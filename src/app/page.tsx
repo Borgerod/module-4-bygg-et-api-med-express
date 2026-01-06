@@ -40,7 +40,7 @@ export default function Home() {
 					<h3>Pages</h3>
 					<div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
 						<Link
-							className="flex h-12 w-full items-center justify-center rounded-xl border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
+							className="flex h-12 w-full items-center justify-center rounded-xl border border-solid border-black/8 px-5 transition-colors hover:border-transparent hover:bg-black/4 dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-39.5"
 							href={"/todo"}
 						>
 							TODO
