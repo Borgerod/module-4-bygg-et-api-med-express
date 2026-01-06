@@ -1,9 +1,12 @@
+// prisma/schema.prisma
+// Define your database models
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model Todo {
@@ -14,3 +17,5 @@ model Todo {
   tags      String
   createdAt DateTime @default(now())
 }
+
+

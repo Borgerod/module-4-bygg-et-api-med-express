@@ -1,0 +1,16 @@
+1. add new model: 
+
+    model User {
+        id    Int    @id @default(autoincrement())
+        name  String
+        email String @unique
+    }
+
+2. Run migration
+    npx prisma migrate dev --name add-user-model
+    
+3. Regenerate the Prisma client
+    npx prisma generate
+    
+4. open studio
+    npx prisma studio
