@@ -49,7 +49,7 @@ export default async function Page() {
 		const tags = tagsStr ? tagsStr.split(",").map((t) => t.trim()) : [];
 		const dueDate = dueDateStr ? new Date(dueDateStr) : undefined;
 		await addTodo(title, tags, dueDate);
-		redirect("/todo");
+		redirect("/todo-old");
 	}
 	return (
 		<>
