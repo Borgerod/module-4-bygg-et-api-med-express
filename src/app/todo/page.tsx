@@ -1,17 +1,9 @@
-// Dummy imports
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import {
-	FieldGroup,
-	Field,
-	FieldLabel,
-	FieldDescription,
-} from "@/components/ui/field";
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DatePicker } from "@/components/ui/todo/DatePicker";
-import TodoForm from "@/components/ui/todo/TodoForm";
-import { addTodo, getTodos } from "@/lib/todo";
+import { addTodo, deleteTodo, getTodos, updateTodo } from "@/lib/todo";
 import { cn } from "@/lib/utils";
 import {
 	Select,
@@ -27,34 +19,63 @@ import {
 	CardAction,
 	CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-// import { addTodo } from "@/lib/todo";
+import { TodoCheckbox } from "@/components/ui/todo/TodoCheckbox";
 
-// import { Post } from '@/ui/todo'
+import { LuX } from "react-icons/lu";
+import {
+	Table,
+	TableHeader,
+	TableBody,
+	TableRow,
+	TableHead,
+	TableCell,
+} from "@/components/ui/table";
 
 export default async function Page() {
 	const todos = await getTodos();
-	// addTodo(title: string, tags: string[], dueDate?: Date)
 	async function handleAddTodo(formData: FormData) {
 		"use server";
-		const title = formData.get("title") as string;
-		const dueDateStr = formData.get("dueDate") as string;
-		const tagsStr = formData.get("tags") as string;
-		const tags = tagsStr ? tagsStr.split(",").map((t) => t.trim()) : [];
-		const dueDate = dueDateStr ? new Date(dueDateStr) : undefined;
-		await addTodo(title, tags, dueDate);
+		const title = formData.get("title")?.toString().trim() || "";
+		if (!title) throw new Error("Title is required");
+		await addTodo(
+			title,
+			formData
+				.get("tags")
+				?.toString()
+				.split(",")
+				.map((t) => t.trim())
+				.filter(Boolean) || [],
+			formData.get("dueDate")
+				? new Date(formData.get("dueDate") as string)
+				: undefined
+		);
 		redirect("/todo");
 	}
+
+	async function handleDeleteTodo(formData: FormData) {
+		"use server";
+		const id = formData.get("id") as string;
+		if (id) {
+			await deleteTodo(id);
+		}
+		redirect("/todo");
+	}
+
+	async function handleToggleTodo(prevState: any, formData: FormData) {
+		"use server";
+		const id = formData.get("id") as string;
+		const done = formData.get("done") === "on";
+		await updateTodo(id, { done });
+		redirect("/todo");
+	}
+
 	return (
 		<>
-			<Card>
-				{/* <TodoForm></TodoForm> */}
+			<Card id="form-card">
 				<CardHeader>
 					<CardTitle>TO DO LIST</CardTitle>
 					<CardDescription>
@@ -63,29 +84,13 @@ export default async function Page() {
 					<CardAction>Add Tasks</CardAction>
 				</CardHeader>
 				<CardContent>
-					<Form
-						// onSubmit={addTodo()}
-						className={cn(
-							// "w-fit",
-							// "w-full",
-							// // "w-xl",
-							// "h-fit",
-							// "p-2",
-							// "bg-neutral-200",
-							// "flex flex-col",
-
-							"",
-							""
-						)}
-						action={handleAddTodo}
-					>
+					<Form className={cn("", "")} action={handleAddTodo}>
 						<FieldGroup>
 							<Field>
 								<FieldLabel htmlFor="checkout-7j9-card-number-uw1">
 									Task
 								</FieldLabel>
 								<Input
-									// id="checkout-7j9-card-number-uw1"
 									id="title"
 									name="title"
 									type="text"
@@ -113,7 +118,7 @@ export default async function Page() {
 									id="tags"
 									name="tags"
 									type="text"
-									placeholder="add tags (seperate with comma)"
+									placeholder="add tags (separate with comma)"
 								/>
 							</Field>
 
@@ -126,55 +131,138 @@ export default async function Page() {
 							</Button>
 						</FieldGroup>
 					</Form>
-					{/* <p>Card Content</p> */}
 				</CardContent>
 			</Card>
-			<Card>
+			{/* _______________________________________________ */}
+			<Card
+				id="table-card"
+				className={cn(
+					"h-fit max-h-200 w-full ",
+
+					"",
+					""
+				)}
+			>
 				<CardHeader>
 					<CardTitle>To Do List</CardTitle>
 					<CardDescription>Your current tasks</CardDescription>
 					<CardAction>placehodler_current_period</CardAction>
 				</CardHeader>
 				<CardContent>
-					<ScrollArea className="h-50 w-full rounded-md border p-4">
-						<ul>
-							{todos.map((todo) => (
-								<li
-									key={todo.id}
-									className="grid grid-cols-[auto_3fr_1fr_1fr_auto] gap-5 justify-items-between"
-								>
-									<Checkbox />
-									<div>{todo.title}</div>
-									<div>
-										{todo.dueDate ? (
-											format(todo.dueDate, "PPP")
-										) : (
-											<span>Pick a date</span>
-										)}
-									</div>
-									<div>
-										{typeof todo.tags === "string"
-											? todo.tags
-													.split(",")
-													.map(
-														(
-															tag: string,
-															i: number
-														) => (
-															<Badge
-																key={i}
-																variant="secondary"
-															>
-																{tag}
-															</Badge>
+					<ScrollArea className="h-100">
+						<Table>
+							<TableHeader>
+								<TableRow className="text-left text-sm font-medium text-muted-foreground">
+									{[
+										"Done",
+										"Task",
+										"Due",
+										"Tags",
+										"Created",
+										"",
+									].map((h, i) => (
+										<TableHead
+											key={`h-${i}`}
+											className={
+												i === 1 ? "w-full" : "w-28"
+											}
+										>
+											{h}
+										</TableHead>
+									))}
+								</TableRow>
+							</TableHeader>
+							<TableBody className="divide-y">
+								{todos.map((todo) => (
+									<TableRow
+										key={todo.id}
+										className="align-top"
+									>
+										<TableCell className="py-2">
+											<TodoCheckbox
+												todoId={todo.id}
+												done={todo.done}
+												onToggle={handleToggleTodo}
+											/>
+										</TableCell>
+										<TableCell className="py-2">
+											{todo.title}
+										</TableCell>
+										<TableCell className="py-2">
+											{todo.dueDate ? (
+												new Date(
+													todo.dueDate
+												).toLocaleDateString("nb-NO", {
+													dateStyle: "short",
+												})
+											) : (
+												<span>-</span>
+											)}
+										</TableCell>
+										<TableCell className="py-2">
+											{typeof todo.tags === "string" &&
+											todo.tags.trim() !== ""
+												? todo.tags
+														.split(",")
+														.filter(
+															(tag: string) =>
+																tag.trim() !==
+																	"untagged" &&
+																tag.trim() !==
+																	""
 														)
-													)
-											: null}
-									</div>
-									<Button></Button>
-								</li>
-							))}
-						</ul>
+														.map(
+															(
+																tag: string,
+																i: number
+															) => (
+																<Badge
+																	key={i}
+																	variant="secondary"
+																>
+																	{tag}
+																</Badge>
+															)
+														)
+												: null}
+										</TableCell>
+										<TableCell className="py-2">
+											{todo.createdAt
+												? new Date(
+														todo.createdAt
+												  ).toLocaleDateString(
+														"nb-NO",
+														{
+															dateStyle: "short",
+														}
+												  )
+												: "N/A"}
+										</TableCell>
+										<TableCell className="py-2">
+											<Form
+												action={handleDeleteTodo}
+												style={{
+													display: "inline",
+												}}
+											>
+												<input
+													type="hidden"
+													name="id"
+													value={todo.id}
+												/>
+												<Button
+													type="submit"
+													variant="ghost"
+													aria-label="Delete todo"
+												>
+													<LuX />
+												</Button>
+											</Form>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
 					</ScrollArea>
 				</CardContent>
 			</Card>

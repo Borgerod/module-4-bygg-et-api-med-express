@@ -12,12 +12,15 @@ export async function GET() {
 // POST /api/todo
 export async function POST(request: Request) {
 	try {
-		const { text, dueDate, tags } = await request.json();
-		if (typeof text !== "string" || !text.trim()) {
-			return new Response(JSON.stringify({ error: "Text is required" }), {
-				status: 400,
-				headers: { "Content-Type": "application/json" },
-			});
+		let { title, dueDate, tags } = await request.json();
+		if (typeof title !== "string" || !title.trim()) {
+			return new Response(
+				JSON.stringify({ error: "Title is required" }),
+				{
+					status: 400,
+					headers: { "Content-Type": "application/json" },
+				}
+			);
 		}
 		if (dueDate && isNaN(Date.parse(dueDate))) {
 			return new Response(
@@ -30,17 +33,22 @@ export async function POST(request: Request) {
 				}
 			);
 		}
-		if (!Array.isArray(tags)) {
+		if (tags !== undefined && !Array.isArray(tags)) {
 			return new Response(
-				JSON.stringify({ error: "Tags must be an array" }),
+				JSON.stringify({
+					error: "tags must be an array if provided",
+				}),
 				{
 					status: 400,
 					headers: { "Content-Type": "application/json" },
 				}
 			);
 		}
+		if (tags === undefined) {
+			tags = [];
+		}
 		const todo = await addTodo(
-			text,
+			title,
 			tags,
 			dueDate ? new Date(dueDate) : undefined
 		);
@@ -61,7 +69,7 @@ export async function POST(request: Request) {
 // PATCH /api/todo?id=1
 export async function PATCH(request: Request) {
 	const { searchParams } = new URL(request.url);
-	const id = Number(searchParams.get("id"));
+	const id = searchParams.get("id");
 	if (!id) {
 		return new Response(JSON.stringify({ error: "ID is required" }), {
 			status: 400,
@@ -85,7 +93,7 @@ export async function PATCH(request: Request) {
 // DELETE /api/todo?id=1
 export async function DELETE(request: Request) {
 	const { searchParams } = new URL(request.url);
-	const id = Number(searchParams.get("id"));
+	const id = searchParams.get("id");
 	if (!id) {
 		return new Response(JSON.stringify({ error: "ID is required" }), {
 			status: 400,
