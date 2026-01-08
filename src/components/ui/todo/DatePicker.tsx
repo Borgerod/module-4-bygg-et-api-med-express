@@ -74,6 +74,7 @@ export function DatePicker(props: {
 	type?: string;
 	placeholder?: string;
 	value?: string;
+	className?: string;
 }) {
 	const [date, setDate] = React.useState<Date>();
 
@@ -84,9 +85,16 @@ export function DatePicker(props: {
 					<Button
 						variant="outline"
 						data-empty={!date}
-						className="data-[empty=true]:text-muted-foreground w-70 justify-start text-left font-normal"
 						id={props.id}
 						name={props.name}
+						className={cn(
+							"data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
+							props.className ? props.className : "",
+							" w-70 ",
+							"",
+							"",
+							""
+						)}
 					>
 						<CalendarIcon />
 						{date ? (
