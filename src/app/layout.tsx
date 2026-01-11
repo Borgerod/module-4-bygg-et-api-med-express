@@ -25,6 +25,16 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	/*
+	! NOTE: removed `ts-node` from devDependencies to avoid a deprecation
+	- changes-made-to-ts-node: deleted `ts-node` from `package.json` devDependencies
+	- changes-made-to-tsconfig.json: updated `tsconfig.json` to use Node ESM resolution:
+	  - "module": "nodenext"
+	  - "moduleResolution": "nodenext"
+	If you later experience issues running `src/app/expressTodo/server.ts`, try:
+	- running it with `npx tsx src/app/expressTodo/server.ts`
+	- or reinstalling `ts-node` with a newer version: `npm install -D ts-node@latest`
+	*/
 	return (
 		<html lang="en">
 			<body
@@ -40,8 +50,7 @@ export default function RootLayout({
 					"justify-self-center",
 					"",
 					""
-				)}
-			>
+				)}>
 				<DarkModeButton />
 				<Warning
 					message="There is a known vulnerability in a dependency. Please be cautious."
