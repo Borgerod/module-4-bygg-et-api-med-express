@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import { Pool } from "pg";
-import { TodoTypes, Todo, TodoProps } from "./todo";
+import { Todo, TodoProps } from "./todo";
 
 dotenv.config();
 
@@ -22,6 +22,8 @@ app.use((req, res, next) => {
 
 ////* GET (w/query)
 app.get("/expressTodo", async (req, res) => {
+  const id = req.query.id; //how to get queries
+  //TODO: Continue from here
   let query = 'SELECT * FROM "Todo"';
   const params: QueryParam[] = [];
 
