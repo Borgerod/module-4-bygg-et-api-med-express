@@ -6,95 +6,89 @@ import { TodoTypes, Todo, TodoProps } from "./todo";
 dotenv.config();
 
 const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL,
 });
 
 const app = express();
 app.use(express.json());
+app.set("trust proxy", true);
 
 app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-	res.header("Access-Control-Allow-Headers", "Content-Type");
-	next();
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
 });
 
-// GET (w/query)
+////* GET (w/query)
 app.get("/expressTodo", async (req, res) => {
-	let query = 'SELECT * FROM "Todo"';
-	const params: QueryParam[] = [];
+  let query = 'SELECT * FROM "Todo"';
+  const params: QueryParam[] = [];
 
-	// If done parameter exists, filter by it
-	if (req.query.done !== undefined) {
-		const done = req.query.done === "true";
-		query += " WHERE done = $1";
-		params.push(done);
-	}
-	// query += ' ORDER BY "createdAt" ASC, id ASC';
-	query += ' ORDER BY "createdAt" DESC, id DESC';
-	const result = await pool.query(query, params);
-	res.json({
-		count: result.rows.length,
-		data: result.rows,
-	});
+  // If done parameter exists, filter by it
+  if (req.query.done !== undefined) {
+    const done = req.query.done === "true";
+    query += " WHERE done = $1";
+    params.push(done);
+  }
+  // query += ' ORDER BY "createdAt" ASC, id ASC';
+  query += ' ORDER BY "createdAt" DESC, id DESC';
+  const result = await pool.query(query, params);
+  res.json({
+    count: result.rows.length,
+    data: result.rows,
+  });
 });
 
 export type QueryParam = TodoProps[keyof TodoProps];
 
-// POST
+////* POST
 app.post("/expressTodo", async (req, res) => {
-	console.log("Received body:", req.body);
-	const todo = new Todo(req.body);
-	console.log("Created todo:", todo);
+  console.log("Received body:", req.body);
+  const todo = new Todo(req.body);
+  console.log("Created todo:", todo);
 
-	await pool.query(
-		`INSERT INTO "Todo" (id, title, done, "dueDate", tags, "createdAt")
+  await pool.query(
+    `INSERT INTO "Todo" (id, title, done, "dueDate", tags, "createdAt")
         VALUES ($1, $2, $3, $4, $5, $6)`,
-		[
-			todo.id,
-			todo.title,
-			todo.done,
-			todo.dueDate,
-			todo.tags,
-			todo.createdAt,
-		]
-	);
-
-	res.status(201).json(todo);
+    [todo.id, todo.title, todo.done, todo.dueDate, todo.tags, todo.createdAt]
+  );
+  res.status(201).json(todo);
 });
 
-// DELETE
+////* DELETE
 app.delete("/expressTodo/:id", async (req, res) => {
-	await pool.query(`DELETE FROM "Todo" WHERE id = $1`, [req.params.id]);
-	res.status(204).send();
+  await pool.query(`DELETE FROM "Todo" WHERE id = $1`, [req.params.id]);
+  res.status(204).send();
 });
 
-// PUT | EDIT
+////* PUT | EDIT
 app.put("/expressTodo/:id", async (req, res) => {
-	// quick check if empty req
-	if (!req.body || Object.keys(req.body).length === 0) {
-		return res.status(400).json({ error: "No fields to update" });
-	}
-	const updates: string[] = [];
-	const params: QueryParam[] = [req.params.id];
+  // quick check if empty req
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return res.status(400).json({ error: "No fields to update" });
+  }
+  const updates: string[] = [];
+  const params: QueryParam[] = [req.params.id];
 
-	// if the param IS something: push to 'update bucket', else ignore
-	(Object.keys(req.body) as Array<keyof TodoProps>).forEach((key) => {
-		const val = (req.body as Partial<TodoProps>)[key];
-		if (val !== undefined) {
-			params.push(val);
-			updates.push(`"${String(key)}" = $${params.length}`);
-		}
-	});
+  // if the param IS something: push to 'update bucket', else ignore
+  (Object.keys(req.body) as Array<keyof TodoProps>).forEach((key) => {
+    const val = (req.body as Partial<TodoProps>)[key];
+    if (val !== undefined) {
+      params.push(val);
+      updates.push(`"${String(key)}" = $${params.length}`);
+    }
+  });
 
-	// push to db when complete.
-	await pool.query(
-		`UPDATE "Todo" SET ${updates.join(", ")} WHERE id = $1`,
-		params
-	);
+  // push to db when complete.
+  await pool.query(
+    `UPDATE "Todo" SET ${updates.join(", ")} WHERE id = $1`,
+    params
+  );
 
-	res.status(200).json({ message: "Todo updated" });
+  res.status(200).json({ message: "Todo updated" });
 });
+
 app.listen(4000, () => {
-	console.log("Server running on port 4000");
+  console.log("Server running on port 4000");
 });
