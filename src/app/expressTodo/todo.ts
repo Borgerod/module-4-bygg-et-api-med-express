@@ -1,0 +1,31 @@
+import { randomUUID } from "crypto";
+
+// types.ts
+export interface TodoProps {
+	id: string;
+	done: boolean;
+	title: string;
+	dueDate?: Date;
+	tags: string;
+	createdAt: Date;
+}
+
+export type TodoTypes = TodoProps & {};
+
+export class Todo implements TodoProps {
+	id: string;
+	done: boolean;
+	title: string;
+	tags: string;
+	createdAt: Date;
+	dueDate?: Date;
+
+	constructor(body: Partial<TodoProps>) {
+		this.id = randomUUID();
+		this.title = body.title || "";
+		this.done = body.done ?? false;
+		this.dueDate = body.dueDate ? new Date(body.dueDate) : undefined;
+		this.tags = body.tags || "";
+		this.createdAt = new Date();
+	}
+}

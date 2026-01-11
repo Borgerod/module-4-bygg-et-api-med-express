@@ -22,7 +22,10 @@
 				"name": "next"
 			}
 		],
+
 		"paths": {
+			"@types": ["./src/lib/types.ts"],
+			"@lib/*": ["./src/lib/*"],
 			"@/*": ["./src/*"]
 		}
 	},
