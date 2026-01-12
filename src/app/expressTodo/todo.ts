@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+/* * Todo constructor + types */
 
 // types.ts
 export interface TodoProps {
