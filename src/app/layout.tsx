@@ -34,6 +34,34 @@ export default function RootLayout({
       - running it with `npx tsx src/app/expressTodo/server.ts`
       - or reinstalling `ts-node` with a newer version: `npm install -D ts-node@latest`
 	*/
+
+  /* * PROJECT COMPOSITION: Mandatory + Chosen Theme
+        
+      - Mandatory: 0. Authentication (required for all projects)
+          goal:
+            - provide secure user authentication and session management.
+          description:
+            - implement login with username and password
+            - validate and protect all endpoints using access tokens (JWT)
+            - ensure proper data validation for authentication requests
+            - handle token refresh and logout securely
+              
+      - Chosen Theme: 1. Gjøremål-API (1. Todo-API)
+          goal: 
+            - an API for administrating tasks.
+          description:
+            - create task with ['title','createdAt'] (optional: + ['dueDate', 'tags'])
+            - list all tasks 
+            - filter by '?done=true|false'
+            - sort by createdAt med ?sort=asc|desc
+              - asc: low to high
+              - desc: high to low
+            - get single task by id
+            - mark task as done/not-done (PATCH)
+            - delete tasks
+            - Eksempel-felter: id, title, done, dueDate, tags[], createdAt
+*/
+
   /* TODO check-list - before submitting assignment:
       TODO 1.0 [ ]:   implement zod validation
         todo 1.1 [ ]: validate atleast: ['body of POST/PUT/PATCH','parameters (f.ex. :id)','query (how relevant)' ]
@@ -42,7 +70,7 @@ export default function RootLayout({
       TODO 3.0 [ ]:   make sure TS is written with ECMAScript Modules (ESM) syntax  
       TODO 4.0 [ ]:   add descr-comments to non-obvious code 
       TODO 5.0 [ ]:   use HTTP status codes - use concrete statuscodes for all responses (see *'status-code-examples')
-      TODO 6.0 [ ]:   Requirement HTTP headers:
+      TODO 6.0 [ ]:   (requirement) implement requirements for HTTP headers
         todo 6.1 [ ]: Access token (Authorization: Bearer <accessToken>)
         todo 6.1 [ ]: Refresh token (X-RefreshToken: <refreshToken>)
                         Which means: 
