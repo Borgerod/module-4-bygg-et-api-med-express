@@ -36,14 +36,21 @@ export default function Home() {
 						center.
 					</p>
 				</div>
-				<div>
-					<h3>Pages</h3>
-					<div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+				<div className="flex flex-col gap-5 w-full">
+					<h3 className="text-2xl leading-0 text-stone-600">Pages</h3>
+					<hr className="border-t  w-full border-stone-400" />
+					<div className="flex flex-col gap-4 text-base font-medium sm:flex-row ">
 						<Link
-							className="flex h-12 w-full items-center justify-center rounded-xl border border-solid border-black/8 px-5 transition-colors hover:border-transparent hover:bg-black/4 dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-39.5"
+							className="w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90"
 							href={"/todo"}
 						>
-							TODO
+							ToDo
+						</Link>
+						<Link
+							className="w-full sm:w-1/2 shadow-md hover:shadow-xs flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90"
+							href={"/expressTodo"}
+						>
+							ToDo (Express)
 						</Link>
 					</div>
 				</div>

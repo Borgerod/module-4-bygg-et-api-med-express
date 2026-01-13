@@ -52,6 +52,73 @@
 // 		</div>
 // 	);
 // }
+// "use client";
+
+// import * as React from "react";
+// import { format } from "date-fns";
+// import { Calendar as CalendarIcon } from "lucide-react";
+
+// import { cn } from "@/lib/utils";
+// import { Button } from "@/components/ui/button";
+// import { Calendar } from "@/components/ui/calendar";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
+
+// // Accept props as a single object
+// export function DatePicker(props: {
+//   id?: string;
+//   name?: string;
+//   type?: string;
+//   placeholder?: string;
+//   value?: string;
+//   className?: string;
+// }) {
+//   const [date, setDate] = React.useState<Date>();
+
+//   return (
+//     <>
+//       <Popover>
+//         <PopoverTrigger asChild>
+//           <Button
+//             variant="outline"
+//             data-empty={!date}
+//             id={props.id}
+//             name={props.name}
+//             className={cn(
+//               "data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
+//               props.className ? props.className : "",
+//               " w-70 ",
+//               "",
+//               "",
+//               ""
+//             )}
+//           >
+//             <CalendarIcon />
+//             {date ? (
+//               format(date, "PPP")
+//             ) : (
+//               <span>{props.placeholder || "Pick a date"}</span>
+//             )}
+//           </Button>
+//         </PopoverTrigger>
+//         <PopoverContent className="w-auto p-0">
+//           <Calendar mode="single" selected={date} onSelect={setDate} />
+//         </PopoverContent>
+//       </Popover>
+//       {/* Hidden input for form submission */}
+//       <input
+//         type="hidden"
+//         id={props.id}
+//         name={props.name}
+//         value={date ? format(date, "yyyy-MM-dd") : ""}
+//       />
+//     </>
+//   );
+// }
+
 "use client";
 
 import * as React from "react";
@@ -62,63 +129,62 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 
-// Accept props as a single object
 export function DatePicker(props: {
-	id?: string;
-	name?: string;
-	type?: string;
-	placeholder?: string;
-	value?: string;
-	className?: string;
+  id?: string;
+  name?: string;
+  placeholder?: string;
+  value?: string; // yyyy-MM-dd
+  className?: string;
+  onSelect?: (value: string) => void;
 }) {
-	const [date, setDate] = React.useState<Date>();
+  // treat props.value as controlled ISO date string (yyyy-MM-dd)
+  const date = props.value ? new Date(props.value) : undefined;
 
-	return (
-		<>
-			<Popover>
-				<PopoverTrigger asChild>
-					<Button
-						variant="outline"
-						data-empty={!date}
-						id={props.id}
-						name={props.name}
-						className={cn(
-							"data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
-							props.className ? props.className : "",
-							" w-70 ",
-							"",
-							"",
-							""
-						)}
-					>
-						<CalendarIcon />
-						{date ? (
-							format(date, "PPP")
-						) : (
-							<span>{props.placeholder || "Pick a date"}</span>
-						)}
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent className="w-auto p-0">
-					<Calendar
-						mode="single"
-						selected={date}
-						onSelect={setDate}
-					/>
-				</PopoverContent>
-			</Popover>
-			{/* Hidden input for form submission */}
-			<input
-				type="hidden"
-				id={props.id}
-				name={props.name}
-				value={date ? format(date, "yyyy-MM-dd") : ""}
-			/>
-		</>
-	);
+  const handleSelect = (d?: Date) => {
+    const formatted = d ? format(d, "yyyy-MM-dd") : "";
+    props.onSelect?.(formatted);
+  };
+
+  return (
+    <>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            data-empty={!date}
+            id={props.id}
+            name={props.name}
+            className={cn(
+              "data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
+              props.className ? props.className : "",
+              " w-70 "
+            )}
+          >
+            <CalendarIcon />
+            {date ? (
+              format(date, "PPP")
+            ) : (
+              <span>{props.placeholder || "Pick a date"}</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar mode="single" selected={date} onSelect={handleSelect} />
+        </PopoverContent>
+      </Popover>
+      {props.name && (
+        <input
+          type="hidden"
+          name={props.name}
+          id={props.id}
+          value={props.value ?? ""}
+        />
+      )}
+    </>
+  );
 }

@@ -1,0 +1,116 @@
+{
+  "todos": [
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7bcc",
+      "title": "table - add select for selecting \"show complete| overdue | unfinished | all\"",
+      "done": false,
+      "dueDate": "2026-01-09T00:00:00.000Z",
+      "tags": "dev,table,add,select,filter",
+      "createdAt": "2026-01-07T09:16:44.947Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-1212-ba40aaac7ba5",
+      "title": "table - add filter by tags, keyword, by period.",
+      "done": true,
+      "dueDate": "2026-01-08T00:00:00.000Z",
+      "tags": "dev,table,add,select,filter",
+      "createdAt": "2026-01-07T08:38:05.707Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40ghac7bad",
+      "title": "menu - replace menu with \"delete button\"",
+      "done": true,
+      "dueDate": "2026-01-11T10:33:55.000Z",
+      "tags": "dev,menu,refactor,select,button",
+      "createdAt": "2026-01-10T10:33:40.000Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba33aaac7ba5",
+      "title": "table - add select for selecting period (todays tasks, this week)   ",
+      "done": true,
+      "dueDate": "2026-01-09T00:00:00.000Z",
+      "tags": "dev,table,add,select",
+      "createdAt": "2026-01-07T08:41:47.759Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7bbb",
+      "title": "table - add select all checkbox | button",
+      "done": true,
+      "dueDate": "2026-01-09T00:00:00.000Z",
+      "tags": "dev,table,add,button,checkbox",
+      "createdAt": "2026-01-07T08:44:36.600Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-basaaaac7ba5",
+      "title": "project - finish todo",
+      "done": false,
+      "dueDate": "2026-01-07T00:00:00.000Z",
+      "tags": "dev,project",
+      "createdAt": "2026-01-07T08:31:41.611Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7bdd",
+      "title": "cell - add edit feature ",
+      "done": false,
+      "dueDate": "2026-01-09T00:00:00.000Z",
+      "tags": "dev,cell,add,functionality",
+      "createdAt": "2026-01-07T08:39:24.314Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7b21",
+      "title": "column - add dateAdded col",
+      "done": true,
+      "dueDate": "2026-01-08T00:00:00.000Z",
+      "tags": "dev,column,add,field",
+      "createdAt": "2026-01-07T08:38:33.427Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7baf",
+      "title": "menu - remove view details ",
+      "done": true,
+      "dueDate": "2026-01-07T00:00:00.000Z",
+      "tags": "dev,menu,del,option",
+      "createdAt": "2026-01-07T08:34:19.239Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7bad",
+      "title": "menu - remove copy todo details ",
+      "done": true,
+      "dueDate": "2026-01-07T00:00:00.000Z",
+      "tags": "dev,menu,del,option",
+      "createdAt": "2026-01-07T08:33:58.183Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7bas",
+      "title": "row - add functionality to delete ",
+      "done": true,
+      "dueDate": "2026-01-07T00:00:00.000Z",
+      "tags": "dev,menu,refactor,functionality",
+      "createdAt": "2026-01-07T08:33:06.762Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7bax",
+      "title": "row - add functionality to checkbox",
+      "done": true,
+      "dueDate": "2026-01-07T00:00:00.000Z",
+      "tags": "dev,menu,refactor,functionality",
+      "createdAt": "2026-01-07T08:33:23.010Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7baa",
+      "title": "menu - add item \"duplicate task\"",
+      "done": true,
+      "dueDate": "2026-01-08T00:00:00.000Z",
+      "tags": "dev,menu,add,option",
+      "createdAt": "2026-01-07T12:23:30.186Z"
+    },
+    {
+      "id": "1b9965ac-965d-485e-87fc-ba40aaac7bac",
+      "title": "table - add sort by tags, duedate, dueDate Inverted, a-z,  z-a, importance lvl",
+      "done": false,
+      "dueDate": "2026-01-08T00:00:00.000Z",
+      "tags": "dev,table,add,select,sort",
+      "createdAt": "2026-01-07T08:36:47.891Z"
+    }
+  ]
+}
