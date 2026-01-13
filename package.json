@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "api": "npx tsx src/app/expressTodo/server.ts",
+    "dev:all": "concurrently \"npm run dev\" \"npm run api\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
