@@ -61,6 +61,7 @@ export default function TodosClient({
     if (!title.trim()) return;
 
     // optimistic UI: create a temp item so user sees immediate feedback
+    // ? should probably use a type schema
     const temp: TodoTypes = {
       id: `temp-${Date.now()}`,
       title,
@@ -162,10 +163,10 @@ export default function TodosClient({
                     <SelectItem value="createdAt_ASC">Newest</SelectItem>
                     <SelectItem value="createdAt_DESC">Oldest</SelectItem>
                     <SelectItem value="dueDate_ASC">
-                      Due date decending
+                      Due date ascending
                     </SelectItem>
                     <SelectItem value="dueDate_DESC">
-                      Due date accending
+                      Due date descending
                     </SelectItem>
                   </SelectContent>
                   {/* <SelectContent>
@@ -236,7 +237,6 @@ export default function TodosClient({
                         : null}
                     </div>
                   </TableCell>
-
                   <TableCell className="py-2 whitespace-nowrap w-24">
                     {todo.createdAt
                       ? new Date(todo.createdAt).toLocaleDateString("nb-NO", {

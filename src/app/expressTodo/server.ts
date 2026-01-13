@@ -1,17 +1,31 @@
+/* ! NOTE: as a temp solution i want to keep server.ts and users.route.ts separate to make it easier to work with (less clutter) 
+          - so i am going to import whatever i need from server.ts 
+          - in server.ts i will add required lines: 
+             + import { userRouter } from "../../expressBackend/routers/users.route"; // adjust path as needed
+             + app.use("/users", userRouter);
+
+          - in users.route.ts: will operate as normal
+*/
+
 import express from "express";
 import dotenv from "dotenv";
 import { Pool } from "pg";
 import { Todo, TodoProps } from "./todo";
+import { userRouter } from "@expressBackend/routers/users.route";
+// import { userRouter } from "../../expressBackend/routers/users.route"; // !TEMP
+// import { userRouter } from "@expressBackend/controllers/users.controllers"; // !TEMP
 
 dotenv.config();
 
-const pool = new Pool({
+export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
 const app = express();
 app.use(express.json());
 app.set("trust proxy", true);
+
+app.use("/users", userRouter);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -23,7 +37,7 @@ app.use((req, res, next) => {
 ////* GET (w/query)
 app.get("/expressTodo", async (req, res) => {
   const id = req.query.id; //how to get queries
-  //TODO: Continue from here
+  //TODO: Continue from here (filtering)
   let query = 'SELECT * FROM "Todo"';
   const params: QueryParam[] = [];
 
