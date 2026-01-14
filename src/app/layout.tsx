@@ -211,7 +211,7 @@ export default function RootLayout({
 */
 
   return (
-    <html lang="en">
+    <html lang="en" className="">
       <body
         className={cn(
           `font-sans ${geistSans.variable} ${geistMono.variable} antialiased`,
@@ -223,7 +223,22 @@ export default function RootLayout({
           "p-5",
           "mt-10 mb-20",
           "mx-auto",
-          "min-h-screen"
+          // "min-h-screen",
+          "h-full",
+          "min-h-full",
+          "max-h-screen",
+          // "min-h-lh",
+          // "min-h-svh",
+          // "min-h-auto",
+          // "min-h-lvh",
+          // "min-h-max",
+          " py-32",
+          " px-16",
+          // "bg-zinc-50",
+          // "dark:bg-zinc-900",
+          "",
+          "",
+          ""
         )}
       >
         <DarkModeButton />
