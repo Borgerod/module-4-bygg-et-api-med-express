@@ -1,0 +1,2 @@
+this is only used by my express solution and will route user logins
+- This might cause confusion when i use nextjs also (routes in app/api) but i shall continue
