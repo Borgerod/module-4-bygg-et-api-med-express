@@ -1,0 +1,180 @@
+# 1. add new model: 
+
+#     model User {
+#         id    Int    @id @default(autoincrement())
+#         name  String
+#         email String @unique
+#     }
+
+# 2. Run migration
+#     npx prisma migrate dev --name add-user-model
+    
+# 3. Regenerate the Prisma client
+#     npx prisma generate
+    
+# 4. open studio
+#     npx prisma studio
+
+SQLite
+
+
+1. init prisma (SQLite)
+npm install prisma @types/node @types/better-sqlite3 --save-dev 
+npm install @prisma/client @prisma/adapter-better-sqlite3 dotenv
+# npm install prisma @types/node --save-dev 
+# npm install @prisma/client @prisma/adapter-mariadb dotenv
+
+
+2. configure esm support  (tsconfig.json)
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ES2023",
+    "strict": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0"
+  }
+
+2.1 OR for NEXTjs projects
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0", 
+}
+
+
+3. Update package.json to enable ESM:
+"type": "module",
+
+4. Initialize Prisma ORM
+You can now invoke the Prisma CLI by prefixing it with npx:
+```bash
+npx prisma
+```
+
+FOR CLEAN INSTALL:
+Next, set up your Prisma ORM project by creating your Prisma Schema file with the following command:
+
+```bash
+npx prisma init --datasource-provider sqlite --output ../generated/prisma
+```
+5. replace schema with provided template
+run: 
+
+```bash
+Add-Content .\prisma\schema.prisma "`r`nmodel Todo {`r`n  id        String    @id @default(uuid())`r`n  title     String`r`n  done      Boolean   @default(false)`r`n  dueDate   DateTime?`r`n  tags      String`r`n  createdAt DateTime  @default(now())`r`n}`r`n`r`nmodel User {`r`n  id           String    @id @default(uuid())`r`n  username     String    @unique`r`n  email        String    @unique`r`n  passwordHash String`r`n  createdAt    DateTime  @default(now())`r`n  updatedAt    DateTime  @default(now()) @updatedAt`r`n  isActive     Boolean   @default(true)`r`n`r`n  activeLogins ActiveLogin[]`r`n}`r`n`r`nmodel ActiveLogin {`r`n  id        String   @id @default(uuid())`r`n  userId    String`r`n  loginAt   DateTime @default(now())`r`n  logoutAt  DateTime?`r`n  sessionId String   @unique`r`n`r`n  user      User     @relation(fields: [userId], references: [id])`r`n}`r`n"
+```
+SKIP THIS STEP
+# 6.Update your .env file with your SQLite connection string details: 
+# ```bash
+# $username = Read-Host "Enter your SQLite username"
+# $passwordSecure = Read-Host "Enter your SQLite password" -AsSecureString
+# $password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($passwordSecure))
+# (Get-Content .env) | Where-Object { $_ -notmatch 'DATABASE_URL="file:./dev.db"' } | Set-Content .env
+# Add-Content .env "`r`nDATABASE_URL=`"mysql://${username}:${password}@localhost:3306/2doDB`"`r`nDATABASE_USER=`"${username}`"`r`nDATABASE_PASSWORD=`"${password}`"`r`nDATABASE_NAME=`"2doDB`"`r`nDATABASE_HOST=`"localhost`"`r`nDATABASE_PORT=3306`r`n"
+# ```
+#   Describing what these lines does: 
+#   "
+#     # Prompt for username
+#     $username = Read-Host "Make a SQLite username"
+
+#     Prompt for password (hidden input)
+#     $passwordSecure = Read-Host "Make a SQLite password" -AsSecureString
+#     $password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($passwordSecure))
+
+#     # Remove old DATABASE_URL line if present
+#     (Get-Content .env) | Where-Object { $_ -notmatch 'DATABASE_URL="file:./dev.db"' } | Set-Content .env
+
+#     # Insert new SQLite connection details
+#     Add-Content .env "`r`nDATABASE_URL=`"mysql://${username}:${password}@localhost:3306/2doDB`"`r`nDATABASE_USER=`"${username}`"`r`nDATABASE_PASSWORD=`"${password}`"`r`nDATABASE_NAME=`"2doDB`"`r`nDATABASE_HOST=`"localhost`"`r`nDATABASE_PORT=3306`r`n"
+#   "
+#   Or do it manualle by replacing the current DATABASE_URL with these lines: 
+#   DATABASE_URL="file:./dev.db"
+#     # DATABASE_URL="mysql://username:password@localhost:3306/2doDB"
+#     # DATABASE_USER="username"
+#     # DATABASE_PASSWORD="password"
+#     # DATABASE_NAME="2doDB"
+#     # DATABASE_HOST="localhost"
+#     # DATABASE_PORT=3306
+
+
+
+7. Migrate schema 
+```bash
+npx prisma migrate dev --name init
+```
+Note if this does not work, check that .env looks like this: 
+DATABASE_URL="file:./dev.db"
+
+8. then generate
+```bash
+npx prisma generate
+```
+
+# # Prompt for username
+# $username = Read-Host "Enter your SQLite username"
+
+# # Prompt for password (hidden input)
+# $passwordSecure = Read-Host "Enter your SQLite password" -AsSecureString
+# $password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($passwordSecure))
+
+# # Remove old DATABASE_URL line if present
+# (Get-Content .env) | Where-Object { $_ -notmatch 'DATABASE_URL="file:./dev.db"' } | Set-Content .env
+
+# # Insert new SQLite connection details
+# Add-Content .env "`r`nDATABASE_URL=`"mysql://${username}:${password}@localhost:3306/2doDB`"`r`nDATABASE_USER=`"${username}`"`r`nDATABASE_PASSWORD=`"${password}`"`r`nDATABASE_NAME=`"2doDB`"`r`nDATABASE_HOST=`"localhost`"`r`nDATABASE_PORT=3306`r`n"
+# ```bash
+# (Get-Content .env) | Where-Object { $_ -notmatch 'DATABASE_URL="file:./dev.db"' } | Set-Content .env
+# Add-Content .env "`r`nDATABASE_URL=`"mysql://username:password@localhost:3306/2doDB`"`r`nDATABASE_USER=`"username`"`r`nDATABASE_PASSWORD=`"password`"`r`nDATABASE_NAME=`"2doDB`"`r`nDATABASE_HOST=`"localhost`"`r`nDATABASE_PORT=3306`r`n"
+# ```
+
+# 2doDB
+
+
+
+
+
+
+
+# generator client {
+#   provider = "prisma-client-js"
+# }
+
+# datasource db {
+#   provider = "sqlite"
+#   url      = env("DATABASE_URL")
+# }
+
+model Todo {
+  id        String    @id @default(uuid())
+  title     String
+  done      Boolean   @default(false)
+  dueDate   DateTime?
+  tags      String
+  createdAt DateTime  @default(now())
+}
+
+model User {
+  id           String    @id @default(uuid())
+  username     String    @unique
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  isActive     Boolean   @default(true)
+
+  activeLogins ActiveLogin[]
+}
+
+model ActiveLogin {
+  id        String   @id @default(uuid())
+  userId    String
+  loginAt   DateTime @default(now())
+  logoutAt  DateTime?
+  sessionId String   @unique
+
+  user      User     @relation(fields: [userId], references: [id])
+}

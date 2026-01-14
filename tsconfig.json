@@ -1,18 +1,28 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    // "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
-    "strict": true,
+    // "strict": true,
     "noEmit": true,
-    "module": "nodenext",
     // "module": "esnext",
     //// "moduleResolution": "bundler",
     //// "esModuleInterop": true,
     //// "skipLibCheck": true,
     // "moduleResolution": "node",
-    "moduleResolution": "nodenext",
+    // "module": "ESNext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "strict": true,
     "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
+    // "moduleResolution": "nodenext",
+    // "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -24,12 +34,19 @@
         "name": "next"
       }
     ],
-
     "paths": {
-      "@types": ["./src/lib/types.ts"],
-      "@expressBackend/*": ["./expressBackend/*"],
-      "@lib/*": ["./src/lib/*"],
-      "@/*": ["./src/*"]
+      "@types": [
+        "./src/lib/types.ts"
+      ],
+      "@expressBackend/*": [
+        "./expressBackend/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
@@ -40,5 +57,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
