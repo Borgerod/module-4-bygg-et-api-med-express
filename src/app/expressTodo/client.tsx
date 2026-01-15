@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import PeriodSelect from "../todo/PeriodSelect";
 
 const API_BASE = (
   process.env.NEXT_PUBLIC_EXPRESS_URL ?? "http://localhost:4000"
@@ -50,10 +51,131 @@ export default function TodosClient({
   const [tags, setTags] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [sortBy, setSortBy] = useState("createdAt_DESC");
+  const [selectPeriod, setSelectPeriod] = useState("all");
 
-  async function sortTodos(id: string) {
-    // TODO: finish this
+  // const [sortCol, sortDir] = sortBy.split("_");
+  // const sorted = [...todos].sort((a_val, b_val) => {
+  //   const aRaw = a_val[sortCol as keyof TodoTypes];
+  //   const bRaw = b_val[sortCol as keyof TodoTypes];
+
+  //   // Custom logic: always push empty due dates to the bottom
+  //   if (!aRaw && !bRaw) return 0;
+  //   if (!aRaw) return 1;
+  //   if (!bRaw) return -1;
+
+  //   const a = String(aRaw);
+  //   const b = String(bRaw);
+
+  //   if (a + b > b + a) return sortDir === "ASC" ? 1 : -1;
+  //   else if (a + b < b + a) return sortDir === "ASC" ? -1 : 1;
+  //   else return 0;
+  // });
+
+  async function handleSelectPeriod(value: string) {
+    setSelectPeriod(value);
   }
+
+  function getTime(date?: Date | string): number {
+    if (!date) return 0;
+    return new Date(date).getTime();
+  }
+
+  async function sortTodos(value: string) {
+    setSortBy(value);
+    const sorted = [...todos];
+
+    switch (value) {
+      case "dueDate_ASC": {
+        const result = sorted.sort((a, b) => {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return getTime(a.dueDate) - getTime(b.dueDate);
+        });
+        setTodos(result);
+        return result;
+      }
+      case "dueDate_DESC": {
+        const result = sorted.sort((a, b) => {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return getTime(b.dueDate) - getTime(a.dueDate);
+        });
+        setTodos(result);
+        return result;
+      }
+      case "createdAt_ASC": {
+        const result = sorted.sort(
+          (a, b) => getTime(a.createdAt) - getTime(b.createdAt)
+        );
+        setTodos(result);
+        return result;
+      }
+      case "createdAt_DESC":
+      default: {
+        const result = sorted.sort(
+          (a, b) => getTime(b.createdAt) - getTime(a.createdAt)
+        );
+        setTodos(result);
+        return result;
+      }
+    }
+  }
+  //   async function largestNumber(todos: TodoTypes[], sortBy: string) {
+  //   const sorted = [...todos].sort((a_val, b_val) => {
+  //     const a = a_val.createdAt ? new Date(a_val.createdAt).getTime() : 0;
+  //     const b = b_val.createdAt ? new Date(b_val.createdAt).getTime() : 0;
+  //     if (a > b) return -1;
+  //     else if (a < b) return 1;
+  //     else return 0;
+  //   });
+  //   return sorted;
+  // }
+
+  // async function sortTodos(value: string) {
+  //   // sortBy: string,
+  //   // id: string,
+  //   // formData: FormData //this so we can apply sortby to formdata so sort is maintained while when form is changed. (prob redundatn)
+  //   // Try: handle internal (no api calls)
+  //   // "use server";
+  //   // const id = formData.get("id") as string;
+  //   // let sortCol: string;
+  //   // switch (sortBy) {
+  //   //   case "dueDate_DESC":
+  //   //     sortCol = "dueDate";
+  //   //     break;
+  //   //   case "dueDate_ASC":
+  //   //     sortCol = "dueDate";
+  //   //     break;
+  //   //   case "createdAt_DESC":
+  //   //     sortCol = "createdAt";
+  //   //     break;
+  //   //   case "createdAt_ASC":
+  //   //   default:
+  //   //     sortCol = "createdAt";
+  //   //     break;
+  //   //   }
+
+  //   // sorting algo
+  //   // sortCol = "dueDate"; //exampledata
+  //   // soretBy = "dueDate_DESC"; //exampledata
+  //   // Greedy
+
+  //   console.log("before (sortby): ", sortBy);
+  //   console.log("before (value): ", value);
+  //   console.log("before (todos): ", todos);
+  //   setSortBy(value);
+  //   console.log("after (sortby): ", sortBy);
+  //   console.log("after (value): ", value);
+  //   const newToDos = await largestNumber(todos, value);
+  //   if (Array.isArray(newToDos)) {
+  //     setTodos(newToDos);
+  //     console.log("after (todos): ", newToDos);
+  //   } else {
+  //     console.log("error, did not get sorted");
+  //   }
+  // }
 
   async function createTodoClient(e?: React.FormEvent) {
     e?.preventDefault();
@@ -147,38 +269,118 @@ export default function TodosClient({
             task(s)
           </CardDescription>
           <CardAction>
-            <div className="grid grid-cols-[1fr_auto] text-muted-foreground items-center ">
-              <div className="flex flex-row w-fit items-center gap-2">
-                {/* {sortBy === "All"
-                  ? "Showing "
-                  : sortBy === "today"
-                  ? "Showing tasks for "
-                  : "Showing tasks for this "} */}
+            {/* <div className="grid grid-cols-[1fr_auto] text-muted-foreground items-center grid-rows-3 "> */}
+            <div
+              className={cn(
+                "flex flex-col items-end text-muted-foreground text-end",
+                "gap-2",
+                "py-2",
+                "",
+                ""
+              )}
+            >
+              <div className="text-nowrap  gap-1 text-sm flex flex-row">
+                Showing
+                <h2
+                  className={cn(
+                    "text-2xl uppercase",
 
-                <Select value={sortBy} onValueChange={setSortBy}>
+                    "leading-2",
+                    "text-primary",
+                    "",
+                    ""
+                  )}
+                >
+                  {selectPeriod}
+                </h2>
+              </div>
+
+              {/* <div className="text-nowrap flex gap-1 text-sm leading-9 ">
+                {selectPeriod === "all" ? (
+                  <>
+                    Showing <h2 className="text-2xl">{selectPeriod}</h2> tasks
+                  </>
+                ) : (
+                  <>
+                    Showing <h2 className="text-2xl">{selectPeriod}&#39;s</h2>{" "}
+                    tasks
+                  </>
+                )}
+              </div> */}
+
+              {/* <div className="text-nowrap gap-1 text-sm flex flex-row items-center invert">
+                Select period
+                <Card className="relative grid px-2  h-fit w-50 bg-background">
+                  <h2
+                    className={cn(
+                      "text-2xl uppercase leading-2 place-self-center pointer-events-none text-primary",
+                      "",
+                      ""
+                    )}
+                  >
+                    {selectPeriod}
+                  </h2>
+                  <Select
+                    value={selectPeriod}
+                    onValueChange={handleSelectPeriod}
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "absolute inset-0 w-full h-full opacity-0 cursor-pointer",
+                        "place-self-center",
+                        "",
+                        ""
+                      )}
+                      style={{ zIndex: 10 }}
+                    >
+                      <SelectValue placeholder="All" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="today">Today</SelectItem>
+                      <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                      <SelectItem value="this week">This week</SelectItem>
+                      <SelectItem value="next week">Next week</SelectItem>
+                      <SelectItem value="this month">This month</SelectItem>
+                      <SelectItem value="next month">Next month</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Card>
+              </div> */}
+
+              {/* <div className="flex flex-row w-fit items-center gap-2">
+                Select period
+                <Select value={selectPeriod} onValueChange={handleSelectPeriod}>
                   <SelectTrigger className="w-fit">
                     <SelectValue placeholder="SortBy" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="createdAt_ASC">Newest</SelectItem>
-                    <SelectItem value="createdAt_DESC">Oldest</SelectItem>
-                    <SelectItem value="dueDate_ASC">
-                      Due date ascending
-                    </SelectItem>
-                    <SelectItem value="dueDate_DESC">
-                      Due date descending
-                    </SelectItem>
-                  </SelectContent>
-                  {/* <SelectContent>
-                    <SelectItem value="All">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="today">Today</SelectItem>
-                    <SelectItem value="week">Week</SelectItem>
-                    <SelectItem value="month">Month</SelectItem>
-                  </SelectContent> */}
+                    <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                    <SelectItem value="this week">This week</SelectItem>
+                    <SelectItem value="next week">Next week</SelectItem>
+                    <SelectItem value="this month">This month</SelectItem>
+                    <SelectItem value="next month">Next month</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div> */}
+              <div className="flex flex-row w-fit items-center gap-2 ">
+                Sort by
+                <Select value={sortBy} onValueChange={sortTodos}>
+                  <SelectTrigger className="w-fit">
+                    <SelectValue placeholder="SortBy" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="createdAt_ASC">Oldest</SelectItem>
+                    <SelectItem value="createdAt_DESC">Newest</SelectItem>
+                    <SelectItem value="dueDate_ASC">Earliest due</SelectItem>
+                    <SelectItem value="dueDate_DESC">Latest due</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
-            {/* <SortBySelect /> */}
+            {/* </div> */}
           </CardAction>
         </CardHeader>
 
@@ -207,13 +409,27 @@ export default function TodosClient({
                   </TableCell>
 
                   <TableCell className="py-2 whitespace-nowrap w-24">
-                    {todo.dueDate ? (
-                      new Date(todo.dueDate).toLocaleDateString("nb-NO", {
-                        dateStyle: "short",
-                      })
-                    ) : (
-                      <span>-</span>
-                    )}
+                    <span
+                      className={cn(
+                        "",
+                        {
+                          "text-primary":
+                            !todo.dueDate ||
+                            new Date(todo.dueDate) > new Date(),
+                          "text-warning":
+                            todo.dueDate &&
+                            new Date(todo.dueDate) <= new Date(),
+                        },
+                        "",
+                        ""
+                      )}
+                    >
+                      {todo.dueDate
+                        ? new Date(todo.dueDate).toLocaleDateString("nb-NO", {
+                            dateStyle: "short",
+                          })
+                        : "-"}
+                    </span>
                   </TableCell>
 
                   <TableCell className="py-2 w-32">
@@ -237,6 +453,7 @@ export default function TodosClient({
                         : null}
                     </div>
                   </TableCell>
+
                   <TableCell className="py-2 whitespace-nowrap w-24">
                     {todo.createdAt
                       ? new Date(todo.createdAt).toLocaleDateString("nb-NO", {
