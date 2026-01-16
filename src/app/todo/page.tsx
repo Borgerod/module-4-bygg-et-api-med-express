@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DatePicker } from "@/components/ui/todo/DatePicker";
+// import { DatePicker } from "@/components/ui/todo/DatePicker";
+import { Calendar28 as DatePicker } from "./DatePicker";
 import { addTodo, deleteTodo, getTodos, updateTodo } from "@/lib/todo";
 import { cn } from "@/lib/utils";
 
@@ -135,7 +136,7 @@ export default async function Page() {
                       <TableCell className="py-2 whitespace-nowrap w-24">
                         {todo.dueDate ? (
                           new Date(todo.dueDate).toLocaleDateString("nb-NO", {
-                            dateStyle: "short",
+                            dateStyle: "medium",
                           })
                         ) : (
                           <span>-</span>
@@ -169,7 +170,7 @@ export default async function Page() {
                           ? new Date(todo.createdAt).toLocaleDateString(
                               "nb-NO",
                               {
-                                dateStyle: "short",
+                                dateStyle: "medium",
                               }
                             )
                           : "N/A"}
@@ -218,7 +219,7 @@ export default async function Page() {
                   ""
                 )}
               >
-                Add Task
+                +{/* Add Task */}
               </Button>
             </CardAction>
           </CardHeader>
@@ -248,11 +249,17 @@ export default async function Page() {
                 )}
               >
                 <Field>
-                  <DatePicker
+                  {/* <DatePicker
                     id="dueDate"
                     name="dueDate"
                     // type="date"
                     placeholder="Due Date"
+                  /> */}
+                  <DatePicker
+                  // id="dueDate"
+                  // name="dueDate"
+                  // value={dueDate}
+                  // onSelect={(v: string) => setDueDate(v)}
                   />
                 </Field>
                 <Field>

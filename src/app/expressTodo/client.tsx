@@ -13,6 +13,15 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { HiOutlineAdjustments, HiOutlinePlusSm } from "react-icons/hi";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Card,
   CardAction,
@@ -23,7 +32,13 @@ import {
 } from "@/components/ui/card";
 import { LuX } from "react-icons/lu";
 
-import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import { cn } from "@lib/utils";
 
 import { DatePicker } from "@/components/ui/todo/DatePicker";
@@ -35,6 +50,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import PeriodSelect from "../todo/PeriodSelect";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const API_BASE = (
   process.env.NEXT_PUBLIC_EXPRESS_URL ?? "http://localhost:4000"
@@ -259,10 +279,13 @@ export default function TodosClient({
           "p-4",
           "w-full",
           "max-h-[70vh]",
-          "overflow-hidden"
+          "overflow-hidden",
+          "",
+          ""
         )}
       >
-        <CardHeader className="shrink-0">
+        {/* <CardHeader className="shrink-0"> */}
+        <CardHeader className="w-full px-0">
           <CardTitle>TO DO LIST</CardTitle>
           <CardDescription>
             Manage, monitor and edit your schedule Displaying: ({todos.length})
@@ -285,7 +308,7 @@ export default function TodosClient({
                   className={cn(
                     "text-2xl uppercase",
 
-                    "leading-2",
+                    "leading-4",
                     "text-primary",
                     "",
                     ""
@@ -365,26 +388,86 @@ export default function TodosClient({
                   </SelectContent>
                 </Select>
               </div> */}
-              <div className="flex flex-row w-fit items-center gap-2 ">
-                Sort by
-                <Select value={sortBy} onValueChange={sortTodos}>
-                  <SelectTrigger className="w-fit">
-                    <SelectValue placeholder="SortBy" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="createdAt_ASC">Oldest</SelectItem>
-                    <SelectItem value="createdAt_DESC">Newest</SelectItem>
-                    <SelectItem value="dueDate_ASC">Earliest due</SelectItem>
-                    <SelectItem value="dueDate_DESC">Latest due</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
             {/* </div> */}
           </CardAction>
         </CardHeader>
 
         <div className="overflow-auto flex-1">
+          <div id="table-settings-row">
+            <div id="open-filter-button ">
+              <Sheet>
+                <SheetTrigger>Open</SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Are you absolutely sure?</SheetTitle>
+                    <SheetDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </SheetDescription>
+                  </SheetHeader>
+                </SheetContent>
+              </Sheet>
+              {/* <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-label="Open Filter"
+                  >
+                    <HiOutlineAdjustments />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent asChild className="">
+                  <form
+
+                  //  onSubmit={filterTodos}
+                  >
+                    <Field>
+                      <FieldLabel>Select period</FieldLabel>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose department" />
+                        </SelectTrigger>
+                        <SelectContent className="contents absolute top-0">
+                          <SelectItem value="all">All</SelectItem>
+                          <SelectItem value="today">Today</SelectItem>
+                          <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                          <SelectItem value="this week">This week</SelectItem>
+                          <SelectItem value="next week">Next week</SelectItem>
+                          <SelectItem value="this month">This month</SelectItem>
+                          <SelectItem value="next month">Next month</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FieldDescription>
+                        Select for what period you want to display the tasks,
+                        e.g.: only show todays tasks, etc...
+                      </FieldDescription>
+                    </Field>
+                  </form>
+                </PopoverContent>
+              </Popover> */}
+            </div>
+
+            <div
+              id="sortby-select"
+              className="flex flex-row w-fit items-center gap-2 "
+            >
+              Sort by
+              <Select value={sortBy} onValueChange={sortTodos}>
+                <SelectTrigger className="w-fit">
+                  <SelectValue placeholder="SortBy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="createdAt_ASC">Oldest</SelectItem>
+                  <SelectItem value="createdAt_DESC">Newest</SelectItem>
+                  <SelectItem value="dueDate_ASC">Earliest due</SelectItem>
+                  <SelectItem value="dueDate_DESC">Latest due</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <Table>
             <TableHeader className="sticky top-0 bg-background z-10">
               <TableRow className="text-left text-sm font-medium text-muted-foreground">
@@ -426,7 +509,7 @@ export default function TodosClient({
                     >
                       {todo.dueDate
                         ? new Date(todo.dueDate).toLocaleDateString("nb-NO", {
-                            dateStyle: "short",
+                            dateStyle: "medium",
                           })
                         : "-"}
                     </span>
@@ -457,7 +540,7 @@ export default function TodosClient({
                   <TableCell className="py-2 whitespace-nowrap w-24">
                     {todo.createdAt
                       ? new Date(todo.createdAt).toLocaleDateString("nb-NO", {
-                          dateStyle: "short",
+                          dateStyle: "medium",
                         })
                       : "N/A"}
                   </TableCell>
@@ -491,13 +574,15 @@ export default function TodosClient({
                 variant="outline"
                 type="submit"
                 className={cn(
-                  "data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
-                  "",
+                  "flex items-center justify-center text-center place-items-center",
+                  "data-[empty=true]:text-muted-foreground font-normal",
+                  "text-3xl text-muted-foreground",
                   "",
                   ""
                 )}
               >
-                Add Task
+                <HiOutlinePlusSm />
+                {/* Add Task */}
               </Button>
             </CardAction>
           </CardHeader>
