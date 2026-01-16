@@ -6,9 +6,9 @@
 
 ```bash
 npm install
-# npx prisma db create
-# npx prisma generate
-# npx prisma migrate dev
+npx prisma db create
+npx prisma generate
+npx prisma migrate dev
 # npx tsx prisma/import.ts
 npx tsx script.ts
 npm run dev:all
