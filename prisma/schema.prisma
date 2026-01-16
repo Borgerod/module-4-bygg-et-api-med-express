@@ -1,9 +1,13 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model Todo {
@@ -16,23 +20,23 @@ model Todo {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  username     String    @unique
-  email        String    @unique
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String   @unique
   passwordHash String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now()) @updatedAt
-  isActive     Boolean   @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+  isActive     Boolean  @default(true)
 
   activeLogins ActiveLogin[]
 }
 
 model ActiveLogin {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
-  loginAt   DateTime @default(now())
+  loginAt   DateTime  @default(now())
   logoutAt  DateTime?
-  sessionId String   @unique
+  sessionId String    @unique
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }

@@ -78,58 +78,105 @@ export default function Home() {
           </Card>
         </div>
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+          <h1
+            suppressHydrationWarning
+            className={cn(
+              "max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50",
+              "",
+              ""
+            )}
+          >
             Welcome to 2Do
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+          <p
+            className={cn(
+              "max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400",
+              "",
+              ""
+            )}
+          >
             An app for managing tasks, powered by{" "}
             <a
               href="https://nextjs.org"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              className={cn(
+                "font-medium text-zinc-950 dark:text-zinc-50",
+                "",
+                ""
+              )}
             >
               NEXTjs
-            </a>{" "}
+            </a>
             , with backend handling by{" "}
             <a
               href="https://expressjs.com/"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              className={cn(
+                "font-medium text-zinc-950 dark:text-zinc-50",
+                "",
+                ""
+              )}
             >
               Express
             </a>
-            {/* , and{" "} */}, database by{" "}
+            , database by{" "}
             <a
               href="https://www.postgresql.org/"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              className={cn(
+                "font-medium text-zinc-950 dark:text-zinc-50",
+                "",
+                ""
+              )}
             >
               PostgreSQL
             </a>
             via{" "}
             <a
               href="https://www.prisma.io/"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              className={cn(
+                "font-medium text-zinc-950 dark:text-zinc-50",
+                "",
+                ""
+              )}
             >
               Prisma
-            </a>{" "}
+            </a>
             , designed with the{" "}
             <a
               href="https://ui.shadcn.com/"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              className={cn(
+                "font-medium text-zinc-950 dark:text-zinc-50",
+                "",
+                ""
+              )}
             >
               Ui.ShadCn
             </a>{" "}
             UI Kit.
           </p>
-
-          <p className="max-w-md text-lg leading-5 text-zinc-600 dark:text-zinc-400">
-            With the goal of the task is to display capabilities for:
-            <ul>
+          <div>
+            <p
+              className={cn(
+                "max-w-md text-lg leading-5 text-zinc-600 dark:text-zinc-400",
+                "",
+                ""
+              )}
+            >
+              With the goal of the task is to display capabilities for:
+            </p>
+            <ul
+              className={cn(
+                "list-disc pl-5 text-zinc-600 dark:text-zinc-400",
+                "",
+                ""
+              )}
+            >
               <li>- REST-ful API construction</li>
               <li>- Node + Express</li>
               <li>- API handling</li>
               <li>- Authentication.</li>
             </ul>
-          </p>
+          </div>
         </div>
+
         <div className="flex flex-col gap-5 w-full">
           <h3 className="text-2xl leading-0 text-stone-600">Pages</h3>
           <hr className="border-t  w-full border-stone-400" />

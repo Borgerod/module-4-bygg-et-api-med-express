@@ -18,9 +18,9 @@ export class Todo implements TodoProps {
   id: string;
   done: boolean;
   title: string;
+  dueDate?: Date;
   tags: string;
   createdAt: Date;
-  dueDate?: Date;
 
   constructor(body: Partial<TodoProps>) {
     this.id = randomUUID();

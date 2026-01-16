@@ -9,17 +9,15 @@
 
 import express from "express";
 import dotenv from "dotenv";
-import { Pool } from "pg";
+import Database from "better-sqlite3";
 import { Todo, TodoProps } from "./todo";
 import { userRouter } from "@expressBackend/routers/users.route";
-// import { userRouter } from "../../expressBackend/routers/users.route"; // !TEMP
-// import { userRouter } from "@expressBackend/controllers/users.controllers"; // !TEMP
 
 dotenv.config();
 
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const db = new Database(
+  process.env.DATABASE_URL?.replace("file:", "") ?? "./dev.db"
+);
 
 const app = express();
 app.use(express.json());
@@ -35,71 +33,95 @@ app.use((req, res, next) => {
 });
 
 ////* GET (w/query)
-app.get("/expressTodo", async (req, res) => {
-  const id = req.query.id; //how to get queries
-  //TODO: Continue from here (filtering)
+app.get("/expressTodo", (req, res) => {
   let query = 'SELECT * FROM "Todo"';
-  const params: QueryParam[] = [];
+  const params: unknown[] = [];
 
-  // If done parameter exists, filter by it
   if (req.query.done !== undefined) {
-    const done = req.query.done === "true";
-    query += " WHERE done = $1";
-    params.push(done);
+    query += " WHERE done = ?";
+    params.push(req.query.done === "true" ? 1 : 0);
   }
-  // query += ' ORDER BY "createdAt" ASC, id ASC';
   query += ' ORDER BY "createdAt" DESC, id DESC';
-  const result = await pool.query(query, params);
+  const stmt = db.prepare(query);
+  const rows = stmt.all(...params);
+
   res.json({
-    count: result.rows.length,
-    data: result.rows,
+    count: rows.length,
+    data: rows,
   });
 });
 
 export type QueryParam = TodoProps[keyof TodoProps];
 
 ////* POST
-app.post("/expressTodo", async (req, res) => {
-  console.log("Received body:", req.body);
-  const todo = new Todo(req.body);
-  console.log("Created todo:", todo);
+// app.post("/expressTodo", (req, res) => {
+//   const todo = new Todo(req.body);
 
-  await pool.query(
+//   db.prepare(
+//     `INSERT INTO "Todo" (id, title, done, "dueDate", tags, "createdAt")
+//      VALUES (?, ?, ?, ?, ?, ?)`
+//   ).run(
+//     todo.id,
+//     todo.title,
+//     todo.done ? 1 : 0,
+//     todo.dueDate,
+//     todo.tags,
+//     todo.createdAt
+//   );
+
+//   res.status(201).json(todo);
+// });
+app.post("/expressTodo", (req, res) => {
+  const todo = new Todo(req.body);
+
+  db.prepare(
     `INSERT INTO "Todo" (id, title, done, "dueDate", tags, "createdAt")
-        VALUES ($1, $2, $3, $4, $5, $6)`,
-    [todo.id, todo.title, todo.done, todo.dueDate, todo.tags, todo.createdAt]
+     VALUES (?, ?, ?, ?, ?, ?)`
+  ).run(
+    todo.id,
+    todo.title,
+    todo.done ? 1 : 0,
+    todo.dueDate ? new Date(todo.dueDate).toISOString() : null,
+    todo.tags,
+    todo.createdAt
+      ? new Date(todo.createdAt).toISOString()
+      : new Date().toISOString()
   );
+
   res.status(201).json(todo);
 });
-
 ////* DELETE
-app.delete("/expressTodo/:id", async (req, res) => {
-  await pool.query(`DELETE FROM "Todo" WHERE id = $1`, [req.params.id]);
+app.delete("/expressTodo/:id", (req, res) => {
+  db.prepare(`DELETE FROM "Todo" WHERE id = ?`).run(req.params.id);
   res.status(204).send();
 });
 
 ////* PUT | EDIT
-app.put("/expressTodo/:id", async (req, res) => {
-  // quick check if empty req
+app.put("/expressTodo/:id", (req, res) => {
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: "No fields to update" });
   }
   const updates: string[] = [];
-  const params: QueryParam[] = [req.params.id];
+  const params: unknown[] = [];
 
-  // if the param IS something: push to 'update bucket', else ignore
   (Object.keys(req.body) as Array<keyof TodoProps>).forEach((key) => {
-    const val = (req.body as Partial<TodoProps>)[key];
-    if (val !== undefined) {
-      params.push(val);
-      updates.push(`"${String(key)}" = $${params.length}`);
+    let val = (req.body as Partial<TodoProps>)[key];
+    // Convert boolean 'done' to 0/1 for SQLite
+    if (key === "done" && typeof val === "boolean") {
+      val = val ? "1" : "0";
     }
+    updates.push(`"${String(key)}" = ?`);
+    params.push(val);
   });
 
-  // push to db when complete.
-  await pool.query(
-    `UPDATE "Todo" SET ${updates.join(", ")} WHERE id = $1`,
-    params
+  if (updates.length === 0) {
+    return res.status(400).json({ error: "No valid fields to update" });
+  }
+
+  params.push(req.params.id);
+
+  db.prepare(`UPDATE "Todo" SET ${updates.join(", ")} WHERE id = ?`).run(
+    ...params
   );
 
   res.status(200).json({ message: "Todo updated" });
