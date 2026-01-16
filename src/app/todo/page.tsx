@@ -80,7 +80,6 @@ export default async function Page() {
 
   return (
     <>
-      {/* _______________________________________________ */}
       <Card
         id="table-card"
         className={cn("flex flex-col", "max-h-150", "w-full", "", "")}
@@ -202,32 +201,28 @@ export default async function Page() {
         </CardContent>
       </Card>
       {/* _______________________________________________ */}
-      <Card id="form-card">
-        {/* TODO: maybe add a "+ button" and make this a popup  */}
-        <CardHeader>
-          <CardTitle>Add new</CardTitle>
-          {/* <CardDescription>
-						keep track of your daily tasks
-					</CardDescription> */}
-          {/* <CardAction>Add Tasks</CardAction> */}
-          <CardAction>
-            <Button
-              variant="outline"
-              type="submit"
-              className={cn(
-                "data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
-                // "w-70",
-                "",
-                "",
-                ""
-              )}
-            >
-              Add Task
-            </Button>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <Form className={cn("", "")} action={handleAddTodo}>
+      <Form className={cn("", "")} action={handleAddTodo}>
+        <Card id="form-card">
+          {/* TODO: maybe add a "+ button" and make this a popup  */}
+          <CardHeader>
+            <CardTitle>Add new</CardTitle>
+
+            <CardAction>
+              <Button
+                variant="outline"
+                type="submit"
+                className={cn(
+                  "data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
+                  "",
+                  "",
+                  ""
+                )}
+              >
+                Add Task
+              </Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
             <FieldGroup className="gap-5">
               <Field>
                 <Textarea
@@ -276,9 +271,9 @@ export default async function Page() {
                 </Field>
               </div>
             </FieldGroup>
-          </Form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Form>
     </>
   );
 }
