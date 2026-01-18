@@ -225,7 +225,7 @@ export default function RootLayout({
           // "p-5",
           // "mt-10 mb-20",
           "my-20",
-          "mx-auto",
+          // "mx-auto",
           // // "min-h-screen",
           // "h-full",
           // "min-h-full",
