@@ -12,7 +12,7 @@ export interface TodoProps {
   createdAt: Date;
 }
 
-export type TodoTypes = TodoProps & {};
+export type TodoType = TodoProps & {};
 
 export class Todo implements TodoProps {
   id: string;

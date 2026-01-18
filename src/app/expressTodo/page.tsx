@@ -1,8 +1,8 @@
 "use server"; //server components are the default - I have this for my own readability
-import { TodoTypes } from "@types";
+import { TodoType } from "@types";
 import TodosClients from "@/app/expressTodo/client";
 
-async function fetchTodosFromServer(): Promise<TodoTypes[]> {
+async function fetchTodosFromServer(): Promise<TodoType[]> {
   const expressUrl =
     process.env.NEXT_PUBLIC_EXPRESS_URL ?? "http://localhost:4000";
   const url = expressUrl
