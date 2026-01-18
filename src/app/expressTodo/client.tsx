@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { TodoTypes } from "@types";
+import { TodoType } from "@types";
 import {
   Table,
   TableBody,
@@ -56,6 +56,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { sortTodos, toggleFilters } from "@lib/filter";
+import { FILTER, SORT_ORDERS } from "@lib/formConfig";
+
 const API_BASE = (
   process.env.NEXT_PUBLIC_EXPRESS_URL ?? "http://localhost:4000"
 ).replace(/\/$/, "");
@@ -64,137 +67,29 @@ const api = (path: string) => `${API_BASE}${path}`;
 export default function TodosClient({
   initialTodos,
 }: {
-  initialTodos: TodoTypes[];
+  initialTodos: TodoType[];
 }) {
-  const [todos, setTodos] = useState<TodoTypes[]>(initialTodos);
+  // const [filtered, setTodos] = useState<TodoType[]>(initialTodos);
+  // const [title, setTitle] = useState("");
+  // const [tags, setTags] = useState("");
+  // const [dueDate, setDueDate] = useState("");
+  // const [sortBy, setSortBy] = useState(SORT_ORDERS.createdat_asc);
+  // // const [selectPeriod, setSelectPeriod] = useState("all");
+  // const [selectPeriod, setSelectPeriod] = useState(FILTER.period.all);
+  // const [isDone, setDone] = useState(FILTER.done.all);
+
+  const [todos, setAllTodos] = useState<TodoType[]>(initialTodos);
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [sortBy, setSortBy] = useState("createdAt_DESC");
-  const [selectPeriod, setSelectPeriod] = useState("all");
+  const [sortBy, setSortBy] = useState(SORT_ORDERS.createdat_asc);
+  const [selectPeriod, setSelectPeriod] = useState(FILTER.period.all);
+  const [isDone, setDone] = useState(FILTER.done.all);
 
-  // const [sortCol, sortDir] = sortBy.split("_");
-  // const sorted = [...todos].sort((a_val, b_val) => {
-  //   const aRaw = a_val[sortCol as keyof TodoTypes];
-  //   const bRaw = b_val[sortCol as keyof TodoTypes];
+  const filtered = toggleFilters(todos, selectPeriod, isDone);
 
-  //   // Custom logic: always push empty due dates to the bottom
-  //   if (!aRaw && !bRaw) return 0;
-  //   if (!aRaw) return 1;
-  //   if (!bRaw) return -1;
-
-  //   const a = String(aRaw);
-  //   const b = String(bRaw);
-
-  //   if (a + b > b + a) return sortDir === "ASC" ? 1 : -1;
-  //   else if (a + b < b + a) return sortDir === "ASC" ? -1 : 1;
-  //   else return 0;
-  // });
-
-  async function handleSelectPeriod(value: string) {
-    setSelectPeriod(value);
-  }
-
-  function getTime(date?: Date | string): number {
-    if (!date) return 0;
-    return new Date(date).getTime();
-  }
-
-  async function sortTodos(value: string) {
-    setSortBy(value);
-    const sorted = [...todos];
-
-    switch (value) {
-      case "dueDate_ASC": {
-        const result = sorted.sort((a, b) => {
-          if (!a.dueDate && !b.dueDate) return 0;
-          if (!a.dueDate) return 1;
-          if (!b.dueDate) return -1;
-          return getTime(a.dueDate) - getTime(b.dueDate);
-        });
-        setTodos(result);
-        return result;
-      }
-      case "dueDate_DESC": {
-        const result = sorted.sort((a, b) => {
-          if (!a.dueDate && !b.dueDate) return 0;
-          if (!a.dueDate) return 1;
-          if (!b.dueDate) return -1;
-          return getTime(b.dueDate) - getTime(a.dueDate);
-        });
-        setTodos(result);
-        return result;
-      }
-      case "createdAt_ASC": {
-        const result = sorted.sort(
-          (a, b) => getTime(a.createdAt) - getTime(b.createdAt)
-        );
-        setTodos(result);
-        return result;
-      }
-      case "createdAt_DESC":
-      default: {
-        const result = sorted.sort(
-          (a, b) => getTime(b.createdAt) - getTime(a.createdAt)
-        );
-        setTodos(result);
-        return result;
-      }
-    }
-  }
-  //   async function largestNumber(todos: TodoTypes[], sortBy: string) {
-  //   const sorted = [...todos].sort((a_val, b_val) => {
-  //     const a = a_val.createdAt ? new Date(a_val.createdAt).getTime() : 0;
-  //     const b = b_val.createdAt ? new Date(b_val.createdAt).getTime() : 0;
-  //     if (a > b) return -1;
-  //     else if (a < b) return 1;
-  //     else return 0;
-  //   });
-  //   return sorted;
-  // }
-
-  // async function sortTodos(value: string) {
-  //   // sortBy: string,
-  //   // id: string,
-  //   // formData: FormData //this so we can apply sortby to formdata so sort is maintained while when form is changed. (prob redundatn)
-  //   // Try: handle internal (no api calls)
-  //   // "use server";
-  //   // const id = formData.get("id") as string;
-  //   // let sortCol: string;
-  //   // switch (sortBy) {
-  //   //   case "dueDate_DESC":
-  //   //     sortCol = "dueDate";
-  //   //     break;
-  //   //   case "dueDate_ASC":
-  //   //     sortCol = "dueDate";
-  //   //     break;
-  //   //   case "createdAt_DESC":
-  //   //     sortCol = "createdAt";
-  //   //     break;
-  //   //   case "createdAt_ASC":
-  //   //   default:
-  //   //     sortCol = "createdAt";
-  //   //     break;
-  //   //   }
-
-  //   // sorting algo
-  //   // sortCol = "dueDate"; //exampledata
-  //   // soretBy = "dueDate_DESC"; //exampledata
-  //   // Greedy
-
-  //   console.log("before (sortby): ", sortBy);
-  //   console.log("before (value): ", value);
-  //   console.log("before (todos): ", todos);
-  //   setSortBy(value);
-  //   console.log("after (sortby): ", sortBy);
-  //   console.log("after (value): ", value);
-  //   const newToDos = await largestNumber(todos, value);
-  //   if (Array.isArray(newToDos)) {
-  //     setTodos(newToDos);
-  //     console.log("after (todos): ", newToDos);
-  //   } else {
-  //     console.log("error, did not get sorted");
-  //   }
+  // async function handleSelectPeriod(value: string) {
+  //   setSelectPeriod(value);
   // }
 
   async function createTodoClient(e?: React.FormEvent) {
@@ -204,15 +99,17 @@ export default function TodosClient({
 
     // optimistic UI: create a temp item so user sees immediate feedback
     // ? should probably use a type schema
-    const temp: TodoTypes = {
+    const temp: TodoType = {
       id: `temp-${Date.now()}`,
       title,
       tags,
       done: false,
       createdAt: new Date(),
-      dueDate: selectedDue ? new Date(selectedDue) : undefined,
+      dueDate: selectedDue
+        ? new Date(selectedDue)
+        : new Date("3000-01-01T00:00:00Z"),
     };
-    setTodos((s) => [temp, ...s]);
+    setAllTodos((s) => [temp, ...s]);
 
     try {
       const res = await fetch(api("/expressTodo"), {
@@ -227,20 +124,20 @@ export default function TodosClient({
       if (!res.ok) throw new Error("Create failed");
       const created = await res.json();
       // replace temp with server returned item
-      setTodos((s) => s.map((t) => (t.id === temp.id ? created : t)));
+      setAllTodos((s) => s.map((t) => (t.id === temp.id ? created : t)));
       setTitle("");
       setTags("");
       setDueDate("");
     } catch (err) {
       // rollback on error
-      setTodos((s) => s.filter((t) => t.id !== temp.id));
+      setAllTodos((s) => s.filter((t) => t.id !== temp.id));
       console.error("Create failed", err);
     }
   }
 
   async function delTodo(id: string) {
     const prev = todos;
-    setTodos((t) => t.filter((x) => x.id !== id));
+    setAllTodos((t) => t.filter((x) => x.id !== id));
 
     try {
       const res = await fetch(api(`/expressTodo/${id}`), {
@@ -248,14 +145,14 @@ export default function TodosClient({
       });
       if (!res.ok) throw new Error("Delete failed");
     } catch (err) {
-      setTodos(prev);
+      setAllTodos(prev);
       console.error("Failed to delete", err);
     }
   }
 
   const toggleDone = async (id: string, done: boolean) => {
     const prev = todos;
-    setTodos((t) => t.map((x) => (x.id === id ? { ...x, done } : x)));
+    setAllTodos((t) => t.map((x) => (x.id === id ? { ...x, done } : x)));
 
     try {
       const res = await fetch(api(`/expressTodo/${id}`), {
@@ -265,7 +162,7 @@ export default function TodosClient({
       });
       if (!res.ok) throw new Error("Toggle failed");
     } catch (err) {
-      setTodos(prev);
+      setAllTodos(prev);
       console.error("Failed to toggle", err);
     }
   };
@@ -281,15 +178,15 @@ export default function TodosClient({
           "max-h-[70vh]",
           "overflow-hidden",
           "",
-          ""
+          "",
         )}
       >
         {/* <CardHeader className="shrink-0"> */}
         <CardHeader className="w-full px-0">
           <CardTitle>TO DO LIST</CardTitle>
           <CardDescription>
-            Manage, monitor and edit your schedule Displaying: ({todos.length})
-            task(s)
+            Manage, monitor and edit your schedule Displaying: (
+            {filtered.length}) task(s)
           </CardDescription>
           <CardAction>
             {/* <div className="grid grid-cols-[1fr_auto] text-muted-foreground items-center grid-rows-3 "> */}
@@ -299,7 +196,7 @@ export default function TodosClient({
                 "gap-2",
                 "py-2",
                 "",
-                ""
+                "",
               )}
             >
               <div className="text-nowrap  gap-1 text-sm flex flex-row">
@@ -311,10 +208,26 @@ export default function TodosClient({
                     "leading-4",
                     "text-primary",
                     "",
-                    ""
+                    "",
                   )}
                 >
                   {selectPeriod}
+                </h2>
+              </div>
+              {/* ! TEMP */}
+              <div className="text-nowrap  gap-1 text-sm flex flex-row">
+                filter by completed:
+                <h2
+                  className={cn(
+                    "text-2xl uppercase",
+
+                    "leading-4",
+                    "text-primary",
+                    "",
+                    "",
+                  )}
+                >
+                  {isDone}
                 </h2>
               </div>
 
@@ -402,8 +315,54 @@ export default function TodosClient({
                   <SheetHeader>
                     <SheetTitle>Are you absolutely sure?</SheetTitle>
                     <SheetDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
+                      <form
+                        id="filter filter-form"
+                        action={() => {
+                          toggleFilters(filtered, selectPeriod, isDone);
+                        }}
+                      >
+                        <div
+                          id="select-period"
+                          className="flex flex-row w-fit items-center gap-2"
+                        >
+                          completed:
+                          <Select
+                            value={isDone}
+                            onValueChange={(value: string) => {
+                              setDone(value);
+                            }}
+                          >
+                            <SelectTrigger className="w-fit">
+                              <SelectValue placeholder={isDone} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.values(FILTER.done).map((label) => (
+                                <SelectItem key={label} value={label}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Select
+                            value={selectPeriod}
+                            onValueChange={(value: string) => {
+                              // handleSelectPeriod(value);
+                              setSelectPeriod(value);
+                            }}
+                          >
+                            <SelectTrigger className="w-fit">
+                              <SelectValue placeholder={selectPeriod} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.values(FILTER.period).map((label) => (
+                                <SelectItem key={label} value={label}>
+                                  {label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </form>
                     </SheetDescription>
                   </SheetHeader>
                 </SheetContent>
@@ -455,15 +414,21 @@ export default function TodosClient({
               className="flex flex-row w-fit items-center gap-2 "
             >
               Sort by
-              <Select value={sortBy} onValueChange={sortTodos}>
+              <Select
+                value={sortBy}
+                onValueChange={(value: string) => {
+                  setSortBy(value);
+                }}
+              >
                 <SelectTrigger className="w-fit">
-                  <SelectValue placeholder="SortBy" />
+                  <SelectValue placeholder={sortBy} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="createdAt_ASC">Oldest</SelectItem>
-                  <SelectItem value="createdAt_DESC">Newest</SelectItem>
-                  <SelectItem value="dueDate_ASC">Earliest due</SelectItem>
-                  <SelectItem value="dueDate_DESC">Latest due</SelectItem>
+                  {Object.values(SORT_ORDERS).map((label) => (
+                    <SelectItem key={label} value={label}>
+                      {label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -478,7 +443,7 @@ export default function TodosClient({
             </TableHeader>
 
             <TableBody className="divide-y">
-              {todos.map((todo) => (
+              {filtered.map((todo) => (
                 <TableRow key={todo.id} className="align-top">
                   <TableCell className="py-2 w-16">
                     <Checkbox
@@ -504,7 +469,7 @@ export default function TodosClient({
                             new Date(todo.dueDate) <= new Date(),
                         },
                         "",
-                        ""
+                        "",
                       )}
                     >
                       {todo.dueDate
@@ -522,7 +487,7 @@ export default function TodosClient({
                             .split(",")
                             .filter(
                               (tag: string) =>
-                                tag.trim() !== "untagged" && tag.trim() !== ""
+                                tag.trim() !== "untagged" && tag.trim() !== "",
                             )
                             .map((tag: string, i: number) => (
                               <Badge
@@ -578,7 +543,7 @@ export default function TodosClient({
                   "data-[empty=true]:text-muted-foreground font-normal",
                   "text-3xl text-muted-foreground",
                   "",
-                  ""
+                  "",
                 )}
               >
                 <HiOutlinePlusSm />
@@ -612,7 +577,7 @@ export default function TodosClient({
                   "h-fit",
                   "h-full",
                   "",
-                  ""
+                  "",
                 )}
               >
                 <Field
@@ -621,7 +586,7 @@ export default function TodosClient({
                     "",
 
                     "",
-                    ""
+                    "",
                   )}
                 >
                   <DatePicker
