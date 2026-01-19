@@ -17,14 +17,18 @@ interface TodoListProps {
   onDelete: (id: string) => Promise<void>;
   onToggle: (id: string, currentDone: boolean) => Promise<void>;
   onEdit: (id: string, newText: string) => Promise<void>;
+  setTodos: React.Dispatch<React.SetStateAction<TodoType[]>>;
 }
 
 export default function TodoList({
   todos,
   onDelete,
   onToggle,
-  onEdit,
+  setTodos,
 }: TodoListProps) {
+  // use context7
+  // #next-devtools
+
   if (!Array.isArray(todos)) return null;
 
   return (
@@ -49,9 +53,10 @@ export default function TodoList({
             <TaskRow
               key={todo.id}
               todo={todo}
+              todos={todos}
+              setTodos={setTodos}
               onDelete={onDelete}
               onToggle={onToggle}
-              onEdit={onEdit}
             />
           ))
         ) : (

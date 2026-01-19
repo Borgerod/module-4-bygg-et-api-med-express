@@ -72,7 +72,9 @@ export default function TodoFilters({ filter, setFilter }: Props) {
       <div id="open-filter-button">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant={"outline"}>Filter</Button>
+            <Button variant={"outline"} className="text-sm font-normal">
+              Filter
+            </Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>

@@ -122,8 +122,10 @@ export default function RootLayout({
       TODO 9.0 [X]:   use CRUD-endpoints for your theme under /v1/... (see *'crud-example-structure')
                       - note: /v1/ is for API versioning for, commong practice for older versions available for clients that haven’t upgraded
       TODO 10.0 [ ]:  (prefer/not required) follow tips (see *'tips')
+      
       TODO 11.0 [ ]:  finish README.md w/ install guide, api guide (what does what, headers etc) or use https://swagger.io/
-  */
+      TODO 11.0 [X]:  Edit is not updating db. 
+      */
 
   /* * status-code-examples: 
     - 200 OK: vellykket GET/PATCH med respons-body

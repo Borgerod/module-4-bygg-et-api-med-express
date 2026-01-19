@@ -77,7 +77,6 @@ export default function Page() {
             "flex flex-col",
             "p-4",
             "w-full",
-            "max-h-[70vh]",
             "overflow-hidden",
             "",
             "",
@@ -100,10 +99,10 @@ export default function Page() {
                 )}
               >
                 <div className="text-nowrap  gap-1 text-sm flex flex-row">
-                  Showing
+                  {/* Showing */}
                   <h2
                     className={cn(
-                      "text-2xl uppercase",
+                      "text-3xl uppercase",
                       "leading-4",
                       "text-primary",
                       "",
@@ -123,7 +122,7 @@ export default function Page() {
             <TodoFilters {...{ filter, setFilter, sortBy, setSortBy }} />
             <div
               id="sortby-select"
-              className="flex flex-row w-fit items-center gap-2 "
+              className="flex flex-row w-fit items-center gap-2 text-sm"
             >
               Sort by
               <Select
@@ -159,6 +158,7 @@ export default function Page() {
               onDelete={deleteTask}
               onToggle={toggleComplete}
               onEdit={editTask}
+              setTodos={setTodos}
             />
           </CardContent>
         </Card>

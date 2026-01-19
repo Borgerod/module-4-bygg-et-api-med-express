@@ -98,34 +98,20 @@ app.delete("/expressTodo/:id", (req, res) => {
 
 ////* PUT | EDIT
 // app.patch("/expressTodo/:id", (req, res) => {
-app.put("/expressTodo/:id", (req, res) => {
-  if (!req.body || Object.keys(req.body).length === 0) {
-    return res.status(400).json({ error: "No fields to update" });
-  }
-  const updates: string[] = [];
-  const params: unknown[] = [];
-
-  (Object.keys(req.body) as Array<keyof TodoProps>).forEach((key) => {
-    let val = (req.body as Partial<TodoProps>)[key];
-    // Convert boolean 'done' to 0/1 for SQLite
-    if (key === "done" && typeof val === "boolean") {
-      val = val ? "1" : "0";
+app.put("/expressTodo/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body;
+  try {
+    const stmt = db.prepare("UPDATE todo SET title = ? WHERE id = ?");
+    const result = stmt.run(title, id);
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Not found" });
     }
-    updates.push(`"${String(key)}" = ?`);
-    params.push(val);
-  });
-
-  if (updates.length === 0) {
-    return res.status(400).json({ error: "No valid fields to update" });
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update task" });
   }
-
-  params.push(req.params.id);
-
-  db.prepare(`UPDATE "Todo" SET ${updates.join(", ")} WHERE id = ?`).run(
-    ...params,
-  );
-
-  res.status(200).json({ message: "Todo updated" });
 });
 
 app.listen(4000, () => {

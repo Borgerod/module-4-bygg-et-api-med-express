@@ -6,27 +6,37 @@ import { Button } from "@/components/ui/button";
 import { LuX } from "react-icons/lu";
 import { cn } from "@lib/utils";
 import { Todo } from "@types";
+import TodoPropsUtils from "@/lib/TodoUtils";
 
 interface TaskCardProps {
   todo: Todo;
+  todos: Todo[];
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   onDelete: (id: string) => Promise<void>;
   onToggle: (id: string, currentDone: boolean) => Promise<void>;
-  onEdit: (id: string, newText: string) => Promise<void>;
 }
 
 export default function TaskRow({
   todo,
+  todos,
+  setTodos,
   onDelete,
   onToggle,
-  onEdit,
 }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [newText, setNewText] = useState<string>(todo.title || "");
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  // use context7
+  // #next-devtools
+
+  const { editTask } = TodoPropsUtils(todos, setTodos);
+
+  const onSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault();
     if (newText.trim()) {
-      onEdit(todo.id, newText.trim());
+      await editTask(todo.id, newText.trim());
       setIsEditing(false);
     }
   };
@@ -91,21 +101,28 @@ export default function TaskRow({
           className={cn(
             "",
             {
-              "text-primary":
-                !todo.dueDate || new Date(todo.dueDate) > new Date(),
-              "text-warning":
-                todo.dueDate && new Date(todo.dueDate) <= new Date(),
+              "text-primary": new Date(todo.dueDate) > new Date(),
+              "text-warning": new Date(todo.dueDate) <= new Date(),
             },
             "",
             "",
           )}
         >
-          {todo.dueDate instanceof Date &&
-          todo.dueDate.toISOString() === "3000-01-01T00:00:00.000Z"
-            ? "-"
-            : new Date(todo.dueDate).toLocaleDateString("nb-NO", {
-                dateStyle: "medium",
-              })}
+          {(() => {
+            // use context7
+            // #next-devtools
+
+            const dateStr: string =
+              todo.dueDate instanceof Date
+                ? todo.dueDate.toISOString()
+                : String(todo.dueDate);
+
+            return dateStr === "3000-01-01T00:00:00.000Z"
+              ? "-"
+              : new Date(dateStr).toLocaleDateString("nb-NO", {
+                  dateStyle: "medium",
+                });
+          })()}
         </span>
       </TableCell>
 
