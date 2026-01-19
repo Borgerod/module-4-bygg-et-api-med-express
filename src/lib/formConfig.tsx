@@ -6,12 +6,6 @@
     *be observant that it could end up containing more that just described after a while 
 */
 
-// export const FILTER = {
-//   active: "Active", // -  !done
-//   completed: "Completed", // -   done
-//   all: "Show All", // - done & !done
-// };
-
 export const SORT_ORDERS = {
   createdat_asc: "newest",
   createdat_desc: "oldest",
@@ -32,8 +26,11 @@ export const FILTER = {
     nextMonth: "Next month",
   },
   done: {
+    all: "Show All", // - done & !done (DEFAULT)
     active: "Active", // -  !done
     completed: "Completed", // -   done
-    all: "Show All", // - done & !done
+  },
+  tags: {
+    label: "Tags",
   },
 };

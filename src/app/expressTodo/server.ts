@@ -10,13 +10,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import Database from "better-sqlite3";
-import { Todo, TodoProps } from "./todo";
+import { Todo, TodoProps } from "@types";
 import { userRouter } from "@expressBackend/routers/users.route";
 
 dotenv.config();
 
 const db = new Database(
-  process.env.DATABASE_URL?.replace("file:", "") ?? "./dev.db"
+  process.env.DATABASE_URL?.replace("file:", "") ?? "./dev.db",
 );
 
 const app = express();
@@ -76,7 +76,7 @@ app.post("/expressTodo", (req, res) => {
 
   db.prepare(
     `INSERT INTO "Todo" (id, title, done, "dueDate", tags, "createdAt")
-     VALUES (?, ?, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, ?, ?)`,
   ).run(
     todo.id,
     todo.title,
@@ -85,7 +85,7 @@ app.post("/expressTodo", (req, res) => {
     todo.tags,
     todo.createdAt
       ? new Date(todo.createdAt).toISOString()
-      : new Date().toISOString()
+      : new Date().toISOString(),
   );
 
   res.status(201).json(todo);
@@ -97,6 +97,7 @@ app.delete("/expressTodo/:id", (req, res) => {
 });
 
 ////* PUT | EDIT
+// app.patch("/expressTodo/:id", (req, res) => {
 app.put("/expressTodo/:id", (req, res) => {
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: "No fields to update" });
@@ -121,7 +122,7 @@ app.put("/expressTodo/:id", (req, res) => {
   params.push(req.params.id);
 
   db.prepare(`UPDATE "Todo" SET ${updates.join(", ")} WHERE id = ?`).run(
-    ...params
+    ...params,
   );
 
   res.status(200).json({ message: "Todo updated" });
