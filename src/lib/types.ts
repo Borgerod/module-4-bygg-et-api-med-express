@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto";
 
-// types.ts
 export interface TodoProps {
   id: string;
   done: boolean;
@@ -21,7 +20,6 @@ export class Todo implements TodoProps {
   dueDate: Date;
 
   constructor(body: Partial<TodoProps>) {
-    // Always generate a new UUID if not provided
     this.id = body.id ?? randomUUID();
     this.title = body.title || "";
     this.done = body.done ?? false;

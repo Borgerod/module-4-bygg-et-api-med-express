@@ -15,7 +15,7 @@ import { userRouter } from "@expressBackend/routers/users.route";
 
 dotenv.config();
 
-const db = new Database(
+export const db = new Database(
   process.env.DATABASE_URL?.replace("file:", "") ?? "./dev.db",
 );
 
