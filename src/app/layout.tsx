@@ -34,7 +34,37 @@ export default function RootLayout({
       - running it with `npx tsx src/app/expressTodo/server.ts`
       - or reinstalling `ts-node` with a newer version: `npm install -D ts-node@latest`
 	*/
-  /* ! IMPORTANT NOTICE: Project description 
+  /* ! BUG REPORT !
+     !
+     ! 1. [Solved] Deleting a task right after adding it does not work. 
+     !      You need to refresh page in order to delete stuff.  
+     !      origin-trace: 
+     !        (endpoint)  onDelete(todo.id) [TaskRow.tsx :159]
+     !                    onDelete(todo.id) [TodoList.tsx :55]
+     !                    deleteTask        [page.tsx :158] 
+     !        (origin)    deleteTask        [TodoUtils.tsx :62] 
+     !        (API)       app.delete        [server.tsx :94]
+     !      known changes: 
+     !        delTodo [client.tsx :139] -> deleteTask 
+     !      evidence:
+     !        - 'error catching' fails; no errors are thrown.
+     !        -  getting 204 no content. but i get this regardless if it gets deleted or not.  
+     !        -  the state todos IS being updated correctly
+     !      
+     !      suspitions:
+     !      ////  - it might be stored locally and it is actually deleted in db
+     !            - [correct] it seems that both constructor and POST were making a UUID, so todo in UI has a different ID than the server untill you refresh. 
+     !      test:
+     !        - [will do] add "test (refreshed)", then refresh, then add "test (un-refreshed)",
+     !        - [has happened]: both items are immediatly added to db
+     !        - [will do] delete both items with delete button
+     !        - [has happened]: "test (refreshed)" was removed from db, "test (un-refreshed)" was not removed from db.
+     !        - added an extra un-refresh to delete just to make sure it is not only the last item that does not get deleted.
+     !      SOLUTION: make sure only the constructor handles UUID. 
+     ! 
+  */
+
+  /** IMPORTANT NOTICE: Project description 
     todo: add this to README
     My project consists of two individual parts: 
     
@@ -124,7 +154,10 @@ export default function RootLayout({
       TODO 10.0 [ ]:  (prefer/not required) follow tips (see *'tips')
       
       TODO 11.0 [ ]:  finish README.md w/ install guide, api guide (what does what, headers etc) or use https://swagger.io/
-      TODO 11.0 [X]:  Edit is not updating db. 
+      TODO 12.0 [X]:  Edit is not updating db. 
+      
+      TODO 13.0 [X]:  fix delete bug [ref: BUG REPORT, 1]
+      
       */
 
   /* * status-code-examples: 
