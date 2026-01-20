@@ -1,0 +1,41 @@
+console.log("Initializing routes...");
+
+import { rootRouter } from "./root.route.js";
+// import { userRouter } from "./user.route.js";
+// import { authRouter } from "./auth.route.js";
+// import { employeesRouter } from "./employees.route.js";
+import { userRouter } from "./users.route.js";
+
+import type { Application, Router } from "express";
+
+const routes = {
+  root: rootRouter,
+  users: userRouter,
+  //   auth: authRouter,
+  //   employees: employeesRouter,
+};
+
+interface Routes {
+  root: Router;
+  users: Router;
+  //   auth: Router;
+  //   employees: Router;
+}
+
+function populateRoutes(app: Application): void {
+  app.use("/", routes["root"]);
+  console.log(`Added routes for collection "root" => "/"`);
+  // app.use("/employees", employeesRouter);
+  for (const collection in routes) {
+    if (collection === "root") continue;
+
+    app.use(`/${collection}`, routes[collection as keyof Routes]);
+    console.log(
+      `Added routes for collection "${collection}" => "/${collection}"`,
+    );
+  }
+}
+
+console.log("Routes initialized!");
+
+export { routes, populateRoutes };

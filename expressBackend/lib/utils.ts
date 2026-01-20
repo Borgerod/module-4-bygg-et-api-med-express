@@ -1,4 +1,10 @@
-//? From tutorial - prob wont use
+/* ! IMPORTANT NOTE: 
+I am not using this, I use SQLite from prisma. db is located in:
+C:\Users\oppdr\Documents\GitHub\module-4-bygg-et-api-med-express\src\app\expressTodo\server.ts
+or "@/app/expressTodo/server"
+*/
+// ? From tutorial - prob wont use
+
 // import fs from "fs";
 // import path from "path";
 
