@@ -21,14 +21,14 @@ export class Todo implements TodoProps {
   dueDate: Date;
 
   constructor(body: Partial<TodoProps>) {
-    // TODO (scheduled for 2999-01-01T00:00:00Z) - set new value for dueDate
-    this.id = randomUUID();
+    // Always generate a new UUID if not provided
+    this.id = body.id ?? randomUUID();
     this.title = body.title || "";
     this.done = body.done ?? false;
     this.dueDate = body.dueDate
       ? new Date(body.dueDate)
-      : new Date("3000-01-01T00:00:00Z"); //instead of undefined its easier to set it as a reaally big number and convert it to "empty" in UI
+      : new Date("3000-01-01T00:00:00Z");
     this.tags = body.tags || "";
-    this.createdAt = new Date();
+    this.createdAt = body.createdAt ? new Date(body.createdAt) : new Date();
   }
 }

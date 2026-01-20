@@ -32,6 +32,32 @@ app.use((req, res, next) => {
   next();
 });
 
+function validateTableAndId(
+  table: string,
+  id: string,
+): { validatedTable: string } | { error: string; status: number } {
+  //? perhaps i should not have this one here
+  const tableMap: Record<string, string> = {
+    Todo: "Todo",
+    // User: "User",
+    // ActiveLogins: "ActiveLogins"
+    // Have put 'User' and 'ActiveLogins' here for when im going to merge the expressBackend with this
+  };
+
+  const validatedTable = tableMap[table];
+  if (!validatedTable) {
+    return { error: "Invalid table name", status: 400 };
+  }
+
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) {
+    return { error: "Invalid ID format", status: 400 };
+  }
+
+  return { validatedTable };
+}
+
 ////* GET (w/query)
 app.get("/expressTodo", (req, res) => {
   let query = 'SELECT * FROM "Todo"';
@@ -54,23 +80,6 @@ app.get("/expressTodo", (req, res) => {
 export type QueryParam = TodoProps[keyof TodoProps];
 
 ////* POST
-// app.post("/expressTodo", (req, res) => {
-//   const todo = new Todo(req.body);
-
-//   db.prepare(
-//     `INSERT INTO "Todo" (id, title, done, "dueDate", tags, "createdAt")
-//      VALUES (?, ?, ?, ?, ?, ?)`
-//   ).run(
-//     todo.id,
-//     todo.title,
-//     todo.done ? 1 : 0,
-//     todo.dueDate,
-//     todo.tags,
-//     todo.createdAt
-//   );
-
-//   res.status(201).json(todo);
-// });
 app.post("/expressTodo", (req, res) => {
   const todo = new Todo(req.body);
 
@@ -90,10 +99,33 @@ app.post("/expressTodo", (req, res) => {
 
   res.status(201).json(todo);
 });
+
 ////* DELETE
-app.delete("/expressTodo/:id", (req, res) => {
-  db.prepare(`DELETE FROM "Todo" WHERE id = ?`).run(req.params.id);
-  res.status(204).send();
+app.delete("/expressTodo/:table/:id", (req, res) => {
+  const { table, id } = req.params;
+
+  // seperated te validator so i can reuse it, which i cant be bothered to actually do.
+  const validation = validateTableAndId(table, id);
+  if ("error" in validation) {
+    return res.status(validation.status).json({ error: validation.error });
+  }
+
+  const { validatedTable } = validation;
+
+  try {
+    const stmt = db.prepare(`DELETE FROM "${validatedTable}" WHERE id = ?`);
+    const result = stmt.run(id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    res.json({ deleted: result.changes });
+    console.log(`Deleted {item-id: ${id} from ${validatedTable}}`);
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ error: "Failed to delete item" });
+  }
 });
 
 ////* PUT | EDIT

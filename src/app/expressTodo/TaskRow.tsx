@@ -26,9 +26,6 @@ export default function TaskRow({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [newText, setNewText] = useState<string>(todo.title || "");
 
-  // use context7
-  // #next-devtools
-
   const { editTask } = TodoPropsUtils(todos, setTodos);
 
   const onSubmit = async (
@@ -109,9 +106,6 @@ export default function TaskRow({
           )}
         >
           {(() => {
-            // use context7
-            // #next-devtools
-
             const dateStr: string =
               todo.dueDate instanceof Date
                 ? todo.dueDate.toISOString()

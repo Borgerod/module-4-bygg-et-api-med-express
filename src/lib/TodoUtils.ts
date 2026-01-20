@@ -12,29 +12,11 @@ export default function TodoPropsUtils(
   todos: Todo[],
   setTodos: Dispatch<SetStateAction<Todo[]>>,
 ) {
-  const createTask = (data: {
-    title: string;
-    tags: string;
-    dueDate: string | null;
-  }): Todo => ({
-    id: crypto.randomUUID(),
-    title: data.title,
-    done: false,
-    tags: data.tags,
-    dueDate: data.dueDate
-      ? new Date(data.dueDate)
-      : new Date("3000-01-01T00:00:00Z"),
-    createdAt: new Date(),
-  });
-
   async function addTask(data: {
     title: string;
     tags: string;
     dueDate: string;
   }): Promise<void> {
-    const newTodo = createTask(data);
-    setTodos((prev: Todo[]) => [...prev, newTodo]);
-
     try {
       const res = await fetch(api("/expressTodo"), {
         method: "POST",
@@ -50,30 +32,43 @@ export default function TodoPropsUtils(
         throw new Error("Failed to add task");
       }
 
-      const responseData = await res.json();
+      const responseData: Todo = await res.json();
       console.log("Task added:", responseData);
+
+      setTodos((prev: Todo[]) => [...prev, responseData]);
     } catch (error) {
       console.error("Failed to add task:", error);
-      // Rollback local state on error
-      setTodos((prev: Todo[]) => prev.filter((t) => t.id !== newTodo.id));
     }
   }
-
-  const deleteTask = async (id: string): Promise<void> => {
-    // Optimistically update UI
-    setTodos((prev: Todo[]) => prev.filter((todo) => todo.id !== id));
-
+  const deleteTask = async (
+    id: string,
+    table: string = "Todo",
+  ): Promise<void> => {
     try {
-      const res = await fetch(api(`/expressTodo/${id}`), {
+      const res = await fetch(api(`/expressTodo/${table}/${id}`), {
         method: "DELETE",
       });
-
+      const responseData: { message?: string; deletedId?: string } =
+        await res.json();
+      if (res.ok) {
+        setTodos((prevTodos) => {
+          const newTodos: Todo[] = prevTodos.filter((todo) => todo.id !== id);
+          console.log(`todos (after deletion): \n ${newTodos.entries}`);
+          return newTodos;
+        });
+        console.log(
+          `responseData (json): ${JSON.stringify(responseData, null, 2)}`,
+        );
+      }
       if (!res.ok) {
-        throw new Error("Failed to delete task");
+        throw new Error(
+          `Error: \n  Failed to delete task; \n ${res.status} - ${res.statusText}`,
+        );
       }
     } catch (error) {
       console.error("Failed to delete task:", error);
       // Optionally refetch or rollback
+      // todo. add roll back
     }
   };
 
@@ -83,7 +78,6 @@ export default function TodoPropsUtils(
   ): Promise<void> {
     const newDone = !currentDone;
 
-    // Optimistically update local state
     setTodos((prev: Todo[]) =>
       prev.map((todo) => (todo.id === id ? { ...todo, done: newDone } : todo)),
     );
@@ -112,7 +106,6 @@ export default function TodoPropsUtils(
   }
 
   const editTask = async (id: string, newText: string): Promise<void> => {
-    // Optimistically update local state
     setTodos((prev: Todo[]) =>
       prev.map((todo) => (todo.id === id ? { ...todo, title: newText } : todo)),
     );
@@ -129,7 +122,13 @@ export default function TodoPropsUtils(
       }
     } catch (error) {
       console.error("Failed to edit task:", error);
-      // Optionally rollback
+      // Rollback on error
+      setTodos((prev: Todo[]) =>
+        // todo: test this
+        prev.map((todo) =>
+          todo.id === id ? { ...todo, title: newText } : todo,
+        ),
+      );
     }
   };
 

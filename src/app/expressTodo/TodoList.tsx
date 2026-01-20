@@ -26,9 +26,6 @@ export default function TodoList({
   onToggle,
   setTodos,
 }: TodoListProps) {
-  // use context7
-  // #next-devtools
-
   if (!Array.isArray(todos)) return null;
 
   return (
