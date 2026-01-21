@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import bcrypt from "bcrypt";
 import sequelize from "../config/db.config";
 
@@ -7,14 +7,14 @@ interface UserAttributes {
   email: string;
   password: string;
   role: "user" | "admin";
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 class User
   extends Model<
     UserAttributes,
-    Optional<UserAttributes, "id" | "createdAt" | "updatedAt" | "role">
+    Omit<UserAttributes, "id" | "createdAt" | "updatedAt">
   >
   implements UserAttributes
 {
@@ -22,8 +22,8 @@ class User
   declare email: string;
   declare password: string;
   declare role: "user" | "admin";
-  declare createdAt: Date;
-  declare updatedAt: Date;
+  declare createdAt?: Date;
+  declare updatedAt?: Date;
 
   async comparePassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
@@ -31,8 +31,10 @@ class User
 
   toJSON(): Omit<UserAttributes, "password"> {
     const values = { ...this.get() } as UserAttributes;
-    const { password, ...userWithoutPassword } = values;
-    return userWithoutPassword;
+    // Remove password from the returned object
+    // @ts-expect-error password is present on instance but should not be exposed in API responses
+    delete values.password;
+    return values;
   }
 }
 
@@ -60,21 +62,13 @@ User.init(
         notEmpty: { msg: "Password cannot be empty" },
         len: {
           args: [6, 100],
-          msg: "Password must be between 6 and 100 characters",
+          msg: "Password must be between 8 and 100 characters",
         },
       },
     },
     role: {
       type: DataTypes.ENUM("user", "admin"),
       defaultValue: "user",
-      allowNull: false,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
       allowNull: false,
     },
   },
@@ -98,5 +92,4 @@ User.init(
 );
 
 export default User;
-
 export type { UserAttributes };

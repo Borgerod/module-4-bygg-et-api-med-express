@@ -12,7 +12,7 @@ import express from "express";
 import dotenv from "dotenv";
 import Database from "better-sqlite3";
 import { Todo, TodoProps } from "@types";
-import { userRouter } from "@expressBackend/routers/users.route";
+import { userRouter } from "@expressBackend/routers/user.route";
 import { sequelize } from "@expressBackend/config/db.config"; // adjust path as needed
 
 dotenv.config();

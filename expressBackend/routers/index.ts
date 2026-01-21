@@ -4,7 +4,7 @@ import { rootRouter } from "./root.route.js";
 // import { userRouter } from "./user.route.js";
 // import { authRouter } from "./auth.route.js";
 // import { employeesRouter } from "./employees.route.js";
-import { userRouter } from "./users.route.js";
+import { userRouter } from "./user.route.js";
 
 import type { Application, Router } from "express";
 
