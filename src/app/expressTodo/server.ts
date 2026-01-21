@@ -1,4 +1,5 @@
-/* ! NOTE: as a temp solution i want to keep server.ts and users.route.ts separate to make it easier to work with (less clutter) 
+/* 
+  ! NOTE: as a temp solution i want to keep server.ts and users.route.ts separate to make it easier to work with (less clutter) 
           - so i am going to import whatever i need from server.ts 
           - in server.ts i will add required lines: 
              + import { userRouter } from "../../expressBackend/routers/users.route"; // adjust path as needed
@@ -12,6 +13,7 @@ import dotenv from "dotenv";
 import Database from "better-sqlite3";
 import { Todo, TodoProps } from "@types";
 import { userRouter } from "@expressBackend/routers/users.route";
+import { sequelize } from "@expressBackend/config/db.config"; // adjust path as needed
 
 dotenv.config();
 
@@ -146,6 +148,9 @@ app.put("/expressTodo/:id", async (req, res) => {
   }
 });
 
-app.listen(4000, () => {
-  console.log("Server running on port 4000");
+sequelize.sync({ alter: true }).then(() => {
+  console.log("Database schema synced to model.");
+  app.listen(4000, () => {
+    console.log("Server running on port 4000");
+  });
 });

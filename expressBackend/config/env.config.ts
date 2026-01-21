@@ -8,12 +8,12 @@ export const config = {
   port: Number(process.env.PORT) || 3500,
 
   database: {
-    host: process.env.DB_HOST ?? "localhost",
-    port: Number(process.env.DB_PORT) || 5432,
-    name: process.env.DB_NAME ?? "node_express_db",
-    user: process.env.DB_USER ?? "postgres",
-    password: process.env.DB_PASSWORD ?? "",
-    dialect: (process.env.DB_DIALECT as Dialect) || "postgres",
+    // host: process.env.DB_HOST ?? "localhost",
+    // port: Number(process.env.DB_PORT) || 5432,
+    // name: process.env.DB_NAME ?? "node_express_db",
+    // user: process.env.DB_USER ?? "postgres",
+    // password: process.env.DB_PASSWORD ?? "",
+    // dialect: (process.env.DB_DIALECT as Dialect) || "postgres",
     storage: process.env.DB_STORAGE ?? "", // For SQLite, fallback to empty string
   },
 
@@ -26,9 +26,6 @@ export const config = {
   cors: {
     origins: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(",")
-      : [
-          "http://localhost:3500",
-          "http://127.0.0.1:5500",
-        ],
+      : ["http://localhost:3500", "http://127.0.0.1:5500"],
   },
 };
