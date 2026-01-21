@@ -22,7 +22,7 @@ export default function Home() {
           " px-16",
           "dark:bg-black sm:items-start",
           "",
-          ""
+          "",
         )}
       >
         {/* <Image
@@ -45,7 +45,7 @@ export default function Home() {
               "aspect-square",
 
               "",
-              ""
+              "",
             )}
             src="/favicon.ico"
             alt="ToDo logo"
@@ -60,7 +60,7 @@ export default function Home() {
               "max-w-100",
               "text-nowrap",
               "",
-              ""
+              "",
             )}
           >
             <p className="flex flex-row justify-between">
@@ -83,7 +83,7 @@ export default function Home() {
             className={cn(
               "max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50",
               "",
-              ""
+              "",
             )}
           >
             Welcome to 2Do
@@ -92,7 +92,7 @@ export default function Home() {
             className={cn(
               "max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400",
               "",
-              ""
+              "",
             )}
           >
             An app for managing tasks, powered by{" "}
@@ -101,7 +101,7 @@ export default function Home() {
               className={cn(
                 "font-medium text-zinc-950 dark:text-zinc-50",
                 "",
-                ""
+                "",
               )}
             >
               NEXTjs
@@ -112,7 +112,7 @@ export default function Home() {
               className={cn(
                 "font-medium text-zinc-950 dark:text-zinc-50",
                 "",
-                ""
+                "",
               )}
             >
               Express
@@ -123,7 +123,7 @@ export default function Home() {
               className={cn(
                 "font-medium text-zinc-950 dark:text-zinc-50",
                 "",
-                ""
+                "",
               )}
             >
               PostgreSQL
@@ -134,7 +134,7 @@ export default function Home() {
               className={cn(
                 "font-medium text-zinc-950 dark:text-zinc-50",
                 "",
-                ""
+                "",
               )}
             >
               Prisma
@@ -145,7 +145,7 @@ export default function Home() {
               className={cn(
                 "font-medium text-zinc-950 dark:text-zinc-50",
                 "",
-                ""
+                "",
               )}
             >
               Ui.ShadCn
@@ -157,7 +157,7 @@ export default function Home() {
               className={cn(
                 "max-w-md text-lg leading-5 text-zinc-600 dark:text-zinc-400",
                 "",
-                ""
+                "",
               )}
             >
               With the goal of the task is to display capabilities for:
@@ -166,7 +166,7 @@ export default function Home() {
               className={cn(
                 "list-disc pl-5 text-zinc-600 dark:text-zinc-400",
                 "",
-                ""
+                "",
               )}
             >
               <li>- REST-ful API construction</li>

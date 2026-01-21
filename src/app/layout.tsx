@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Warning } from "@/components/ui/Warning";
+import { Notification } from "@/components/ui/Notification";
 import DarkModeButton from "@/components/DarkModeButton";
 
 const geistSans = Geist({
@@ -157,7 +157,7 @@ export default function RootLayout({
       TODO 12.0 [X]:  Edit is not updating db. 
       
       TODO 13.0 [X]:  fix delete bug [ref: BUG REPORT, 1]
-      TODO 14.0 [ ]:  SAD NEWS: The old Warning component has been rolled back and the finished version no longer exists in commit history. Remake it.
+      TODO 14.0 [X]:  SAD NEWS: The old Warning component has been rolled back and the finished version no longer exists in commit history. Remake it.
       
       */
 
@@ -281,10 +281,21 @@ export default function RootLayout({
         )}
       >
         <DarkModeButton />
-        <Warning
+        <Notification
           message="There is a known vulnerability in a dependency. Please be cautious."
           storageKey="warning:dependency-v20260108"
           moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
+          moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
+          moreText={`@modelcontextprotocol/sdk  <1.25.2
+Severity: high
+Anthropic's MCP TypeScript SDK has a ReDoS vulnerability - https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
+No fix available
+node_modules/@modelcontextprotocol/sdk
+  next-devtools-mcp  *
+  Depends on vulnerable versions of @modelcontextprotocol/sdk
+  Depends on vulnerable versions of undici
+  node_modules/next-devtools-mcp`}
+          type="warning"
         />
 
         {children}

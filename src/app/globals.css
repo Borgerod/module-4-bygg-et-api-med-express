@@ -24,7 +24,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
-  --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -44,24 +44,42 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --color-warning: var(--warning);
 
-  --color-warning-strong: color-mix(in oklch, var(--color-warning), black 12%);
-  --color-warning-light: color-mix(in oklch, var(--color-warning), white 80%);
-  --color-warning-dark: color-mix(in oklch, var(--color-warning), black 48%);
-  --color-warning-translucent: color-mix(
-    in oklch,
-    var(--color-background),
-    var(--color-warning) 20%
-  );
+  /* Info colors */
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-border: var(--info-border);
+  --color-info-text: var(--info-text);
 
-  --color-warning-foreground: color-mix(
-    in oklch,
-    var(--color-foreground),
-    white 86%
-  );
-  --color-warning-light-foreground: var(--color-foreground);
-  --color-warning-translucent-foreground: var(--color-foreground);
+  /* Success colors */
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+  --color-success-text: var(--success-text);
+
+  /* Error colors */
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-error-border: var(--error-border);
+  --color-error-text: var(--error-text);
+
+  /* Warning colors */
+  --color-warning-base: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+  --color-warning-text: var(--warning-text);
+
+  /* Issue colors */
+  --color-issue: var(--issue);
+  --color-issue-bg: var(--issue-bg);
+  --color-issue-border: var(--issue-border);
+  --color-issue-text: var(--issue-text);
+
+  /* Default colors */
+  --color-default: var(--default);
+  --color-default-bg: var(--default-bg);
+  --color-default-border: var(--default-border);
+  --color-default-text: var(--default-text);
 }
 
 :root {
@@ -80,7 +98,6 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(12.729% 0.01511 19.318);
-  --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -97,13 +114,43 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Semantic colors - Light mode */
+  --info: oklch(59.854% 0.1141 233.899);
+  --info-bg: color-mix(in oklch, var(--info), transparent 90%);
+  --info-border: color-mix(in oklch, var(--info), transparent 70%);
+  --info-text: var(--info);
+
+  --success: oklch(59.83% 0.17433 147.759);
+  --success-bg: color-mix(in oklch, var(--success), transparent 90%);
+  --success-border: color-mix(in oklch, var(--success), transparent 70%);
+  --success-text: var(--success);
+
+  --error: oklch(60% 0.2 25);
+  --error-bg: color-mix(in oklch, var(--error), transparent 90%);
+  --error-border: color-mix(in oklch, var(--error), transparent 70%);
+  --error-text: var(--error);
+
   --warning: oklch(60% 0.2 25);
+  --warning-bg: color-mix(in oklch, var(--warning), transparent 90%);
+  --warning-border: color-mix(in oklch, var(--warning), transparent 70%);
+  --warning-text: var(--warning);
+
+  --issue: oklch(77.702% 0.15667 87.98);
+  --issue-bg: color-mix(in oklch, var(--issue), transparent 90%);
+  --issue-border: color-mix(in oklch, var(--issue), transparent 70%);
+  --issue-text: var(--issue);
+
+  --default: var(--card);
+  --default-bg: var(--card);
+  --default-border: oklch(0.922 0 0);
+  --default-text: var(--card-foreground);
 }
 
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.145 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
@@ -115,7 +162,6 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -132,7 +178,37 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  --warning: oklch(60% 0.2 25);
+
+  /* Semantic colors - Dark mode */
+  --info: oklch(0.704 0.191 250);
+  --info-bg: color-mix(in oklch, var(--info), transparent 85%);
+  --info-border: color-mix(in oklch, var(--info), transparent 60%);
+  --info-text: oklch(0.8 0.15 250);
+
+  --success: oklch(0.704 0.191 145);
+  --success-bg: color-mix(in oklch, var(--success), transparent 85%);
+  --success-border: color-mix(in oklch, var(--success), transparent 60%);
+  --success-text: oklch(0.8 0.15 145);
+
+  --error: oklch(0.704 0.191 22.216);
+  --error-bg: color-mix(in oklch, var(--error), transparent 85%);
+  --error-border: color-mix(in oklch, var(--error), transparent 60%);
+  --error-text: oklch(0.8 0.15 25);
+
+  --warning: oklch(0.704 0.191 22.216);
+  --warning-bg: color-mix(in oklch, var(--warning), transparent 85%);
+  --warning-border: color-mix(in oklch, var(--warning), transparent 60%);
+  --warning-text: oklch(0.8 0.15 25);
+
+  --issue: oklch(77.702% 0.15667 87.98);
+  --issue-bg: color-mix(in oklch, var(--issue), transparent 85%);
+  --issue-border: color-mix(in oklch, var(--issue), transparent 60%);
+  --issue-text: oklch(0.85 0.12 87.98);
+
+  --default: var(--card);
+  --default-bg: var(--card);
+  --default-border: oklch(1 0 0 / 10%);
+  --default-text: var(--card-foreground);
 }
 
 @layer base {
@@ -141,5 +217,135 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Color-only utilities - just set semantic color variable for hover inheritance */
+  .color-info {
+    --semantic-color: var(--color-info);
+  }
+  .color-success {
+    --semantic-color: var(--color-success);
+  }
+  .color-error {
+    --semantic-color: var(--color-error);
+  }
+  .color-warning {
+    --semantic-color: var(--color-warning-base);
+  }
+  .color-issue {
+    --semantic-color: var(--color-issue);
+  }
+  .color-default {
+    --semantic-color: var(--color-foreground);
+  }
+
+  /* Background utilities with semantic color variable */
+  .bg-info {
+    --semantic-color: var(--color-info);
+    background-color: var(--color-info-bg);
+  }
+  .bg-success {
+    --semantic-color: var(--color-success);
+    background-color: var(--color-success-bg);
+  }
+  .bg-error {
+    --semantic-color: var(--color-error);
+    background-color: var(--color-error-bg);
+  }
+  .bg-warning {
+    --semantic-color: var(--color-warning-base);
+    background-color: var(--color-warning-bg);
+  }
+  .bg-issue {
+    --semantic-color: var(--color-issue);
+    background-color: var(--color-issue-bg);
+  }
+  .bg-default {
+    --semantic-color: var(--color-foreground);
+    background-color: var(--color-default-bg);
+  }
+  .bg-foreground {
+    --semantic-color: var(--color-foreground);
+    background-color: var(--color-foreground);
+  }
+
+  /* Border utilities with semantic color variable */
+  .border-info {
+    --semantic-color: var(--color-info);
+    border-color: var(--color-info-border);
+  }
+  .border-success {
+    --semantic-color: var(--color-success);
+    border-color: var(--color-success-border);
+  }
+  .border-error {
+    --semantic-color: var(--color-error);
+    border-color: var(--color-error-border);
+  }
+  .border-warning {
+    --semantic-color: var(--color-warning-base);
+    border-color: var(--color-warning-border);
+  }
+  .border-issue {
+    --semantic-color: var(--color-issue);
+    border-color: var(--color-issue-border);
+  }
+  .border-default {
+    --semantic-color: var(--color-foreground);
+    border-color: var(--color-default-border);
+  }
+  .border-foreground {
+    --semantic-color: var(--color-foreground);
+    border-color: var(--color-foreground);
+  }
+
+  /* Text utilities with semantic color variable */
+  .text-info {
+    --semantic-color: var(--color-info);
+    color: var(--color-info-text);
+  }
+  .text-success {
+    --semantic-color: var(--color-success);
+    color: var(--color-success-text);
+  }
+  .text-error {
+    --semantic-color: var(--color-error);
+    color: var(--color-error-text);
+  }
+  .text-warning {
+    --semantic-color: var(--color-warning-base);
+    color: var(--color-warning-text);
+  }
+  .text-issue {
+    --semantic-color: var(--color-issue);
+    color: var(--color-issue-text);
+  }
+  .text-default {
+    --semantic-color: var(--color-foreground);
+    color: var(--color-default-text);
+  }
+  .text-foreground {
+    --semantic-color: var(--color-foreground);
+    color: var(--color-foreground);
+  }
+
+  /* Magic hover utilities - inherit and make darker */
+  .hover\:bg-darker:hover {
+    background-color: color-mix(
+      in oklch,
+      var(--semantic-color),
+      transparent 70%
+    );
+  }
+
+  .hover\:text-darker:hover {
+    /* color: color-mix(in oklch, var(--semantic-color), black 20%); */
+    color: color-mix(in oklch, var(--semantic-color), black 50%);
+  }
+
+  .hover\:border-darker:hover {
+    border-color: color-mix(in oklch, var(--semantic-color), transparent 50%);
   }
 }
