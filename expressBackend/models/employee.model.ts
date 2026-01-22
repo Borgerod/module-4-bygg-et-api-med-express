@@ -77,7 +77,7 @@ const Employee = sequelize.define(
     // }
   },
   {
-    tableName: "employees",
+    tableName: "Employees",
     timestamps: true,
 
     // Indexes for performance
@@ -85,9 +85,6 @@ const Employee = sequelize.define(
       {
         fields: ["lastname", "firstname"],
       },
-      // {
-      //   fields: ["userId"]
-      // }
     ],
   },
 );

@@ -26,12 +26,21 @@ async function seed() {
       email: "test2@auth.no",
       password: "abc123",
       role: "user",
+      username: "TestUser2",
+    });
+
+    await User.create({
+      email: "test1@auth.no",
+      password: "abc123",
+      role: "user",
+      username: "TestUser1",
     });
 
     await User.create({
       email: "test@auth.no",
       password: "abc123",
       role: "admin",
+      username: "TestUser0",
     });
 
     console.log("DB Seeded successfully.");

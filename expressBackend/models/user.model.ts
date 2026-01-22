@@ -4,6 +4,7 @@ import sequelize from "../config/db.config";
 
 interface UserAttributes {
   id: string;
+  username: string;
   email: string;
   password: string;
   role: "user" | "admin";
@@ -19,6 +20,7 @@ class User
   implements UserAttributes
 {
   declare id: string;
+  declare username: string;
   declare email: string;
   declare password: string;
   declare role: "user" | "admin";
@@ -45,6 +47,19 @@ User.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: { msg: "Username cannot be empty" },
+        len: { args: [3, 30], msg: "Username must be 3-30 characters" },
+        is: {
+          args: /^[a-zA-Z0-9_]+$/,
+          msg: "Username can only contain letters, numbers, and underscores",
+        },
+      },
     },
     email: {
       type: DataTypes.STRING,
@@ -74,7 +89,7 @@ User.init(
   },
   {
     sequelize,
-    tableName: "User",
+    tableName: "Users",
     timestamps: true,
     hooks: {
       beforeCreate: async (user: User) => {

@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
-import * as userController from "../controllers/user.controllers";
+import * as userController from "../controllers/users.controllers";
 import * as bcrypt from "bcrypt";
+import { ZodError } from "zod";
 
 const userRouter = express.Router();
 
@@ -11,18 +12,39 @@ userRouter.get("/", async (req: Request, res: Response) => {
 });
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
-  const user = await userController.getUserById(req.params.id);
+  const id: string = Array.isArray(req.params.id)
+    ? req.params.id[0]
+    : req.params.id;
+  const user = await userController.getUserById(id);
   console.log(`GET /users/${req.params.id}`, user);
   res.json(user);
 });
 
 userRouter.post("/", async (req: Request, res: Response) => {
-  const { body } = req;
-  const { password } = body;
-  const hash = bcrypt.hashSync(password, 10);
-  body.password = hash;
-  const result = userController.createUser(body);
-  res.json(result);
+  try {
+    const user = await userController.createUser(req.body);
+    res.status(201).json(user);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      // Return all validation issues as an array
+      return res.status(400).json({ errors: err.issues });
+    }
+    // Use type assertion to access custom properties
+    const status = (err as Error & { status?: number }).status ?? 400;
+    res.status(status).json({ error: (err as Error).message });
+  }
 });
 
+// todo make patch
+
+// todo make delete
+userRouter.delete("/:id", async (req: Request, res: Response) => {
+  const id: string = Array.isArray(req.params.id)
+    ? req.params.id[0]
+    : req.params.id;
+  const user = await userController.getUserById(id);
+  userController.deleteUser(id);
+  console.log(`DELETE /users/${req.params.id}`, user);
+  res.sendStatus(204);
+});
 export { userRouter };

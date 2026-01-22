@@ -16,8 +16,10 @@ Employee.belongsTo(User, {
 // Export models and sequelize instance
 export { sequelize, User, Employee };
 
-export default {
+const db = {
   sequelize,
   User,
   Employee,
 };
+
+export default db;
