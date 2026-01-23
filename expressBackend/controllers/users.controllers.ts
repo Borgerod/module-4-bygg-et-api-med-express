@@ -6,18 +6,47 @@ import {
 } from "@expressBackend/schema/user.schema";
 import User, { UserAttributes } from "../models/user.model";
 import bcrypt from "bcrypt";
-import { UniqueConstraintError } from "sequelize";
+import {
+  UniqueConstraintError,
+  ValidationError as SequelizeValidationError,
+} from "sequelize";
 import { ZodError } from "zod";
 
 type UserSafe = Omit<UserAttributes, "passwordHash">;
 
+function getStatusFromError(error: unknown): number {
+  if (error instanceof ZodError) return 400;
+  if (typeof error === "object" && error !== null) {
+    const clientError = error as { message?: string };
+    const msg = clientError.message?.toLowerCase() ?? "";
+    if (msg.includes("not found")) return 404;
+    if (msg.includes("conflict")) return 409;
+    if (msg.includes("unique constraint")) return 409;
+    if (msg.includes("validation error")) return 400; // <-- add this line
+  }
+  return 500;
+}
+
 export async function getUsers(): Promise<UserSafe[]> {
   try {
     const users = await User.findAll({ attributes: { exclude: ["password"] } });
+    console.info(
+      `GET /users`,
+      users.map((u) => ({
+        id: u.id,
+        username: u.username,
+        email: u.email,
+      })),
+    );
     return users.map((user) => user.toJSON() as UserSafe);
-  } catch (err) {
-    console.error("Error fetching users:", err);
-    throw new Error("Failed to fetch users");
+  } catch (error) {
+    console.error(`GET /users`, {
+      error: error instanceof Error ? error.message : error,
+    });
+    const clientError = new Error("Failed to fetch users");
+    (clientError as Error & { status: number }).status =
+      getStatusFromError(error);
+    throw clientError;
   }
 }
 
@@ -26,22 +55,31 @@ export async function getUserById(id: string): Promise<UserSafe> {
     const user = await User.findByPk(id, {
       attributes: { exclude: ["password"] },
     });
-
-    if (!user) throw new Error("User not found");
+    if (!user) {
+      const clientError = new Error("User not found");
+      (clientError as Error & { status: number }).status = 404;
+      console.error(`GET /users/${id}`, { error: "User not found" });
+      throw clientError;
+    }
+    console.info(`GET /users/${id}`, {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    });
     return user.toJSON() as UserSafe;
-  } catch (err) {
-    console.error("Error fetching user:", err);
-    throw new Error("Failed to fetch user");
+  } catch (error) {
+    console.error(`GET /users/${id}`, {
+      error: error instanceof Error ? error.message : error,
+    });
+    const clientError = new Error("Failed to fetch user");
+    (clientError as Error & { status: number }).status =
+      getStatusFromError(error);
+    throw clientError;
   }
 }
 
 export async function createUser(createUserData: UserCreation) {
   try {
-    if (!createUserData.username) {
-      throw new Error("Missing 'username' in request body");
-    }
-
-    // Validate input, let ZodError propagate
     const validatedData = UserSchemaCreate.parse(createUserData);
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
@@ -52,47 +90,37 @@ export async function createUser(createUserData: UserCreation) {
       password: hashedPassword,
     });
 
+    console.info(`POST /users`, {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    });
+
     return user.toJSON() as UserSafe;
-  } catch (err) {
-    if (err instanceof ZodError) {
-      console.error("Error while creating user (validation):", err);
-      throw err;
-    }
-    if (err instanceof UniqueConstraintError) {
-      // logging specific cause or error, but exclude sensitive DB info. Incase logs gets compomized
-      const fieldKeys = err.fields[0] as DistractionFields;
-
-      // a fun way of preventing attacks by pretending to be careless and by deliberatly giving them false information.
-      const distraction = getDistraction(fieldKeys);
-      console.error(
-        `UniqueConstraintError while creating user`,
-        `\nfields: ${distraction}`,
-        `\nerrors:`,
-        err.errors,
-      );
-
-      class UserExistsError extends Error {
-        status: number;
-        code: string;
-        constructor(message: string) {
-          super(message);
-          this.status = 409;
-          this.code = "USER_ALREADY_EXISTS";
-        }
-      }
-
-      // return the default string for regular users for not to confuse them.
-      const error = new UserExistsError(
-        // `A user with the same ${distraction} already exists.`, //if you still want to do it
-        `A user with the same credentials already exists.`, // the safest but less fun.
-      );
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.error(`POST /users`, { error: error.issues });
+      (error as ZodError & { status?: number }).status = 400;
       throw error;
     }
-    console.error(
-      `[UserController][${new Date().toISOString()}] Unhandled error while creating user:`,
-      err instanceof Error ? err.stack : err,
-    );
-    throw err;
+    if (error instanceof UniqueConstraintError) {
+      console.error(`POST /users`, {
+        error: "A user with the same credentials already exists.",
+      });
+      const clientError = new Error(
+        "A user with the same credentials already exists.",
+      ) as Error & { status?: number };
+      clientError.status = 409;
+      throw clientError;
+    }
+    console.error(`POST /users`, {
+      error: error instanceof Error ? error.message : error,
+    });
+    const clientError = new Error("Failed to create user") as Error & {
+      status?: number;
+    };
+    clientError.status = getStatusFromError(error);
+    throw clientError;
   }
 }
 
@@ -100,7 +128,10 @@ export async function updateUser(id: string, updateData: UserUpdate) {
   try {
     const user = await User.findByPk(id);
     if (!user) {
-      throw new Error("User not found");
+      const clientError = new Error("User not found");
+      (clientError as Error & { status: number }).status = 404;
+      console.error(`PATCH /users/${id}`, { error: "User not found" });
+      throw clientError;
     }
     const validatedData = UserSchemaUpdate.parse(updateData);
 
@@ -116,50 +147,63 @@ export async function updateUser(id: string, updateData: UserUpdate) {
       await user.update(validatedData);
     }
 
-    return user.toJSON();
-  } catch (err) {
-    console.error("Error while updating user:", err);
-    throw new Error("Failed to update user");
+    const result = user.toJSON() as UserSafe;
+    console.info(`PATCH /users/${id}`, {
+      id: result.id,
+      username: result.username,
+      email: result.email,
+    });
+    return result;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.error(`PATCH /users/${id}`, { error: error.issues });
+      (error as ZodError & { status: number }).status = 400;
+      throw error;
+    }
+    if (error instanceof SequelizeValidationError) {
+      console.error(`PATCH /users/${id}`, { error: error.errors });
+      const clientError = new Error("Validation error") as Error & {
+        status: number;
+      };
+      clientError.status = 400;
+      throw clientError;
+    }
+    console.error(`PATCH /users/${id}`, {
+      error: error instanceof Error ? error.message : error,
+    });
+    const clientError = new Error("Failed to update user");
+    (clientError as Error & { status: number }).status =
+      getStatusFromError(error);
+    throw clientError;
   }
 }
 
-export async function deleteUser(id: string) {
+export async function deleteUser(id: string): Promise<UserSafe | null> {
   try {
-    const user = await User.findByPk(id);
+    const user = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
+    });
     if (!user) {
-      throw new Error("User not found");
+      const clientError = new Error("User not found");
+      (clientError as Error & { status: number }).status = 404;
+      console.error(`DELETE /users/${id}`, { error: "User not found" });
+      throw clientError;
     }
-
+    const userData = user.toJSON() as UserSafe;
     await user.destroy();
-    return { success: true, message: "User deleted successfully" };
-  } catch (err) {
-    console.error("Error while deleting user:", err);
-    throw new Error("Failed to delete user");
-  }
-}
-
-type DistractionFields = "email" | "username" | "phone";
-function getDistraction(fields: DistractionFields) {
-  const fieldOptions: DistractionFields[] = ["email", "username", "phone"];
-  console.log("actual field is: ", fields);
-  for (let i = 0; i < fieldOptions.length; i++) {
-    const dist = fieldOptions[i];
-    /*
-      issue; when attacker recieved a distractionfield and then proceeds to then change the given distractionfield,
-      she (should) then recieve the same error message i.e "A user with username already exists." which tells him that he might be recieving false info.
-      but I will take that into account. so if this scenario is triggered, it will be treated as if the original matching field has been changed, 
-      resulting in him to recieve the correct error message. "A user with email already exists."
-      todo [ ] implement this
-    */
-
-    if (i + 1 >= fieldOptions.length) {
-      console.log("out of bound: return 0 ");
-      console.log("distraction field is: ", fieldOptions[0]);
-      return fieldOptions[0];
-    }
-    if (fields === dist) {
-      console.log("distraction field is: ", fieldOptions[i + 1]);
-      return fieldOptions[i + 1];
-    }
+    console.info(`DELETE /users/${id}`, {
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+    });
+    return userData;
+  } catch (error) {
+    console.error(`DELETE /users/${id}`, {
+      error: error instanceof Error ? error.message : error,
+    });
+    const clientError = new Error("Failed to delete user");
+    (clientError as Error & { status: number }).status =
+      getStatusFromError(error);
+    throw clientError;
   }
 }

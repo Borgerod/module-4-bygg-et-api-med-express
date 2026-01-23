@@ -3,8 +3,6 @@ import { z } from "zod";
 // user for handling of user except for updating and creating user, aka USAGE for example logins
 export const UserSchemaBase = z.object({
   id: z.uuidv4(),
-  // username: z.string(),
-  // email: z.email(),
   username: z
     .string()
     .min(3, "Username must be at least 3 characters long")
@@ -40,7 +38,7 @@ export const UserSchemaCreate = UserSchemaBase.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-});
+}).strict();
 // export const UserSchemaCreate = z.omit({
 //   lastLoggedIn: true,
 //   // email: z.email(),
