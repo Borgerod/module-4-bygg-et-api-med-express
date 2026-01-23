@@ -23,8 +23,6 @@ export const UserSchemaBase = z.object({
       /[^A-Za-z0-9]/,
       "Password must contain at least one special character",
     ),
-  // password: z.string(),
-  // passwordHash: z.string(),
   role: z.enum(["user", "admin"]).default("user"),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
@@ -39,16 +37,6 @@ export const UserSchemaCreate = UserSchemaBase.omit({
   createdAt: true,
   updatedAt: true,
 }).strict();
-// export const UserSchemaCreate = z.omit({
-//   lastLoggedIn: true,
-//   // email: z.email(),
-//   // username: z.string(),
-//   // password: z.string().min(6, "Password must be at least 6 characters"),
-//   // role: z.enum(["user", "admin"]).default("user"),
-//   // isActive: z.boolean().default(true),
-//   // isOnline: z.boolean().default(false),
-//   // Do not include passwordHash here
-// });
 
 // used for updating the user
 export const UserSchemaUpdate = UserSchemaBase.omit({

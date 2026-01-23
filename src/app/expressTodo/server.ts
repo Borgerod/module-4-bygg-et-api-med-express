@@ -14,6 +14,7 @@ import Database from "better-sqlite3";
 import { Todo, TodoProps } from "@types";
 import { userRouter } from "@expressBackend/routers/user.route";
 import { sequelize } from "@expressBackend/config/db.config"; // adjust path as needed
+import { employeesRouter } from "@expressBackend/routers/employee.route";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(express.json());
 app.set("trust proxy", true);
 
 app.use("/users", userRouter);
+app.use("/employees", employeesRouter);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");

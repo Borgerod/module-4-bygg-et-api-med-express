@@ -10,6 +10,8 @@ interface UserAttributes {
   role: "user" | "admin";
   createdAt?: Date;
   updatedAt?: Date;
+  isActive: boolean; // <-- add this
+  isOnline: boolean; // <-- add this
 }
 
 class User
@@ -26,6 +28,8 @@ class User
   declare role: "user" | "admin";
   declare createdAt?: Date;
   declare updatedAt?: Date;
+  declare isActive: boolean; // <-- add this
+  declare isOnline: boolean; // <-- add this
 
   async comparePassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
@@ -85,6 +89,16 @@ User.init(
       type: DataTypes.ENUM("user", "admin"),
       defaultValue: "user",
       allowNull: false,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
+    isOnline: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   },
   {
