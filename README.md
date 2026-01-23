@@ -36,6 +36,7 @@ npx prisma db create
 npx prisma generate
 npx prisma migrate dev
 npx tsx script.ts #Todo table is handled by prisma
+npx prisma migrate reset --force # <-- resets db before seeding
 npm run seed #any other tables are handled by self-made schemas etc in /expressBackend
 npm run dev:all
 ```
