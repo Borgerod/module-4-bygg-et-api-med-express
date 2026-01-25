@@ -15,6 +15,7 @@ import { Todo, TodoProps } from "@types";
 import { userRouter } from "@expressBackend/routers/user.route";
 import { sequelize } from "@expressBackend/config/db.config"; // adjust path as needed
 import { employeesRouter } from "@expressBackend/routers/employee.route";
+import os from "os";
 
 dotenv.config();
 
@@ -150,10 +151,19 @@ app.put("/expressTodo/:id", async (req, res) => {
   }
 });
 
-sequelize.sync({ alter: true }).then(() => {
-  // todo add proper logs
-  console.log("Database schema synced to model.");
-  app.listen(4000, () => {
-    console.log("Server running on port 4000");
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    const port = 4000;
+    const localUrl = `http://localhost:${port}`;
+    const networkUrl = `http://${os.networkInterfaces()["Ethernet"]?.[1]?.address || "127.0.0.1"}:${port}`;
+    console.log(`▲ Express API`);
+    console.log(`- Local:         ${localUrl}`);
+    console.log(`- Network:       ${networkUrl}`);
+    console.log(`- Environments:  .env`);
+    app.listen(port, () => {});
+  })
+  .catch((error) => {
+    console.error("Failed to sync database schema:", error);
+    process.exit(1);
   });
-});
