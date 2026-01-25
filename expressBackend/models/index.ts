@@ -4,13 +4,13 @@ import Employee from "./employee.model";
 
 // Define associations
 User.hasOne(Employee, {
-  foreignKey: "userId",
-  as: "employeeProfile",
+  foreignKey: "user_id",
+  as: "employee_profile",
 });
 
 Employee.belongsTo(User, {
-  foreignKey: "userId",
-  as: "userAccount",
+  foreignKey: "user_id",
+  as: "user_account",
 });
 
 // Export models and sequelize instance

@@ -1,12 +1,6 @@
 import { testConnection, syncDatabase } from "@expressBackend/config/db.config";
 import Employee from "@expressBackend/models/employee.model";
 import User from "@expressBackend/models/user.model";
-// import { generateCompanyEmail } from "@expressBackend/schema/employee.schema";
-// import {
-//   departments,
-//   positions,
-//   roles,
-// } from "@expressBackend/models/employee.model";
 import { staffMap } from "@expressBackend/models/employee.model";
 
 async function seed() {
@@ -14,15 +8,10 @@ async function seed() {
     await testConnection();
     await syncDatabase();
 
-    // const department =
-    //   departments[Math.floor(Math.random() * departments.length)];
-    // const position = positions[Math.floor(Math.random() * positions.length)];
-    // const role = roles[Math.floor(Math.random() * roles.length)];
-
     const employeeBatchSize: number = 4;
     const userBatchSize: number = 8;
-    await generateUsers(employeeBatchSize);
-    await generateEmplyees(userBatchSize);
+    await generateUsers(userBatchSize);
+    await generateEmplyees(employeeBatchSize);
 
     console.log("DB Seeded successfully.");
     process.exit(0);
@@ -72,15 +61,12 @@ async function generateUsers(userBatchSize: number) {
     "LunarPath_4",
   ];
   const roles = ["user", "admin"] as const;
-  type UserRole = (typeof roles)[number]; // const usernames: string[] = [];
+  type UserRole = (typeof roles)[number];
   for (let i = 0; i < userBatchSize; i++) {
     const email = emails[Math.floor(Math.random() * emails.length)];
     emails = emails.filter((item) => item !== email);
     const username = usernames[Math.floor(Math.random() * usernames.length)];
     usernames = usernames.filter((item) => item !== username);
-
-    // console.log("usernames: ", usernames, " -> '", username, "'\n");
-    // console.log("emails: ", emails, " -> '", email, "'\n");
 
     await User.create({
       email: email,
@@ -91,31 +77,6 @@ async function generateUsers(userBatchSize: number) {
       isOnline: false,
     });
   }
-  // await User.create({
-  //   email: "test2@auth.no",
-  //   password: "abc123ABC!",
-  //   role: "user",
-  //   username: "TestUser2",
-  //   isActive: true,
-  //   isOnline: false,
-  // });
-  // await User.create({
-  //   email: "test1@auth.no",
-  //   password: "abc123ABC!",
-  //   role: "user",
-  //   username: "TestUser1",
-  //   isActive: true,
-  //   isOnline: false,
-  // });
-
-  // await User.create({
-  //   email: "test@auth.no",
-  //   password: "abc123ABC!",
-  //   role: "admin",
-  //   username: "TestUser0",
-  //   isActive: true,
-  //   isOnline: false,
-  // });
 }
 const namingProb = {
   hasMiddleName: 0.6,
@@ -138,8 +99,12 @@ function randomPhoneNumber(): string {
 async function generateEmplyees(employeeBatchSize: number) {
   const departmentKeys = Object.keys(staffMap) as Array<keyof typeof staffMap>;
 
+  // After creating users, fetch their ids:
+  const users = await User.findAll({ attributes: ["id"] });
+  if (users.length === 0)
+    throw new Error("No users found for employee assignment");
+
   for (let i = 0; i < employeeBatchSize; i++) {
-    // Generate random names for each employee
     const probOfSpace = Math.random() < namingProb.hasDoubleFirstNameSpace;
     const probOfHyphen = Math.random() < namingProb.hasDoubleFirstNameHyphen;
 
@@ -209,6 +174,7 @@ async function generateEmplyees(employeeBatchSize: number) {
     const role = randomStaff.role;
 
     await Employee.create({
+      userId: users[i % users.length].id,
       firstname,
       middlename,
       lastname,

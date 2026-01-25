@@ -22,7 +22,7 @@ function getStatusFromError(error: unknown): number {
     if (msg.includes("not found")) return 404;
     if (msg.includes("conflict")) return 409;
     if (msg.includes("unique constraint")) return 409;
-    if (msg.includes("validation error")) return 400; // <-- add this line
+    if (msg.includes("validation error")) return 400;
   }
   return 500;
 }

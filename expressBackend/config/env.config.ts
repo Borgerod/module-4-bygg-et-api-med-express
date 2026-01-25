@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
-// REFACTOR: updated port from 3500 to 4000
 
-import type { Dialect } from "sequelize";
+// import type { Dialect } from "sequelize";
 
 export const config = {
   env: process.env.NODE_ENV ?? "development",
@@ -15,7 +14,7 @@ export const config = {
     // user: process.env.DB_USER ?? "postgres",
     // password: process.env.DB_PASSWORD ?? "",
     // dialect: (process.env.DB_DIALECT as Dialect) || "postgres",
-    storage: process.env.DB_STORAGE ?? "", // For SQLite, fallback to empty string
+    storage: process.env.DB_STORAGE ?? "",
   },
 
   jwt: {

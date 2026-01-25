@@ -44,9 +44,6 @@ function validateTableAndId(
   //? perhaps i should not have this one here
   const tableMap: Record<string, string> = {
     Todo: "Todo",
-    // User: "User",
-    // ActiveLogins: "ActiveLogins"
-    // Have put 'User' and 'ActiveLogins' here for when im going to merge the expressBackend with this
   };
 
   const validatedTable = tableMap[table];
@@ -134,7 +131,6 @@ app.delete("/expressTodo/:table/:id", (req, res) => {
 });
 
 ////* PUT | EDIT
-// app.patch("/expressTodo/:id", (req, res) => {
 app.put("/expressTodo/:id", async (req, res) => {
   const { id } = req.params;
   const { title } = req.body;

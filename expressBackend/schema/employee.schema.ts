@@ -8,7 +8,8 @@ import {
 export const EmployeeSchemaBase = z.object({
   // id: z.uuid(), // System UUID (primary key)
   id: z.uuidv4(),
-  // employeeId: z.number().int().positive(), // Human-friendly ID for cards (auto-generated)
+  userId: z.uuidv4(), // prob needs chanign
+
   employeeId: z.string().length(16), // Human-friendly ID for cards (auto-generated)
   firstname: z
     .string()
@@ -58,6 +59,7 @@ export const EmployeeSchemaBase = z.object({
 
 export const EmployeeSchemaCreate = EmployeeSchemaBase.omit({
   id: true,
+  userId: true,
   employeeId: true,
   email: true,
   isActive: true,
@@ -93,6 +95,7 @@ export const EmployeeSchemaCreate = EmployeeSchemaBase.omit({
 export const EmployeeSchemaUpdate = EmployeeSchemaBase.omit({
   lastLoggedIn: true,
   id: true,
+  userId: true,
   email: true,
   employeeId: true,
   isActive: true,

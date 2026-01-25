@@ -1,93 +1,11 @@
-// import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "@expressBackend/config/db.config";
 import { departmentCodes } from "@expressBackend/schema/employee.schema";
-import { DataTypes, Model, Optional, Op } from "sequelize";
+import { DataTypes, Model, Op } from "sequelize";
 import {
   departments,
   positions,
   roles,
 } from "@expressBackend/constants/employee.contants";
-
-// const departments = [
-//   "Executive",
-//   "Management",
-//   "Administration",
-//   "FinanceAndAccounting",
-//   "HumanResources",
-//   "SalesAndMarketing",
-//   "OperationsAndProduction",
-//   "InformationTechnology",
-//   "CustomerService",
-//   "LegalAndCompliance",
-// ];
-
-// const positions = [
-//   "CEO",
-//   "COO",
-//   "CFO",
-//   "CTO",
-//   "GeneralManager",
-//   "DepartmentManager",
-//   "ProjectManager",
-//   "TeamLead",
-//   "OfficeAdministrator",
-//   "ExecutiveAssistant",
-//   "Accountant",
-//   "PayrollSpecialist",
-//   "FinancialAnalyst",
-//   "HRManager",
-//   "Recruiter",
-//   "HRCoordinator",
-//   "SalesRepresentative",
-//   "MarketingManager",
-//   "SocialMediaManager",
-//   "ContentStrategist",
-//   "GrowthAnalyst",
-//   "OperationsManager",
-//   "ProductionWorker",
-//   "Technician",
-//   "QualityControlInspector",
-//   "SupplyChainCoordinator",
-//   "ITManager",
-//   "SystemAdministrator",
-//   "NetworkAdministrator",
-//   "SoftwareDeveloper",
-//   "SeniorSoftwareDeveloper",
-//   "TechnicalLead",
-//   "DevOpsEngineer",
-//   "SiteReliabilityEngineer",
-//   "SecurityEngineer",
-//   "SecurityAnalyst",
-//   "DatabaseAdministrator",
-//   "DataEngineer",
-//   "DataAnalyst",
-//   "QATester",
-//   "QAEngineer",
-//   "TechnicalSupportSpecialist",
-//   "ITSupportManager",
-//   "CustomerServiceRepresentative",
-//   "CustomerSupportManager",
-//   "CustomerSuccessManager",
-//   "LegalCounsel",
-//   "ComplianceOfficer",
-//   "RiskOfficer",
-// ];
-
-// const roles = [
-//   "user",
-//   "employee",
-//   "admin",
-//   "moderator",
-//   "editor",
-//   "manager",
-//   "supervisor",
-//   "operator",
-//   "support",
-//   "auditor",
-//   "developer",
-//   "system",
-//   "superadmin",
-// ];
 
 export const staffMap = {
   // this will work as a template for checking positions and privilages.
@@ -175,13 +93,11 @@ export const staffMap = {
     { position: "RiskOfficer", role: "auditor" },
   ],
 };
-/*
- */
 // note: Types are at the bottom so any devs wont have to scroll through all of it to get to the model.
 // note: I could, but i dont want to implement more complexity with sequelize-typescript (for now)
 export interface EmployeeAttributes {
   id: string;
-  // employeeId: number;
+  userId: string;
   employeeId: string;
   firstname: string;
   middlename?: string | null;
@@ -199,24 +115,19 @@ export interface EmployeeAttributes {
   lastLoggedIn?: Date | null;
 }
 
-// type EmployeeCreationAttributes = Optional<
-//   EmployeeAttributes,
-//   "id" | "employeeId" | "email" | "createdAt" | "updatedAt" | "lastLoggedIn"
-// >;
-
 class Employee
-  // extends Model<EmployeeAttributes, EmployeeCreationAttributes>
   extends Model<
     EmployeeAttributes,
     Omit<
       EmployeeAttributes,
+      // | "userId"
       "id" | "employeeId" | "email" | "createdAt" | "updatedAt" | "lastLoggedIn"
     >
   >
   implements EmployeeAttributes
 {
   declare id: string;
-  // declare employeeId: number;
+  declare userId: string;
   declare employeeId: string;
   declare firstname: string;
   declare middlename?: string | null;
@@ -246,77 +157,102 @@ Employee.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false,
+      field: "id",
+    },
+    userId: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      field: "user_id",
     },
     employeeId: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      // autoIncrement: true,
+      field: "employee_id",
     },
     firstname: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: "firstname",
     },
     middlename: {
       type: DataTypes.STRING,
       allowNull: true,
+      field: "middlename",
     },
     lastname: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: "lastname",
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      field: "email",
       validate: { isEmail: true },
     },
     countryCode: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "+47",
+      field: "country_code",
     },
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: "phone",
     },
     department: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: "department",
     },
     position: {
       type: DataTypes.STRING,
       allowNull: false,
+      field: "position",
     },
     role: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "employee",
+      field: "role",
     },
     isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+      field: "is_active",
     },
     isOnline: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      field: "is_online",
     },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+      field: "created_at",
     },
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+      field: "updated_at",
     },
     lastLoggedIn: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null,
+      field: "last_logged_in",
     },
   },
 
@@ -324,6 +260,14 @@ Employee.init(
     sequelize,
     tableName: "Employees",
     timestamps: true,
+    indexes: [
+      {
+        fields: ["lastname", "firstname", "middlename"],
+      },
+      {
+        fields: ["employee_id", "user_id"],
+      },
+    ],
     hooks: {
       beforeValidate: async (employee: Employee) => {
         if (!employee.employeeId) {
@@ -346,6 +290,9 @@ Employee.init(
           );
         }
       },
+      // beforeCreate: async (employee: Employee) => {
+      //   employee.userId;
+      // },
     },
   },
 );
@@ -432,97 +379,8 @@ export async function generateCompanyEmail(
   }
 }
 
-//   const lastEmployee =
-//   return "morendin";
-// }
-// type Department =
-//   | "Executive"
-//   | "Management"
-//   | "Administration"
-//   | "FinanceAndAccounting"
-//   | "HumanResources"
-//   | "SalesAndMarketing"
-//   | "OperationsAndProduction"
-//   | "InformationTechnology"
-//   | "CustomerService"
-//   | "LegalAndCompliance";
-
-// type Position =
-//   | "CEO"
-//   | "COO"
-//   | "CFO"
-//   | "CTO"
-//   | "GeneralManager"
-//   | "DepartmentManager"
-//   | "ProjectManager"
-//   | "TeamLead"
-//   | "OfficeAdministrator"
-//   | "ExecutiveAssistant"
-//   | "Accountant"
-//   | "PayrollSpecialist"
-//   | "FinancialAnalyst"
-//   | "HRManager"
-//   | "Recruiter"
-//   | "HRCoordinator"
-//   | "SalesRepresentative"
-//   | "MarketingManager"
-//   | "SocialMediaManager"
-//   | "ContentStrategist"
-//   | "GrowthAnalyst"
-//   | "OperationsManager"
-//   | "ProductionWorker"
-//   | "Technician"
-//   | "QualityControlInspector"
-//   | "SupplyChainCoordinator"
-//   | "ITManager"
-//   | "SystemAdministrator"
-//   | "NetworkAdministrator"
-//   | "SoftwareDeveloper"
-//   | "SeniorSoftwareDeveloper"
-//   | "TechnicalLead"
-//   | "DevOpsEngineer"
-//   | "SiteReliabilityEngineer"
-//   | "SecurityEngineer"
-//   | "SecurityAnalyst"
-//   | "DatabaseAdministrator"
-//   | "DataEngineer"
-//   | "DataAnalyst"
-//   | "QATester"
-//   | "QAEngineer"
-//   | "TechnicalSupportSpecialist"
-//   | "ITSupportManager"
-//   | "CustomerServiceRepresentative"
-//   | "CustomerSupportManager"
-//   | "CustomerSuccessManager"
-//   | "LegalCounsel"
-//   | "ComplianceOfficer"
-//   | "RiskOfficer";
-
-// type Role =
-//   | "user"
-//   | "admin"
-//   | "moderator"
-//   | "editor"
-//   | "manager"
-//   | "supervisor"
-//   | "operator"
-//   | "support"
-//   | "auditor"
-//   | "developer"
-//   | "system"
-//   | "superadmin";
-
 export type Department = (typeof departments)[number];
 export type Position = (typeof positions)[number];
 export type Role = (typeof roles)[number];
 export default Employee;
-// export type { EmployeeCreationAttributes };
 export { departments, positions, roles };
-
-// generateEmployeeId("IT").then((id: string) => {
-//   // ... use id ...
-// });
-
-// generateEmployeeId("IT").then((id: string) => {
-//   // ... use id ...
-// });

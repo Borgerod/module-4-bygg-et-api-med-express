@@ -1,21 +1,17 @@
 import {
-  // EmployeeLogin,
-  // EmployeeSchemaLogin,
   EmployeeCreation,
   EmployeeSchemaCreate,
+  EmployeeSchemaUpdate,
   EmployeeUpdate,
-  // EmployeeSchemaUpdate,
 } from "@expressBackend/schema/employee.schema";
 import Employee, {
   EmployeeAttributes,
 } from "@expressBackend/models/employee.model";
-import bcrypt from "bcrypt";
 import {
   UniqueConstraintError,
   ValidationError as SequelizeValidationError,
 } from "sequelize";
 import { ZodError } from "zod";
-// import { generateCompanyEmail } from "@expressBackend/schema/employee.schema";
 
 type EmployeeSafe = Omit<EmployeeAttributes, "passwordHash">;
 
@@ -27,11 +23,11 @@ function getStatusFromError(error: unknown): number {
     if (msg.includes("not found")) return 404;
     if (msg.includes("conflict")) return 409;
     if (msg.includes("unique constraint")) return 409;
-    if (msg.includes("validation error")) return 400; // <-- add this line
+    if (msg.includes("validation error")) return 400;
   }
   return 500;
 }
-// implement auth and checker for tokens related to the requesters role, so the information recieved gets limited based on the role
+
 export async function getEmployees(): Promise<EmployeeSafe[]> {
   try {
     const employees = await Employee.findAll({
@@ -114,41 +110,31 @@ export async function createEmployee(createEmployeeData: EmployeeCreation) {
   try {
     const validatedData = EmployeeSchemaCreate.parse(createEmployeeData);
 
-    // // Generate company email
-    // const email = generateCompanyEmail(
-    //   validatedData.firstname,
-    //   validatedData.lastname,
-    // );
-
-    // Always set isOnline to false on creation
     const employee = await Employee.create({
       ...validatedData,
+      userId: String((createEmployeeData as { userId?: string }).userId),
       isActive: false,
       isOnline: false,
-      // no email here!
     });
 
-    // console.info(`POST /employees`, {
-    //   //   id: employee.id,
-    //   //   firstname: employee.firstname,
-    //   //   lastname: employee.lastname,
-    //   //   email: employee.email,
-    //   id: employee.id,
-    //   employeeId: employee.employeeId,
-    //   firstname: employee.firstname,
-    //   lastname: employee.lastname,
-    //   email: employee.email,
-    //   countryCode: employee.countryCode,
-    //   phone: employee.phone,
-    //   department: employee.department,
-    //   position: employee.position,
-    //   role: employee.role,
-    //   isActive: employee.isActive,
-    //   isOnline: employee.isOnline,
-    //   createdAt: employee.createdAt,
-    //   updatedAt: employee.updatedAt,
-    //   lastLoggedIn: employee.lastLoggedIn,
-    // });
+    console.info(`POST /employees`, {
+      id: employee.id,
+      userId: employee.userId,
+      employeeId: employee.employeeId,
+      firstname: employee.firstname,
+      lastname: employee.lastname,
+      email: employee.email,
+      countryCode: employee.countryCode,
+      phone: employee.phone,
+      department: employee.department,
+      position: employee.position,
+      role: employee.role,
+      isActive: employee.isActive,
+      isOnline: employee.isOnline,
+      createdAt: employee.createdAt,
+      updatedAt: employee.updatedAt,
+      lastLoggedIn: employee.lastLoggedIn,
+    });
 
     return employee.toJSON() as EmployeeSafe;
   } catch (error) {
@@ -187,13 +173,15 @@ export async function updateEmployee(id: string, updateData: EmployeeUpdate) {
       console.error(`PATCH /employees/${id}`, { error: "Employee not found" });
       throw clientError;
     }
-    const validatedData = EmployeeSchemaCreate.parse(updateData);
+    // Use the correct schema for updates
+    const validatedData = EmployeeSchemaUpdate.parse(updateData);
 
     await employee.update(validatedData);
 
     const result = employee.toJSON() as EmployeeSafe;
     console.info(`PATCH /employees/${id}`, {
       id: employee.id,
+      userId: employee.userId,
       employeeId: employee.employeeId,
       firstname: employee.firstname,
       lastname: employee.lastname,
@@ -239,16 +227,20 @@ export async function deleteEmployee(id: string): Promise<EmployeeSafe | null> {
     const employee = await Employee.findByPk(id, {
       attributes: { exclude: ["password"] },
     });
+
     if (!employee) {
       const clientError = new Error("Employee not found");
       (clientError as Error & { status: number }).status = 404;
       console.error(`DELETE /employees/${id}`, { error: "Employee not found" });
       throw clientError;
     }
+
     const employeeData = employee.toJSON() as EmployeeSafe;
     await employee.destroy();
+
     console.info(`DELETE /employees/${id}`, {
       id: employee.id,
+      userId: employee.id,
       employeeId: employee.employeeId,
       firstname: employee.firstname,
       lastname: employee.lastname,
@@ -264,6 +256,7 @@ export async function deleteEmployee(id: string): Promise<EmployeeSafe | null> {
       updatedAt: employee.updatedAt,
       lastLoggedIn: employee.lastLoggedIn,
     });
+
     return employeeData;
   } catch (error) {
     console.error(`DELETE /employees/${id}`, {
@@ -279,10 +272,6 @@ export async function deleteEmployee(id: string): Promise<EmployeeSafe | null> {
 // ----------------------------------------------
 //               HELPER FUNCTIONS
 // ----------------------------------------------
-// function generateCompanyEmail(firstname: string, lastname: string): string {
-//   // Example: firstname.lastname@company.com
-//   return `${firstname.toLowerCase()}.${lastname.toLowerCase()}@company.com`;
-// }
 
 // Normalize phone for storage (strips spaces)
 export function normalizePhone(phone: string): string {
@@ -291,14 +280,9 @@ export function normalizePhone(phone: string): string {
 
 // Format phone for display (adds spaces)
 export function formatPhone(countryCode: string, phone: string): string {
-  // Remove any existing spaces
   const cleaned = phone.replace(/\s/g, "");
-
-  // Format based on length (Norwegian style: +47 999 99 999)
   if (cleaned.length === 8) {
     return `${countryCode} ${cleaned.slice(0, 3)} ${cleaned.slice(3, 5)} ${cleaned.slice(5)}`;
   }
-
-  // Default: space every 3 digits
   return `${countryCode} ${cleaned.match(/.{1,3}/g)?.join(" ") || cleaned}`;
 }
