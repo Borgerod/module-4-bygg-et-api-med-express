@@ -1,19 +1,21 @@
 import {
-  EmployeeLogin,
-  EmployeeSchemaLogin,
+  // EmployeeLogin,
+  // EmployeeSchemaLogin,
   EmployeeCreation,
   EmployeeSchemaCreate,
   EmployeeUpdate,
-  EmployeeSchemaUpdate,
+  // EmployeeSchemaUpdate,
 } from "@expressBackend/schema/employee.schema";
-import Employee, { EmployeeAttributes } from "../models/employee.model";
+import Employee, {
+  EmployeeAttributes,
+} from "@expressBackend/models/employee.model";
 import bcrypt from "bcrypt";
 import {
   UniqueConstraintError,
   ValidationError as SequelizeValidationError,
 } from "sequelize";
 import { ZodError } from "zod";
-import { generateCompanyEmail } from "../schema/employee.schema";
+// import { generateCompanyEmail } from "@expressBackend/schema/employee.schema";
 
 type EmployeeSafe = Omit<EmployeeAttributes, "passwordHash">;
 
@@ -112,40 +114,41 @@ export async function createEmployee(createEmployeeData: EmployeeCreation) {
   try {
     const validatedData = EmployeeSchemaCreate.parse(createEmployeeData);
 
-    // Generate company email
-    const email = generateCompanyEmail(
-      validatedData.firstname,
-      validatedData.lastname,
-    );
+    // // Generate company email
+    // const email = generateCompanyEmail(
+    //   validatedData.firstname,
+    //   validatedData.lastname,
+    // );
 
     // Always set isOnline to false on creation
     const employee = await Employee.create({
       ...validatedData,
-      email,
+      isActive: false,
       isOnline: false,
+      // no email here!
     });
 
-    console.info(`POST /employees`, {
-      //   id: employee.id,
-      //   firstname: employee.firstname,
-      //   lastname: employee.lastname,
-      //   email: employee.email,
-      id: employee.id,
-      employeeId: employee.employeeId,
-      firstname: employee.firstname,
-      lastname: employee.lastname,
-      email: employee.email,
-      countryCode: employee.countryCode,
-      phone: employee.phone,
-      department: employee.department,
-      position: employee.position,
-      role: employee.role,
-      isActive: employee.isActive,
-      isOnline: employee.isOnline,
-      createdAt: employee.createdAt,
-      updatedAt: employee.updatedAt,
-      lastLoggedIn: employee.lastLoggedIn,
-    });
+    // console.info(`POST /employees`, {
+    //   //   id: employee.id,
+    //   //   firstname: employee.firstname,
+    //   //   lastname: employee.lastname,
+    //   //   email: employee.email,
+    //   id: employee.id,
+    //   employeeId: employee.employeeId,
+    //   firstname: employee.firstname,
+    //   lastname: employee.lastname,
+    //   email: employee.email,
+    //   countryCode: employee.countryCode,
+    //   phone: employee.phone,
+    //   department: employee.department,
+    //   position: employee.position,
+    //   role: employee.role,
+    //   isActive: employee.isActive,
+    //   isOnline: employee.isOnline,
+    //   createdAt: employee.createdAt,
+    //   updatedAt: employee.updatedAt,
+    //   lastLoggedIn: employee.lastLoggedIn,
+    // });
 
     return employee.toJSON() as EmployeeSafe;
   } catch (error) {
@@ -184,7 +187,7 @@ export async function updateEmployee(id: string, updateData: EmployeeUpdate) {
       console.error(`PATCH /employees/${id}`, { error: "Employee not found" });
       throw clientError;
     }
-    const validatedData = EmployeeSchemaUpdate.parse(updateData);
+    const validatedData = EmployeeSchemaCreate.parse(updateData);
 
     await employee.update(validatedData);
 
@@ -271,4 +274,31 @@ export async function deleteEmployee(id: string): Promise<EmployeeSafe | null> {
       getStatusFromError(error);
     throw clientError;
   }
+}
+
+// ----------------------------------------------
+//               HELPER FUNCTIONS
+// ----------------------------------------------
+// function generateCompanyEmail(firstname: string, lastname: string): string {
+//   // Example: firstname.lastname@company.com
+//   return `${firstname.toLowerCase()}.${lastname.toLowerCase()}@company.com`;
+// }
+
+// Normalize phone for storage (strips spaces)
+export function normalizePhone(phone: string): string {
+  return phone.replace(/\s/g, "");
+}
+
+// Format phone for display (adds spaces)
+export function formatPhone(countryCode: string, phone: string): string {
+  // Remove any existing spaces
+  const cleaned = phone.replace(/\s/g, "");
+
+  // Format based on length (Norwegian style: +47 999 99 999)
+  if (cleaned.length === 8) {
+    return `${countryCode} ${cleaned.slice(0, 3)} ${cleaned.slice(3, 5)} ${cleaned.slice(5)}`;
+  }
+
+  // Default: space every 3 digits
+  return `${countryCode} ${cleaned.match(/.{1,3}/g)?.join(" ") || cleaned}`;
 }

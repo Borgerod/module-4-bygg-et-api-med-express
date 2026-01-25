@@ -3,11 +3,13 @@ import {
   departments,
   positions,
   roles,
-} from "@expressBackend/models/employee.model";
+} from "@expressBackend/constants/employee.contants";
 
 export const EmployeeSchemaBase = z.object({
-  id: z.uuid(), // System UUID (primary key)
-  employeeId: z.number().int().positive(), // Human-friendly ID for cards (auto-generated)
+  // id: z.uuid(), // System UUID (primary key)
+  id: z.uuidv4(),
+  // employeeId: z.number().int().positive(), // Human-friendly ID for cards (auto-generated)
+  employeeId: z.string().length(16), // Human-friendly ID for cards (auto-generated)
   firstname: z
     .string()
     .min(2, "First name must be at least 2 characters long")
@@ -15,6 +17,14 @@ export const EmployeeSchemaBase = z.object({
     .regex(
       /^[a-zA-ZæøåÆØÅ\s'-]+$/,
       "First name can only contain letters, spaces, hyphens, and apostrophes",
+    ),
+  middlename: z
+    .string()
+    .min(2, "First name must be at least 2 characters long")
+    .max(50, "First name must be at most 50 characters long")
+    .regex(
+      /^[a-zA-ZæøåÆØÅ\s'-]+$/,
+      "Middle name can only contain letters, spaces, hyphens, and apostrophes",
     ),
   lastname: z
     .string()
@@ -32,7 +42,7 @@ export const EmployeeSchemaBase = z.object({
     .default("+47"),
   phone: z
     .string()
-    .min(1, "Phone number is required")
+    .min(6, "Phone number is required")
     .regex(/^[\d\s]+$/, "Phone number can only contain digits and spaces"),
 
   department: z.enum(departments as [string, ...string[]]), // should be wrong if empty
@@ -46,25 +56,49 @@ export const EmployeeSchemaBase = z.object({
   lastLoggedIn: z.date().nullable().default(null),
 });
 
-export const EmployeeSchemaCreate = z.object({
-  firstname: z.string().min(1),
-  lastname: z.string().min(1),
-  countryCode: z.string().min(1),
-  phone: z.string().min(1),
-  department: z.enum(departments as [string, ...string[]]),
-  position: z.enum(positions as [string, ...string[]]),
-  role: z.enum(roles as [string, ...string[]]).default("employee"),
-  isActive: z.boolean(),
-});
-
-export const EmployeeSchemaUpdate = EmployeeSchemaBase.pick({
-  firstname: true,
-  lastname: true,
-  countryCode: true,
-  phone: true,
-  department: true,
-  position: true,
+export const EmployeeSchemaCreate = EmployeeSchemaBase.omit({
+  id: true,
+  employeeId: true,
+  email: true,
   isActive: true,
+  isOnline: true,
+  createdAt: true,
+  updatedAt: true,
+  lastLoggedIn: true,
+}).strict();
+
+// export const EmployeeSchemaCreate = z.object({
+//   firstname: z.string().min(1),
+//   lastname: z.string().min(1),
+//   countryCode: z.string().min(1),
+//   phone: z.string().min(6),
+//   department: z.enum(departments as [string, ...string[]]),
+//   position: z.enum(positions as [string, ...string[]]),
+//   role: z.enum(roles as [string, ...string[]]).default("employee"),
+//   isActive: z.boolean(),
+// });
+
+// export const EmployeeSchemaUpdate = EmployeeSchemaBase.pick({
+//   firstname: true,
+//   lastname: true,
+//   countryCode: true,
+//   phone: true,
+//   department: true,
+//   position: true,
+//   isActive: true,
+// })
+//   .partial()
+//   .strict();
+
+export const EmployeeSchemaUpdate = EmployeeSchemaBase.omit({
+  lastLoggedIn: true,
+  id: true,
+  email: true,
+  employeeId: true,
+  isActive: true,
+  isOnline: true,
+  createdAt: true,
+  updatedAt: true,
 })
   .partial()
   .strict();
@@ -80,43 +114,23 @@ export type EmployeeCreation = z.infer<typeof EmployeeSchemaCreate>;
 export type EmployeeUpdate = z.infer<typeof EmployeeSchemaUpdate>;
 export type EmployeeLogin = z.infer<typeof EmployeeSchemaLogin>;
 
-// Format employee ID for display
-export function formatEmployeeId(employeeId: number): string {
-  return `EMP-${employeeId.toString().padStart(5, "0")}`;
-}
-
-// Generate company email
-export function generateCompanyEmail(
-  firstname: string,
-  lastname: string,
-): string {
-  const cleanFirst = firstname.toLowerCase().replace(/[^a-z]/g, "");
-  const cleanLast = lastname.toLowerCase().replace(/[^a-z]/g, "");
-  return `${cleanFirst}.${cleanLast}@${process.env.DATABASE_URL}.${process.env.DOMAIN_EXTENTION}`;
-}
-
-// Normalize phone for storage (strips spaces)
-export function normalizePhone(phone: string): string {
-  return phone.replace(/\s/g, "");
-}
-
-// Format phone for display (adds spaces)
-export function formatPhone(countryCode: string, phone: string): string {
-  // Remove any existing spaces
-  const cleaned = phone.replace(/\s/g, "");
-
-  // Format based on length (Norwegian style: +47 999 99 999)
-  if (cleaned.length === 8) {
-    return `${countryCode} ${cleaned.slice(0, 3)} ${cleaned.slice(3, 5)} ${cleaned.slice(5)}`;
-  }
-
-  // Default: space every 3 digits
-  return `${countryCode} ${cleaned.match(/.{1,3}/g)?.join(" ") || cleaned}`;
-}
+// Department code mapping
+export const departmentCodes: Record<string, string> = {
+  Executive: "EX",
+  Management: "MG",
+  Administration: "AD",
+  FinanceAndAccounting: "FA",
+  HumanResources: "HR",
+  SalesAndMarketing: "SM",
+  OperationsAndProduction: "OP",
+  InformationTechnology: "IT",
+  CustomerService: "CS",
+  LegalAndCompliance: "LC",
+};
 
 // Example: employee.controller.ts
-// import { generateCompanyEmail } from "../schema/employee.schema";
-// import { EmployeeCreate } from "../schema/employee.schema";
+// import { generateCompanyEmail } from "@expressBackend/schema/employee.schema";
+// import { EmployeeCreate } from "@expressBackend/schema/employee.schema";
 
 // const validated = EmployeeSchemaCreate.parse(req.body);
 // const email = generateCompanyEmail(validated.firstname, validated.lastname, "yourcompany.com");
