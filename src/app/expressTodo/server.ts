@@ -151,6 +151,7 @@ app.put("/expressTodo/:id", async (req, res) => {
 });
 
 sequelize.sync({ alter: true }).then(() => {
+  // todo add proper logs
   console.log("Database schema synced to model.");
   app.listen(4000, () => {
     console.log("Server running on port 4000");
