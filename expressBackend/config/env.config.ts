@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
+// REFACTOR: updated port from 3500 to 4000
 
 import type { Dialect } from "sequelize";
 
 export const config = {
   env: process.env.NODE_ENV ?? "development",
-  port: Number(process.env.PORT) || 3500,
+  port: Number(process.env.PORT) || 4000,
 
   database: {
     // host: process.env.DB_HOST ?? "localhost",
@@ -26,6 +27,6 @@ export const config = {
   cors: {
     origins: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(",")
-      : ["http://localhost:3500", "http://127.0.0.1:5500"],
+      : ["http://localhost:4000", "http://127.0.0.1:5500"],
   },
 };
