@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import bcrypt from "bcrypt";
-import sequelize from "../config/db.config";
+import sequelize from "@expressBackend/config/db.config";
 
 interface UserAttributes {
   id: string;

@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-import * as userController from "../controllers/users.controllers";
+import * as userController from "@expressBackend/controllers/users.controllers";
 import { ZodError } from "zod";
 
 const userRouter = express.Router();
