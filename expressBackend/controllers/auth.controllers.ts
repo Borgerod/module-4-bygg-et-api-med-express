@@ -1,27 +1,11 @@
-import express from "express";
 import * as bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { readJsonDB } from "../util";
-import User from "../models/user.model";
-import { config } from "../config/env.config";
+import User from "@expressBackend/models/user.model";
+import { config } from "@expressBackend/config/env.config";
+import RefreshToken from "@expressBackend/models/refresh-token.model";
+import jwt, { SignOptions } from "jsonwebtoken";
 
-async function login(email: string, password: string) {
-  const user = await User.findOne({
-    where: {
-      email,
-    },
-  });
-
-  console.log(`Comparing password "${password}" with existing hash...`);
-  const result = bcrypt.compareSync(password, user.password);
-  console.log("Result:", result);
-
-  if (!result) {
-    res.status(401).json({ success: false, error: "Invalid credentials." });
-    throw new Error("Invalid credentials.");
-  }
-
-  const accessToken = jwt.sign(
+function generateTokenPair(user: User) {
+  const accessToken: string = jwt.sign(
     {
       role: user.role,
       user: {
@@ -31,18 +15,49 @@ async function login(email: string, password: string) {
     config.jwt.secret,
     {
       expiresIn: config.jwt.accessExpiration,
-    },
-  ); // .env, miljøvarabeldefinisjonsfil
+    } as SignOptions,
+  );
 
-  const refreshToken = jwt.sign({}, config.jwt.secret, {
+  const refreshToken: string = jwt.sign({ id: user.id }, config.jwt.secret, {
     expiresIn: config.jwt.refreshExpiration,
-  }); // .env, miljøvarabeldefinisjonsfil
+  } as SignOptions);
 
-  return { success: true, accessToken, refreshToken };
+  return { accessToken, refreshToken };
 }
-
-function verifyToken(token) {
+interface LoginResult {
+  success: boolean;
+  accessToken: string;
+  refreshToken: string;
+}
+async function login(email: string, password: string): Promise<LoginResult> {
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+  const result: boolean = bcrypt.compareSync(password, user.password);
+  if (!result) {
+    throw new Error("Invalid email or password");
+  }
+  const tokens = generateTokenPair(user);
+  await RefreshToken.upsert({ userId: user.id, token: tokens.refreshToken });
+  return { success: true, ...tokens };
+}
+function verifyToken(token: string) {
   return jwt.verify(token, config.jwt.secret);
 }
 
-export { login, verifyToken };
+async function verifyRefreshToken(token: string) {
+  const storedRefreshToken = await RefreshToken.findAll({
+    where: {
+      token,
+    },
+  });
+
+  if (!storedRefreshToken.length) {
+    throw new Error("RefreshToken not found.", { cause: 404 });
+  }
+
+  return true;
+}
+
+export { login, verifyToken, verifyRefreshToken, generateTokenPair };

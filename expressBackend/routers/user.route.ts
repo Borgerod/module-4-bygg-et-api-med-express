@@ -1,20 +1,28 @@
 import express, { Request, Response, NextFunction } from "express";
 import * as userController from "@expressBackend/controllers/users.controllers";
 import { ZodError } from "zod";
+import { isAuthenticated } from "@expressBackend/middleware/isAuthenticated.middleware";
+import { validateRequest } from "@expressBackend/middleware/useValidate.middleware";
+import { UserSchemaCreate } from "@expressBackend/schema/user.schema";
 
 const userRouter = express.Router();
 
-userRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const users = await userController.getUsers();
-    res.status(200).json(users);
-  } catch (error) {
-    next(error);
-  }
-});
+userRouter.get(
+  "/",
+  isAuthenticated(["admin"]),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const users = await userController.getUsers();
+      res.status(200).json(users);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 userRouter.get(
   "/:id",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -30,6 +38,8 @@ userRouter.get(
 
 userRouter.post(
   "/",
+  isAuthenticated(["admin"]), //keep if userRegistration should be monitored by admins (for example if the only users for this app are employees)
+  validateRequest({ bodySchema: UserSchemaCreate }),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await userController.createUser(req.body);

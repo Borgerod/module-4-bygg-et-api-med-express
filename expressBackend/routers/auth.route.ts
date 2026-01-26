@@ -1,47 +1,118 @@
-import express from "express";
-import * as bcrypt from "bcrypt";
+// import express from "express";
+import express, { Request, Response, NextFunction } from "express";
+
+import {
+  generateTokenPair,
+  login,
+  verifyRefreshToken,
+} from "@expressBackend/controllers/auth.controllers";
+import RefreshToken from "@expressBackend/models/refresh-token.model";
+import { AuthSchemaLogin } from "@expressBackend/schema/auth.schema";
 import jwt from "jsonwebtoken";
-import User from "../models/user.model";
-import { config } from "../config/env.config";
+import { config } from "@expressBackend/config/env.config";
+import { validateRequest } from "@expressBackend/middleware/useValidate.middleware";
+import User from "@expressBackend/models/user.model";
 
-async function login(email: string, password: string) {
-  const user = await User.findOne({
-    where: {
-      email,
-    },
+const authRouter = express.Router();
+
+interface TokenPair {
+  accessToken: string;
+  refreshToken: string;
+}
+
+const setAuthCookies = (res: Response, tokens: TokenPair) => {
+  res.cookie("refreshToken", tokens.refreshToken, {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: config.env !== "development",
   });
+  res.cookie("accessToken", tokens.accessToken, {
+    maxAge: 3 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: config.env !== "development",
+  });
+};
 
-  console.log(`Comparing password "${password}" with existing hash...`);
-  const result = bcrypt.compareSync(password, user.password);
-  console.log("Result:", result);
+const handleRefreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { token } = req.params;
+  const headerRefreshToken = req.cookies.refreshToken;
+  const actualToken = token || headerRefreshToken || null;
 
-  if (!result) {
-    res.status(401).json({ success: false, error: "Invalid credentials." });
-    throw new Error("Invalid credentials.");
+  if (actualToken === null) {
+    throw new Error("Bad request", { cause: 400 });
   }
 
-  const accessToken = jwt.sign(
-    {
-      role: user.role,
-      user: {
-        id: user.id,
-      },
-    },
-    config.jwt.secret,
-    {
-      expiresIn: config.jwt.accessExpiration,
-    },
-  ); // .env, miljøvarabeldefinisjonsfil
+  try {
+    await verifyRefreshToken(actualToken);
 
-  const refreshToken = jwt.sign({}, config.jwt.secret, {
-    expiresIn: config.jwt.refreshExpiration,
-  }); // .env, miljøvarabeldefinisjonsfil
+    // Use verify instead of decode
+    const payloadRefreshToken = jwt.verify(actualToken, config.jwt.secret) as {
+      id: string;
+    };
 
-  return { success: true, accessToken, refreshToken };
-}
+    const user = await User.findByPk(payloadRefreshToken.id);
 
-function verifyToken(token) {
-  return jwt.verify(token, config.jwt.secret);
-}
+    if (!user) {
+      res.sendStatus(401);
+      return;
+    }
 
-export { login, verifyToken };
+    const tokens = generateTokenPair(user);
+    await RefreshToken.upsert({ userId: user.id, token: tokens.refreshToken }); // Update stored token
+    setAuthCookies(res, tokens);
+    res.status(200).json({ success: true, ...tokens });
+  } catch (error) {
+    next(error);
+    return;
+  }
+};
+authRouter.get(
+  "/refresh",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      res.status(401).json({ error: "No refresh token provided" });
+      return;
+    }
+    try {
+      await verifyRefreshToken(refreshToken);
+      const decoded = jwt.verify(refreshToken, config.jwt.secret) as {
+        id: string;
+      };
+      const user = await User.findByPk(decoded.id);
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      const tokens = generateTokenPair(user);
+      setAuthCookies(res, tokens);
+      res.json(tokens);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+authRouter.get("/refresh/:token", handleRefreshToken);
+
+authRouter.post(
+  "/login",
+  validateRequest({ bodySchema: AuthSchemaLogin }),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+    try {
+      const result = await login(email, password);
+      setAuthCookies(res, result);
+      res.json(result);
+    } catch (error) {
+      next(error);
+      // res.sendStatus(err.cause ?? 401);
+      return;
+    }
+  },
+);
+
+export { authRouter };

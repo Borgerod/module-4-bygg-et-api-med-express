@@ -15,7 +15,9 @@ import { Todo, TodoProps } from "@types";
 import { userRouter } from "@expressBackend/routers/user.route";
 import { sequelize } from "@expressBackend/config/db.config"; // adjust path as needed
 import { employeesRouter } from "@expressBackend/routers/employee.route";
+import { authRouter } from "@expressBackend/routers/auth.route";
 import os from "os";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -25,10 +27,13 @@ export const db = new Database(
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", true);
+app.use(cookieParser());
 
 app.use("/users", userRouter);
 app.use("/employees", employeesRouter);
+app.use("/auth", authRouter);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");

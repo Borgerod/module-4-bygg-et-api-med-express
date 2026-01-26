@@ -102,31 +102,29 @@ employeesRouter.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Centralized error handler
-employeesRouter.use(
-  (err: unknown, req: Request, res: Response, next: NextFunction): void => {
-    if (res.headersSent) {
-      return;
-    }
+employeesRouter.use((err: unknown, req: Request, res: Response): void => {
+  if (res.headersSent) {
+    return;
+  }
 
-    if (err instanceof ZodError) {
-      res.status(400).json({ error: err.issues });
-      return;
-    }
+  if (err instanceof ZodError) {
+    res.status(400).json({ error: err.issues });
+    return;
+  }
 
-    let status = 500;
-    let message = "Internal server error";
-    if (typeof err === "object" && err !== null && "message" in err) {
-      message = (err as { message: string }).message;
-      if (
-        "status" in err &&
-        typeof (err as { status: number }).status === "number"
-      ) {
-        status = (err as { status: number }).status;
-      }
+  let status = 500;
+  let message = "Internal server error";
+  if (typeof err === "object" && err !== null && "message" in err) {
+    message = (err as { message: string }).message;
+    if (
+      "status" in err &&
+      typeof (err as { status: number }).status === "number"
+    ) {
+      status = (err as { status: number }).status;
     }
+  }
 
-    res.status(status).json({ error: message });
-  },
-);
+  res.status(status).json({ error: message });
+});
 
 export { employeesRouter };

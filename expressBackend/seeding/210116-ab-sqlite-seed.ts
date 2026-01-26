@@ -3,6 +3,13 @@ import Employee from "@expressBackend/models/employee.model";
 import User from "@expressBackend/models/user.model";
 import { staffMap } from "@expressBackend/models/employee.model";
 
+const generatedUserPasswords: {
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+}[] = [];
+
 async function seed() {
   try {
     await testConnection();
@@ -13,12 +20,24 @@ async function seed() {
     await generateUsers(userBatchSize);
     await generateEmplyees(employeeBatchSize);
 
+    await printUserLogins();
+
     console.log("DB Seeded successfully.");
     process.exit(0);
   } catch (err) {
     console.error("Error seeding DB:", err);
     process.exit(1);
   }
+}
+
+async function printUserLogins() {
+  // TEMPORARY WHILE TESTING
+  console.log("User login info for testing:");
+  generatedUserPasswords.forEach((user) => {
+    console.log(
+      `Username: ${user.username}, Email: ${user.email}, Password: ${user.password}, Role: ${user.role}`,
+    );
+  });
 }
 
 async function generateUsers(userBatchSize: number) {
@@ -67,14 +86,23 @@ async function generateUsers(userBatchSize: number) {
     emails = emails.filter((item) => item !== email);
     const username = usernames[Math.floor(Math.random() * usernames.length)];
     usernames = usernames.filter((item) => item !== username);
+    const password = passwords[Math.floor(Math.random() * passwords.length)];
+    const role = roles[Math.floor(Math.random() * roles.length)] as UserRole;
 
     await User.create({
       email: email,
-      password: passwords[Math.floor(Math.random() * passwords.length)],
-      role: roles[Math.floor(Math.random() * roles.length)] as UserRole,
+      password: password,
+      role: role,
       username: username,
       isActive: true,
       isOnline: false,
+    });
+
+    generatedUserPasswords.push({
+      username,
+      email,
+      password,
+      role,
     });
   }
 }
@@ -86,7 +114,6 @@ const namingProb = {
   hasDoubleLastNameHyphen: 0.06,
 };
 function randomPhoneNumber(): string {
-  // Norwegian mobile numbers often start with 4, 9, or 8 and are 8 digits
   const starts = ["4", "9", "8"];
   const start = starts[Math.floor(Math.random() * starts.length)];
   let number = start;
@@ -99,7 +126,6 @@ function randomPhoneNumber(): string {
 async function generateEmplyees(employeeBatchSize: number) {
   const departmentKeys = Object.keys(staffMap) as Array<keyof typeof staffMap>;
 
-  // After creating users, fetch their ids:
   const users = await User.findAll({ attributes: ["id"] });
   if (users.length === 0)
     throw new Error("No users found for employee assignment");
