@@ -148,7 +148,13 @@ app.put("/expressTodo/:id", async (req, res) => {
 });
 
 sequelize
-  .sync({ alter: true })
+  /*  *refactor .sync
+  -     do: remove this '{ alter: true }' form '.sync()' - 
+  - reason: tries to alter update Users (remove + replace), 
+            but SQLite prevents this due to Employees are dependant on it.
+            resulting in server crash 
+*/
+  .sync() // refactor .sync*
   .then(() => {
     const port = 4000;
     const localUrl = `http://localhost:${port}`;
