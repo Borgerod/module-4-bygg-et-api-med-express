@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/todo/DatePicker";
+import { login } from "@expressBackend/controllers/auth.controllers";
 import { cn } from "@lib/utils";
 import Link from "next/link";
 import { title } from "process";
@@ -12,6 +13,7 @@ import { useState } from "react";
 import * as React from "react";
 
 export default function Page() {
+  // should add destination page as param for the redirect
   //   const data = await fetch("");
   //   const posts = await data.json();
   const [rememberMe, setRememberMe] = React.useState(false);
@@ -21,6 +23,8 @@ export default function Page() {
     setEmail(formData.get("email") as string);
     setPassword(formData.get("password") as string);
     console.log({ email, password });
+    // TODO figure out how to use the api.
+    // const res:Promise<LoginResult> = login(email, password);
 
     // onAdd({
     //   email,
@@ -32,7 +36,7 @@ export default function Page() {
       <form action={handleSubmit} className={cn("w-full", "", "")}>
         <FieldSet className={cn("p-5 w-full", "", "")}>
           <h1> Login </h1>
-          <Field className={cn("w-full", "", "")}>
+          <Field id="email-field" className={cn("w-full", "", "")}>
             <Input
               id="email"
               name="email"
@@ -45,7 +49,7 @@ export default function Page() {
               className={cn("min-h-10 resize-none w-full", "", "")}
             />
           </Field>
-          <Field className={cn("w-full", "", "")}>
+          <Field id="password-field" className={cn("w-full", "", "")}>
             <Input
               id="password"
               name="password"
@@ -57,6 +61,7 @@ export default function Page() {
               className={cn("w-full", "", "")}
             />
           </Field>
+
           <FieldGroup
             id="field-subgroup"
             className={cn(
@@ -80,7 +85,7 @@ export default function Page() {
               </Button>
             </span>
             <Button type="submit" className={cn("w-full px-8", "", "")}>
-              login
+              Log in
             </Button>
             <Button className="text-xs" type="button" variant={"outline"}>
               <Link href={"/signup"}>Signup</Link>

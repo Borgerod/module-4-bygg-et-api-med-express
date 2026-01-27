@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "@expressBackend/config/db.config";
+import sequelize from "@/app/api/expressBackend/config/db.config";
 import User from "./user.model";
 import RefreshToken from "./refresh-token.model";
 

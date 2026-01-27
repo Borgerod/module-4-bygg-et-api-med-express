@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "@expressBackend/config/db.config.js";
+import sequelize from "@/app/api/expressBackend/config/db.config.js";
 
 const RefreshToken = sequelize.define(
   "RefreshToken",

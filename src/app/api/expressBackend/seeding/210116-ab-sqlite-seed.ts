@@ -1,7 +1,10 @@
-import { testConnection, syncDatabase } from "@expressBackend/config/db.config";
-import Employee from "@expressBackend/models/employee.model";
-import User from "@expressBackend/models/user.model";
-import { staffMap } from "@expressBackend/models/employee.model";
+import {
+  testConnection,
+  syncDatabase,
+} from "@/app/api/expressBackend/config/db.config";
+import Employee from "@/app/api/expressBackend/models/employee.model";
+import User from "@/app/api/expressBackend/models/user.model";
+import { staffMap } from "@/app/api/expressBackend/models/employee.model";
 
 const generatedUserPasswords: {
   username: string;

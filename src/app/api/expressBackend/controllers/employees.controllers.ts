@@ -3,10 +3,10 @@ import {
   EmployeeSchemaCreate,
   EmployeeSchemaUpdate,
   EmployeeUpdate,
-} from "@expressBackend/schema/employee.schema";
+} from "@/app/api/expressBackend/schema/employee.schema";
 import Employee, {
   EmployeeAttributes,
-} from "@expressBackend/models/employee.model";
+} from "@/app/api/expressBackend/models/employee.model";
 import {
   UniqueConstraintError,
   ValidationError as SequelizeValidationError,

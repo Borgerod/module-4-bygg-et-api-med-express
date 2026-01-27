@@ -27,7 +27,8 @@
 
     "paths": {
       "@types": ["./src/lib/types.ts"],
-      "@expressBackend/*": ["./expressBackend/*"],
+      "@expressBackend/*": ["./src/app/api/expressBackend/*"],
+      // "@expressBackend/*": ["expressBackend/*"],
       "@lib/*": ["./src/lib/*"],
       "@/*": ["./src/*"]
     }

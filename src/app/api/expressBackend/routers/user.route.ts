@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
-import * as userController from "@expressBackend/controllers/users.controllers";
+import * as userController from "@/app/api/expressBackend/controllers/users.controllers";
 import { ZodError } from "zod";
-import { isAuthenticated } from "@expressBackend/middleware/isAuthenticated.middleware";
-import { validateRequest } from "@expressBackend/middleware/useValidate.middleware";
-import { UserSchemaCreate } from "@expressBackend/schema/user.schema";
+import { isAuthenticated } from "@/app/api/expressBackend/middleware/isAuthenticated.middleware";
+import { validateRequest } from "@/app/api/expressBackend/middleware/useValidate.middleware";
+import { UserSchemaCreate } from "@/app/api/expressBackend/schema/user.schema";
 
 const userRouter = express.Router();
 

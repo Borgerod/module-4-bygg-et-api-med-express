@@ -12,10 +12,10 @@ import express from "express";
 import dotenv from "dotenv";
 import Database from "better-sqlite3";
 import { Todo, TodoProps } from "@types";
-import { userRouter } from "@expressBackend/routers/user.route";
-import { sequelize } from "@expressBackend/config/db.config"; // adjust path as needed
-import { employeesRouter } from "@expressBackend/routers/employee.route";
-import { authRouter } from "@expressBackend/routers/auth.route";
+import { userRouter } from "@/app/api/expressBackend/routers/user.route";
+import { sequelize } from "@/app/api/expressBackend/config/db.config"; // adjust path as needed
+import { employeesRouter } from "@/app/api/expressBackend/routers/employee.route";
+import { authRouter } from "@/app/api/expressBackend/routers/auth.route";
 import os from "os";
 import cookieParser from "cookie-parser";
 

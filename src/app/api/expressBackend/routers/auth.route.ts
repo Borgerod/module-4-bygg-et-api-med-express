@@ -5,13 +5,13 @@ import {
   generateTokenPair,
   login,
   verifyRefreshToken,
-} from "@expressBackend/controllers/auth.controllers";
-import RefreshToken from "@expressBackend/models/refresh-token.model";
-import { AuthSchemaLogin } from "@expressBackend/schema/auth.schema";
+} from "@/app/api/expressBackend/controllers/auth.controllers";
+import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
+import { AuthSchemaLogin } from "@/app/api/expressBackend/schema/auth.schema";
 import jwt from "jsonwebtoken";
-import { config } from "@expressBackend/config/env.config";
-import { validateRequest } from "@expressBackend/middleware/useValidate.middleware";
-import User from "@expressBackend/models/user.model";
+import { config } from "@/app/api/expressBackend/config/env.config";
+import { validateRequest } from "@/app/api/expressBackend/middleware/useValidate.middleware";
+import User from "@/app/api/expressBackend/models/user.model";
 
 const authRouter = express.Router();
 

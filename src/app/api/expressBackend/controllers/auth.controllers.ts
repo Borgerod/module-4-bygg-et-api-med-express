@@ -1,7 +1,7 @@
 import * as bcrypt from "bcrypt";
-import User from "@expressBackend/models/user.model";
-import { config } from "@expressBackend/config/env.config";
-import RefreshToken from "@expressBackend/models/refresh-token.model";
+import User from "@/app/api/expressBackend/models/user.model";
+import { config } from "@/app/api/expressBackend/config/env.config";
+import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
 import jwt, { SignOptions } from "jsonwebtoken";
 
 function generateTokenPair(user: User) {
@@ -24,7 +24,7 @@ function generateTokenPair(user: User) {
 
   return { accessToken, refreshToken };
 }
-interface LoginResult {
+export interface LoginResult {
   success: boolean;
   accessToken: string;
   refreshToken: string;

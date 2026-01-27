@@ -1,5 +1,5 @@
 // import { verifyToken } from "@expressBackend/controllers/auth.controller";
-import { verifyToken } from "@expressBackend/controllers/auth.controllers";
+import { verifyToken } from "@/app/api/expressBackend/controllers/auth.controllers";
 import { Request, Response, NextFunction } from "express";
 import { JwtPayload } from "jsonwebtoken";
 

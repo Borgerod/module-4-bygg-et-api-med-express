@@ -3,8 +3,10 @@ import {
   UserSchemaCreate,
   UserUpdate,
   UserSchemaUpdate,
-} from "@expressBackend/schema/user.schema";
-import User, { UserAttributes } from "@expressBackend/models/user.model";
+} from "@/app/api/expressBackend/schema/user.schema";
+import User, {
+  UserAttributes,
+} from "@/app/api/expressBackend/models/user.model";
 import bcrypt from "bcrypt";
 import {
   UniqueConstraintError,

@@ -1,11 +1,11 @@
-import sequelize from "@expressBackend/config/db.config";
-import { departmentCodes } from "@expressBackend/schema/employee.schema";
+import sequelize from "@/app/api/expressBackend/config/db.config";
+import { departmentCodes } from "@/app/api/expressBackend/schema/employee.schema";
 import { DataTypes, Model, Op } from "sequelize";
 import {
   departments,
   positions,
   roles,
-} from "@expressBackend/constants/employee.contants";
+} from "@/app/api/expressBackend/constants/employee.contants";
 
 export const staffMap = {
   // this will work as a template for checking positions and privilages.
