@@ -48,3 +48,7 @@ dev.db
 _BACKUP_FILES
 /generated/prisma
 
+src/app/admin/TEMP_TEST_PAGE
+src/app/admin/page.tsx
+src/app/users/page.tsx
+src/app/users/TEMP_TEST_PAGE
