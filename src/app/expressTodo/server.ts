@@ -1,23 +1,14 @@
-/* 
-  ! NOTE: as a temp solution i want to keep server.ts and users.route.ts separate to make it easier to work with (less clutter) 
-          - so i am going to import whatever i need from server.ts 
-          - in server.ts i will add required lines: 
-             + import { userRouter } from "../../expressBackend/routers/users.route"; // adjust path as needed
-             + app.use("/users", userRouter);
-
-          - in users.route.ts: will operate as normal
-*/
-
 import express from "express";
 import dotenv from "dotenv";
 import Database from "better-sqlite3";
 import { Todo, TodoProps } from "@types";
 import { userRouter } from "@/app/api/expressBackend/routers/user.route";
-import { sequelize } from "@/app/api/expressBackend/config/db.config"; // adjust path as needed
+import { sequelize } from "@/app/api/expressBackend/config/db.config";
 import { employeesRouter } from "@/app/api/expressBackend/routers/employee.route";
 import { authRouter } from "@/app/api/expressBackend/routers/auth.route";
 import os from "os";
 import cookieParser from "cookie-parser";
+import { Request, Response, NextFunction } from "express";
 
 dotenv.config();
 
@@ -26,27 +17,39 @@ export const db = new Database(
 );
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+  );
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", true);
 app.use(cookieParser());
 
+// Routes
 app.use("/users", userRouter);
 app.use("/employees", employeesRouter);
 app.use("/auth", authRouter);
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
 
 function validateTableAndId(
   table: string,
   id: string,
 ): { validatedTable: string } | { error: string; status: number } {
-  //? perhaps i should not have this one here
   const tableMap: Record<string, string> = {
     Todo: "Todo",
   };
@@ -111,7 +114,6 @@ app.post("/expressTodo", (req, res) => {
 app.delete("/expressTodo/:table/:id", (req, res) => {
   const { table, id } = req.params;
 
-  // seperated te validator so i can reuse it, which i cant be bothered to actually do.
   const validation = validateTableAndId(table, id);
   if ("error" in validation) {
     return res.status(validation.status).json({ error: validation.error });
@@ -152,14 +154,15 @@ app.put("/expressTodo/:id", async (req, res) => {
   }
 });
 
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.status(500).json({
+    error: err.message,
+    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
+});
+
 sequelize
-  /*  *refactor .sync
-  -     do: remove this '{ alter: true }' form '.sync()' - 
-  - reason: tries to alter update Users (remove + replace), 
-            but SQLite prevents this due to Employees are dependant on it.
-            resulting in server crash 
-*/
-  .sync() // refactor .sync*
+  .sync()
   .then(() => {
     const port = 4000;
     const localUrl = `http://localhost:${port}`;
@@ -167,7 +170,7 @@ sequelize
     console.log(`▲ Express API`);
     console.log(`- Local:         ${localUrl}`);
     console.log(`- Network:       ${networkUrl}`);
-    console.log(`- Environments:  .env`);
+    console.log(`- CORS enabled for: http://localhost:3000`);
     app.listen(port, () => {});
   })
   .catch((error) => {

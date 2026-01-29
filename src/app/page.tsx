@@ -1,69 +1,47 @@
+"use client";
 import { Card } from "@/components/ui/card";
 import { cn } from "@lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  return (
-    // <div className="flex min-h-screen items-center justify-center  font-sans bg-transparent">
+  const pathname = usePathname();
+  const router = useRouter();
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      document.cookie = `referer=${pathname}; path=/; SameSite=Lax`;
+    }
+  }, [pathname]);
+
+  return (
     <main
       className={cn(
-        // "flex w-full flex-col items-center justify-between",
-        // "max-w-3xl",
-        // // "min-h-screen",
-        // //   "min-h-auto",
-        // "min-h-fit",
-        // "min-h-full",
-        // "max-h-fit",
-        // "h-full",
-        // //   "h-fit",
-        // //   "max-h-screen",
         " sm:py-32",
         " px-10",
         " sm:px-16",
         "dark:bg-black sm:items-start",
-        // // "dark:bg-black sm:content-between",
-        // "content-around",
-
-        // "flex w-full flex-col ",
-        // "grid grid-rows-3",
-        // "grid grid-rows-3",
         "grid grid-rows-[1fr_auto_1fr]",
         "gap-10 sm:gap-0",
-        // "h-full",
-        // "min-h-10",
-        // "items-center",
-        // "justify-between",
-        // "justify-around",
-        // "content-between",
         "",
         "",
         "",
       )}
     >
-      {/* <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        /> */}
-
       <div
         id="project-header"
         className="flex flex-col w-full  sm:flex-row sm:justify-between items-center"
       >
         <Image
           className={cn(
-            //   "dark:invert",
             "h-50 w-50",
             "h-full w-full",
             "min-h-20 min-w-20",
             "max-h-40 max-w-40",
             "aspect-square",
-
             "",
             "",
           )}
@@ -152,7 +130,6 @@ export default function Home() {
           >
             SQLite{" "}
           </a>
-          {/* via{" "} */}
           both with and without using{" "}
           <a
             href="https://www.prisma.io/"
@@ -191,9 +168,6 @@ export default function Home() {
           <ul
             className={cn(
               "list-disc pl-5 text-zinc-600 dark:text-zinc-400",
-              // "place-self-center",
-              // "sm:place-self-start",
-              // " sm:px-10",
               "px-10",
               "",
               "",
@@ -209,22 +183,58 @@ export default function Home() {
 
       <div
         id="project-routes"
-        className="flex flex-col items-center gap-5 text-center sm:items-start sm:text-left"
+        className={cn(
+          "flex flex-col items-center gap-5 text-center sm:items-start sm:text-left",
+          "",
+          "",
+        )}
       >
-        <h3 className="text-2xl leading-10 text-stone-600 self-start">Pages</h3>
-        <hr className="border-t  w-full border-stone-400" />
-        <div className="flex flex-col w-full gap-4 text-base font-medium sm:flex-row ">
+        <h3
+          className={cn(
+            "text-2xl leading-10 text-stone-600 self-start",
+            "",
+            "",
+          )}
+        >
+          Pages
+        </h3>
+        <hr className={cn("border-t  w-full border-stone-400", "", "")} />
+        <div
+          className={cn(
+            "flex flex-col w-full gap-4 text-base font-medium sm:flex-row ",
+            "",
+            "",
+          )}
+        >
           <Link
-            className="w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90"
+            className={cn(
+              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
+              "",
+              "",
+            )}
             href={"/todo"}
           >
             ToDo (Prisma)
           </Link>
           <Link
-            className="w-full sm:w-1/2 shadow-md hover:shadow-xs flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90"
+            className={cn(
+              "w-full sm:w-1/2 shadow-md hover:shadow-xs flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
+              "",
+              "",
+            )}
             href={"/expressTodo"}
           >
             ToDo (Express)
+          </Link>
+          <Link
+            className={cn(
+              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
+              "",
+              "",
+            )}
+            href={"/login"}
+          >
+            Log in
           </Link>
         </div>
       </div>

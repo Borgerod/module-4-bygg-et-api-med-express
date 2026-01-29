@@ -35,6 +35,7 @@ type WarningProps = {
   moreTitle?: string;
   moreText?: string;
   type?: WarningType;
+  // visible?: boolean;
 };
 
 const ICONS: Record<WarningType, ReactNode> = {
@@ -58,34 +59,46 @@ const COLOR_MAP: Record<WarningType, string> = {
 export function Notification(props: WarningProps) {
   const {
     message,
-    storageKey = "app:warning:v1",
+    storageKey,
     moreUrl,
     moreTitle,
     moreText,
     type = "default",
+    // visible: visibleProp,
   } = props;
 
   const color = COLOR_MAP[type];
 
-  const [visible, setVisible] = useState<boolean | undefined>(undefined);
+  // const [visible, setVisible] = useState<boolean | undefined>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    // should not really have this in client files, but whatever. is so small and i cant be bothered to fix it rn.
-    try {
+    if (storageKey) {
       const isDismissed = localStorage.getItem(storageKey) === "dismissed";
-      queueMicrotask(() => setVisible(!isDismissed));
-    } catch {
-      queueMicrotask(() => setVisible(true));
+      setVisible(!isDismissed);
+      // try {
+      // } catch {
+      //   setVisible(true);
+      // }
     }
   }, [storageKey]);
 
-  if (visible === undefined || !visible) return null;
+  // if (storageKey) {
+  //   if (!visible) return null;
+  // } else {
+  //   if (!visible) return null;
+  // }
+  if (storageKey) {
+    if (!visible) return null;
+  }
 
   const dismiss = () => {
-    try {
-      localStorage.setItem(storageKey, "dismissed");
-    } catch {}
-    setVisible(false);
+    if (storageKey) {
+      try {
+        localStorage.setItem(storageKey, "dismissed");
+      } catch {}
+      setVisible(false);
+    }
   };
 
   return (
@@ -137,6 +150,7 @@ export function Notification(props: WarningProps) {
             "shrink-0",
             `color-${color}`,
             `hover:bg-darker hover:text-darker`,
+            storageKey ? "visibel" : "hidden",
           )}
         >
           <FiX className="w-4 h-4" aria-hidden />
@@ -146,7 +160,7 @@ export function Notification(props: WarningProps) {
       <CardContent className="px-0 ">
         <Collapsible className="rounded-md">
           <div className="flex-1 text-sm">
-            <p className={cn(`text-${color} dark:text-${color}-dark`)}>
+            <p className={cn(`text-${color} dark:text-${color}-dark`, "", "")}>
               {message}
             </p>
             <CollapsibleTrigger asChild>
@@ -157,6 +171,9 @@ export function Notification(props: WarningProps) {
                   `text-${color} dark:text-${color}-dark`,
                   "bg-transparent border-none p-0 h-auto",
                   "cursor-pointer",
+                  moreText ? "visible" : "hidden",
+                  "",
+                  "",
                 )}
               >
                 Read more
@@ -167,6 +184,8 @@ export function Notification(props: WarningProps) {
             className={cn(
               "flex flex-col items-start gap-2 text-sm w-full mt-2",
               `text-${color} dark:text-${color}-dark`,
+              "",
+              "",
             )}
           >
             <pre
@@ -174,10 +193,13 @@ export function Notification(props: WarningProps) {
                 "font-mono whitespace-pre-wrap word-break-words text-xs rounded p-2 w-full",
                 `bg-${color} bg-opacity-10 dark:bg-${color}-dark dark:bg-opacity-20`,
                 `text-${color} dark:text-${color}-dark`,
+                "",
+                "",
               )}
             >
               {moreText ??
-                "This dependency has a reported security vulnerability. Check the advisory for details and upgrade to a patched version when available."}
+                // "This dependency has a reported security vulnerability. Check the advisory for details and upgrade to a patched version when available."}
+                ""}
             </pre>
             {moreUrl && (
               <Link
@@ -189,6 +211,8 @@ export function Notification(props: WarningProps) {
                   "hover:opacity-80",
                   `text-${color} dark:text-${color}-dark`,
                   "gap-2",
+                  "",
+                  "",
                 )}
               >
                 {moreTitle ?? "View on GitHub"}

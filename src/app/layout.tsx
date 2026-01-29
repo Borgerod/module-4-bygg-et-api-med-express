@@ -276,6 +276,7 @@ export default function RootLayout({
           // "bg-zinc-50",
           // "dark:bg-zinc-900",
           // "w-700",
+          "gap-5",
           "",
           "",
         )}
@@ -287,14 +288,14 @@ export default function RootLayout({
           moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
           moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
           moreText={`@modelcontextprotocol/sdk  <1.25.2
-Severity: high
-Anthropic's MCP TypeScript SDK has a ReDoS vulnerability - https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
-No fix available
-node_modules/@modelcontextprotocol/sdk
-  next-devtools-mcp  *
-  Depends on vulnerable versions of @modelcontextprotocol/sdk
-  Depends on vulnerable versions of undici
-  node_modules/next-devtools-mcp`}
+            Severity: high
+            Anthropic's MCP TypeScript SDK has a ReDoS vulnerability - https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
+            No fix available
+            node_modules/@modelcontextprotocol/sdk
+            next-devtools-mcp  *
+            Depends on vulnerable versions of @modelcontextprotocol/sdk
+            Depends on vulnerable versions of undici
+            node_modules/next-devtools-mcp`}
           type="warning"
         />
 

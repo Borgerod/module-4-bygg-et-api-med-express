@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/card";
 
 import { Badge } from "@/components/ui/badge";
-import { TodoCheckbox } from "@/components/ui/todo/TodoCheckbox";
+import TodoCheckbox from "@/components/ui/todo/TodoCheckbox";
 
 import { LuX } from "react-icons/lu";
 import {
@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import PeriodSelect from "./PeriodSelect";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default async function Page() {
   const todos = await getTodos();
@@ -57,7 +58,7 @@ export default async function Page() {
         .filter(Boolean) || [],
       formData.get("dueDate")
         ? new Date(formData.get("dueDate") as string)
-        : undefined
+        : undefined,
     );
     redirect("/todo");
   }
@@ -105,7 +106,7 @@ export default async function Page() {
                         <TableHead key={`h-${i}`} className={cn("")}>
                           {h}
                         </TableHead>
-                      )
+                      ),
                     )}
                   </TableRow>
                 </TableHeader>
@@ -118,6 +119,14 @@ export default async function Page() {
                           done={todo.done}
                           onToggle={handleToggleTodo}
                         />
+
+                        {/* <Checkbox
+                          checked={Boolean(todo.done)}
+                          onCheckedChange={() =>
+                            handleToggleTodo(todo.done, )
+                            // onToggle(todo.id, Boolean(todo.done))
+                          }
+                        /> */}
                       </TableCell>
                       <TableCell className="py-2 wrap-break-word min-w-50 max-w-75 ">
                         <p
@@ -127,7 +136,7 @@ export default async function Page() {
                             "",
                             "",
                             "",
-                            ""
+                            "",
                           )}
                         >
                           {todo.title}
@@ -151,7 +160,7 @@ export default async function Page() {
                                 .filter(
                                   (tag: string) =>
                                     tag.trim() !== "untagged" &&
-                                    tag.trim() !== ""
+                                    tag.trim() !== "",
                                 )
                                 .map((tag: string, i: number) => (
                                   <Badge
@@ -171,7 +180,7 @@ export default async function Page() {
                               "nb-NO",
                               {
                                 dateStyle: "medium",
-                              }
+                              },
                             )
                           : "N/A"}
                       </TableCell>
@@ -216,7 +225,7 @@ export default async function Page() {
                   "data-[empty=true]:text-muted-foreground justify-start text-left font-normal",
                   "",
                   "",
-                  ""
+                  "",
                 )}
               >
                 +{/* Add Task */}
@@ -245,7 +254,7 @@ export default async function Page() {
                   "h-fit",
                   "h-full",
                   "",
-                  ""
+                  "",
                 )}
               >
                 <Field>
@@ -272,7 +281,7 @@ export default async function Page() {
                       "w-full!",
 
                       "",
-                      ""
+                      "",
                     )}
                   />
                 </Field>
