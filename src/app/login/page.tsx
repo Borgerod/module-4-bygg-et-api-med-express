@@ -22,14 +22,17 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [buttonText, setButtonText] = useState("Login");
   const [notification, setNotification] = useState(false);
-  const [rememberMe, setRememberMe] = React.useState(false);
-  const router = useRouter();
+  const [rememberMe, setRememberMe] = useState(false);
   // const searchParams = useSearchParams();
   // const pathname = usePathname();
+  const router = useRouter();
   const referer = getReferer();
 
   // const [loginStatus, setLoginStatus] = useState(""); //related to UI messages "logging in.." "failed to login" etc. not related to tokens.
-
+  const [loginData, setLoginData] = useState({
+    accessToken: "",
+    refreshToken: "",
+  });
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setButtonText("Logging in...");
@@ -47,11 +50,34 @@ export default function LoginPage() {
       };
       const response = await fetch(url, options);
       const text = await response.text();
-      let data: { error?: string } = {};
+      // let data: { error?: string } = {};
+      let data;
+      // setLoginData(
+      //   )
+      // console.log("PRINTING DIFFERENT RESPONSE HANDLES");
+      // console.log("response.formData: ", response.formData());
+      // console.log("response.text: ");
+      // console.log("response.body: ", response.body);
+      // console.log("response.headers: ", response.headers.entries());
       try {
         data = JSON.parse(text);
+        setLoginData({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        });
+        if (!data.error) {
+          if (referer) {
+            router.push(referer);
+          }
+        }
       } catch {
-        data.error = text;
+        data = { error: text };
+      }
+
+      if (data.error) {
+        setMessage("✗ Error: " + data.error);
+        setNotification(true);
+        setButtonText("Log in");
       }
 
       //  const userAgent = headersList.get('user-agent')
@@ -64,16 +90,6 @@ export default function LoginPage() {
       // const prevPage = localStorage.getItem("prevPage");
 
       // you can now use prevPage as needed
-      if (referer) {
-        router.push(referer);
-        // router.push("./todo");
-        // now that i think about it it should inherit the desired destination from parent (could be todoexpress or prisma todo) fallback is home.
-      } else {
-        // router.back();
-      }
-      // if (!data.error) {
-      //   router.push(referer);
-      // }
     } catch (error) {
       setMessage(
         "✗ Error: " + (error instanceof Error ? error.name : "Failed"),
@@ -83,70 +99,76 @@ export default function LoginPage() {
     }
   }
   return (
-    <Card className={cn("min-w-87.5 max-w-full mx-auto", "p-0", "")}>
-      <form onSubmit={handleSubmit}>
-        <FieldSet className={cn("p-5 w-full", "", "")}>
-          <h1 className="text-2xl mb-4">Login</h1>
-          {notification && <Notification message={message} type="warning" />}
+    <>
+      <Card className={cn("min-w-87.5 max-w-full mx-auto", "p-0", "")}>
+        <form onSubmit={handleSubmit}>
+          <FieldSet className={cn("p-5 w-full", "", "")}>
+            <h1 className="text-2xl mb-4">Login</h1>
+            {notification && <Notification message={message} type="warning" />}
 
-          <Field className={cn("w-full", "", "")}>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="off"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              required
-              className={cn("min-h-10 resize-none w-full", "", "")}
-            />
-          </Field>
-          <Field className={cn("w-full", "", "")}>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="off"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="password"
-              className={cn("w-full", "", "")}
-            />
-          </Field>
-          <FieldGroup
-            id="field-subgroup"
-            className={cn(
-              "w-full h-fit flex flex-col gap-y-2 items-stretch justify-center",
-              "",
-              "",
-            )}
-          >
-            <span className="flex justify-between items-center">
-              <span className="flex gap-2 items-center text-xs">
-                <Checkbox
-                  checked={rememberMe}
-                  onCheckedChange={(checked: boolean) =>
-                    setRememberMe(checked === true)
-                  }
-                />
-                <span className="text-nowrap">remember me</span>
+            <Field className={cn("w-full", "", "")}>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="off"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                required
+                className={cn("min-h-10 resize-none w-full", "", "")}
+              />
+            </Field>
+            <Field className={cn("w-full", "", "")}>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="off"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="password"
+                className={cn("w-full", "", "")}
+              />
+            </Field>
+            <FieldGroup
+              id="field-subgroup"
+              className={cn(
+                "w-full h-fit flex flex-col gap-y-2 items-stretch justify-center",
+                "",
+                "",
+              )}
+            >
+              <span className="flex justify-between items-center">
+                <span className="flex gap-2 items-center text-xs">
+                  <Checkbox
+                    checked={rememberMe}
+                    onCheckedChange={(checked: boolean) =>
+                      setRememberMe(checked === true)
+                    }
+                  />
+                  <span className="text-nowrap">remember me</span>
+                </span>
+                <Button className="px-0 text-xs" type="button" variant={"link"}>
+                  <Link href={"/reset-password"}>Forgot password?</Link>
+                </Button>
               </span>
-              <Button className="px-0 text-xs" type="button" variant={"link"}>
-                <Link href={"/reset-password"}>Forgot password?</Link>
+              <Button type="submit" className="w-full">
+                {buttonText ? buttonText : "Log in"}
               </Button>
-            </span>
-            <Button type="submit" className="w-full">
-              {buttonText ? buttonText : "Log in"}
-            </Button>
 
-            <Button className="text-xs" type="button" variant={"outline"}>
-              <Link href={"/signup"}>Signup</Link>
-            </Button>
-          </FieldGroup>
-        </FieldSet>
-      </form>
-    </Card>
+              <Button className="text-xs" type="button" variant={"outline"}>
+                <Link href={"/signup"}>Signup</Link>
+              </Button>
+            </FieldGroup>
+          </FieldSet>
+        </form>
+      </Card>
+      <Card>
+        {loginData.accessToken}
+        {loginData.refreshToken}
+      </Card>
+    </>
   );
 }
 

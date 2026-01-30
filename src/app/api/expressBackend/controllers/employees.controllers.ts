@@ -1,5 +1,7 @@
 import {
   EmployeeCreation,
+  EmployeeLogin,
+  EmployeeSchemaLogin,
   EmployeeSchemaCreate,
   EmployeeSchemaUpdate,
   EmployeeUpdate,
@@ -163,6 +165,52 @@ export async function createEmployee(createEmployeeData: EmployeeCreation) {
     throw clientError;
   }
 }
+export async function updateEmployeeOnlineStatus(
+  id: string,
+  updateData: EmployeeLogin,
+) {
+  try {
+    // const employee = await Employee.findByPk(id);
+    //  const employee = await Employee.findByPk(id);
+    const employee = await Employee.findOne({ where: { userId: id } });
+    if (!employee) {
+      const clientError = new Error("Employee not found");
+      (clientError as Error & { status: number }).status = 404;
+      console.error(`PATCH (Login update) /employees/${id}`, {
+        error: "Employee not found",
+      });
+      throw clientError;
+    }
+
+    const validatedData = EmployeeSchemaLogin.parse(updateData);
+    await employee.update(validatedData);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.error(`PATCH (Login update) /employees/${id}`, {
+        error: error.issues,
+      });
+      (error as ZodError & { status: number }).status = 400;
+      throw error;
+    }
+    if (error instanceof SequelizeValidationError) {
+      console.error(`PATCH (Login update) /employees/${id}`, {
+        error: error.errors,
+      });
+      const clientError = new Error("Validation error") as Error & {
+        status: number;
+      };
+      clientError.status = 400;
+      throw clientError;
+    }
+    console.error(`PATCH (Login update) /employees/${id}`, {
+      error: error instanceof Error ? error.message : error,
+    });
+    const clientError = new Error("Failed to update employee");
+    (clientError as Error & { status: number }).status =
+      getStatusFromError(error);
+    throw clientError;
+  }
+}
 
 export async function updateEmployee(id: string, updateData: EmployeeUpdate) {
   try {
@@ -268,10 +316,6 @@ export async function deleteEmployee(id: string): Promise<EmployeeSafe | null> {
     throw clientError;
   }
 }
-
-// ----------------------------------------------
-//               HELPER FUNCTIONS
-// ----------------------------------------------
 
 // Normalize phone for storage (strips spaces)
 export function normalizePhone(phone: string): string {

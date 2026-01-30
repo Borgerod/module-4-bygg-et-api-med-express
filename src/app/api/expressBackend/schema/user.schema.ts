@@ -27,8 +27,8 @@ export const UserSchemaBase = z.object({
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   isActive: z.boolean().default(true),
-  isOnline: z.boolean().default(false), //only true when user logs in (will happen with a redirect upon signup)
-  lastLoggedIn: z.number().min(Date.now()).nullable().default(null),
+  // isOnline: z.boolean().default(false), //only true when user logs in (will happen with a redirect upon signup)
+  // lastLoggedIn: z.number().min(Date.now()).nullable().default(null),
 });
 
 // used for usercreation where we dont allow changes to lastLoggedIn
@@ -40,7 +40,7 @@ export const UserSchemaCreate = UserSchemaBase.omit({
 
 // used for updating the user
 export const UserSchemaUpdate = UserSchemaBase.omit({
-  lastLoggedIn: true,
+  // lastLoggedIn: true,
   id: true,
   role: true,
   // id: true,

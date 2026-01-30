@@ -7,4 +7,9 @@ const AuthSchemaLogin = z
   })
   .strict();
 
-export { AuthSchemaLogin };
+const AuthSchemaLogout = z
+  .object({
+    id: z.uuid(),
+  })
+  .strict();
+export { AuthSchemaLogin, AuthSchemaLogout };

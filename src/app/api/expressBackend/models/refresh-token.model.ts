@@ -1,19 +1,79 @@
 import { DataTypes } from "sequelize";
 import sequelize from "@/app/api/expressBackend/config/db.config.js";
+import User from "./user.model";
 
+// const RefreshToken = sequelize.define(
+//   "RefreshToken",
+//   {
+//     userId: {
+//       type: DataTypes.UUIDV4,
+//       primaryKey: true,
+//       unique: true,
+//     },
+//     token: {
+//       type: DataTypes.TEXT,
+//       allowNull: true,
+//       defaultValue: null,
+//       unique: true,
+//     },
+//   },
+//   {
+//     tableName: "activeRefreshTokens",
+//     timestamps: true,
+//   },
+// );
+
+// export default RefreshToken;
+
+/* * RefreshToken w/ unique ID's * */
 const RefreshToken = sequelize.define(
   "RefreshToken",
   {
-    userId: {
-      type: DataTypes.UUIDV4,
+    id: {
+      type: DataTypes.UUID,
       primaryKey: true,
-      unique: true,
+      defaultValue: DataTypes.UUIDV4,
+      field: "id",
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      field: "user_id",
     },
     token: {
       type: DataTypes.TEXT,
-      allowNull: true,
-      defaultValue: null,
+      allowNull: false,
       unique: true,
+      field: "token",
+    },
+    loginAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: "login_at",
+    },
+    logoutAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: "logout_at",
+    },
+    sessionId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      field: "session_id",
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: "created_at",
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: "updated_at",
     },
   },
   {

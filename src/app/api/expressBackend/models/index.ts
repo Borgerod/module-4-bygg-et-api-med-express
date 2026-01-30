@@ -1,6 +1,7 @@
 import sequelize from "@/app/api/expressBackend/config/db.config";
 import User from "./user.model";
 import Employee from "./employee.model";
+import RefreshToken from "./refresh-token.model";
 
 // Define associations
 User.hasOne(Employee, {
@@ -13,13 +14,19 @@ Employee.belongsTo(User, {
   as: "user_account",
 });
 
+RefreshToken.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user_id",
+});
+
 // Export models and sequelize instance
-export { sequelize, User, Employee };
+export { sequelize, User, Employee, RefreshToken };
 
 const db = {
   sequelize,
   User,
   Employee,
+  RefreshToken,
 };
 
 export default db;

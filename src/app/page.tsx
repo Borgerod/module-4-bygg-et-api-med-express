@@ -1,21 +1,32 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Home() {
   const pathname = usePathname();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      document.cookie = `referer=${pathname}; path=/; SameSite=Lax`;
+  function handleLogout(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ): void {
+    try {
+      event.preventDefault();
+      fetch("http://localhost:4000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).finally(() => {
+        // window.location.href = "/login";
+      });
+    } catch (error) {
+      console.error("Error while logging out: ", error);
     }
-  }, [pathname]);
+  }
 
   return (
     <main
@@ -33,7 +44,11 @@ export default function Home() {
     >
       <div
         id="project-header"
-        className="flex flex-col w-full  sm:flex-row sm:justify-between items-center"
+        className={cn(
+          "flex flex-col w-full  sm:flex-row sm:justify-between items-center",
+          "",
+          "",
+        )}
       >
         <Image
           className={cn(
@@ -183,29 +198,11 @@ export default function Home() {
 
       <div
         id="project-routes"
-        className={cn(
-          "flex flex-col items-center gap-5 text-center sm:items-start sm:text-left",
-          "",
-          "",
-        )}
+        className="flex flex-col items-center gap-5 text-center sm:items-start sm:text-left"
       >
-        <h3
-          className={cn(
-            "text-2xl leading-10 text-stone-600 self-start",
-            "",
-            "",
-          )}
-        >
-          Pages
-        </h3>
-        <hr className={cn("border-t  w-full border-stone-400", "", "")} />
-        <div
-          className={cn(
-            "flex flex-col w-full gap-4 text-base font-medium sm:flex-row ",
-            "",
-            "",
-          )}
-        >
+        <h3 className="text-2xl leading-10 text-stone-600 self-start">Pages</h3>
+        <hr className="border-t  w-full border-stone-400" />
+        <div className="flex flex-col w-full gap-4 text-base font-medium sm:flex-row ">
           <Link
             className={cn(
               "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
@@ -232,10 +229,25 @@ export default function Home() {
               "",
               "",
             )}
-            href={"/login"}
+            href={{
+              pathname: "/login",
+              query: { from: pathname },
+            }}
           >
             Log in
           </Link>
+          <Button
+            className={cn(
+              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
+              "",
+              "",
+            )}
+            type={"button"}
+            variant={"ghost"}
+            onClick={handleLogout}
+          >
+            Log out
+          </Button>
         </div>
       </div>
     </main>

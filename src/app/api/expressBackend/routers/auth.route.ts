@@ -4,10 +4,14 @@ import express, { Request, Response, NextFunction } from "express";
 import {
   generateTokenPair,
   login,
+  logout,
   verifyRefreshToken,
 } from "@/app/api/expressBackend/controllers/auth.controllers";
 import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
-import { AuthSchemaLogin } from "@/app/api/expressBackend/schema/auth.schema";
+import {
+  AuthSchemaLogin,
+  AuthSchemaLogout,
+} from "@/app/api/expressBackend/schema/auth.schema";
 import jwt from "jsonwebtoken";
 import { config } from "@/app/api/expressBackend/config/env.config";
 import { validateRequest } from "@/app/api/expressBackend/middleware/useValidate.middleware";
@@ -114,5 +118,13 @@ authRouter.post(
     }
   },
 );
+
+authRouter.post("/logout", async (req: Request, res: Response) => {
+  const refreshToken = req.cookies?.refreshToken;
+  if (refreshToken) {
+    await RefreshToken.destroy({ where: { token: refreshToken } });
+  }
+  res.status(204).end();
+});
 
 export { authRouter };

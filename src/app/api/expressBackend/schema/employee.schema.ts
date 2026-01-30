@@ -54,7 +54,8 @@ export const EmployeeSchemaBase = z.object({
   isOnline: z.boolean().default(false),
   createdAt: z.date(),
   updatedAt: z.date(),
-  lastLoggedIn: z.date().nullable().default(null),
+  // lastLoggedIn: z.date().nullable().default(null),
+  lastLoggedIn: z.date().min(Date.now()).nullable().default(null),
 });
 
 export const EmployeeSchemaCreate = EmployeeSchemaBase.omit({
@@ -105,10 +106,27 @@ export const EmployeeSchemaUpdate = EmployeeSchemaBase.omit({
 })
   .partial()
   .strict();
-
-export const EmployeeSchemaLogin = z.object({
-  isOnline: z.boolean(),
-  lastLoggedIn: z.date(),
+export const EmployeeSchemaLogin = EmployeeSchemaBase.omit({
+  // export const EmployeeSchemaLogin = z.object({
+  // isOnline: z.boolean(),
+  // lastLoggedIn: z.date(),
+  id: true,
+  userId: true,
+  employeeId: true,
+  firstname: true,
+  middlename: true,
+  lastname: true,
+  email: true,
+  countryCode: true,
+  phone: true,
+  department: true,
+  position: true,
+  role: true,
+  isActive: true,
+  // isOnline: true,
+  createdAt: true,
+  updatedAt: true,
+  // lastLoggedIn: true,
 });
 
 export type EmployeeType = z.infer<typeof EmployeeSchemaBase>;

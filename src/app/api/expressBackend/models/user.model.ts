@@ -12,7 +12,7 @@ interface UserAttributes {
   createdAt?: Date;
   updatedAt?: Date;
   isActive: boolean;
-  isOnline: boolean;
+  // isOnline: boolean;
 }
 
 class User
@@ -31,7 +31,7 @@ class User
   declare createdAt?: Date;
   declare updatedAt?: Date;
   declare isActive: boolean;
-  declare isOnline: boolean;
+  // declare isOnline: boolean;
 
   async comparePassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
@@ -49,6 +49,7 @@ User.init(
   {
     id: {
       type: DataTypes.UUID,
+
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false,
@@ -108,12 +109,12 @@ User.init(
       defaultValue: true,
       field: "is_active",
     },
-    isOnline: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-      field: "is_online",
-    },
+    // isOnline: {
+    //   type: DataTypes.BOOLEAN,
+    //   allowNull: false,
+    //   defaultValue: false,
+    //   field: "is_online",
+    // },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
