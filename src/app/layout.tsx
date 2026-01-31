@@ -4,7 +4,9 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Notification } from "@/components/ui/Notification";
 import DarkModeButton from "@/components/DarkModeButton";
-
+import NavBar from "@/components/NavBar";
+import { useState } from "react";
+// import { usePathname } from "next/navigation";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -245,49 +247,122 @@ export default function RootLayout({
         6. ...and then implement the remaining endpoints
 
 */
+  // <body
+  //   // className={cn(
+  //   //   "layout",
+  //   //   `font-sans ${geistSans.variable} ${geistMono.variable} antialiased`,
+  //   //   "flex",
+  //   //   "flex-col",
+  //   //   "max-w-4xl",
+  //   //   "place-self-center",
+  //   //   "gap-5",
+  //   //   "mx-auto",
+  //   //   // "my-20",
+  //   //   // "py-20",
+  //   //   "",
+  //   //   "",
+  //   //   // // "gap-10",
+  //   //   // // "min-w-2xl",
+  //   //   // // "lg:p-10",
+  //   //   // // "p-5",
+  //   //   // // "mt-10 mb-20",
+  //   //   // "my-20",
+  //   //   // // "mx-auto",
+  //   //   // // // "min-h-screen",
+  //   //   // // "h-full",
+  //   //   // // "min-h-full",
+  //   //   // // "max-h-screen",
+  //   //   // // // "min-h-lh",
+  //   //   // // // "min-h-svh",
+  //   //   // // // "min-h-auto",
+  //   //   // // // "min-h-lvh",
+  //   //   // // // "min-h-max",
+  //   //   // // " py-30",
+  //   //   // // " px-16",
+  //   //   // // "bg-zinc-50",
+  //   //   // // "dark:bg-zinc-900",
+  //   //   // // "w-700",
+  //   //   // "gap-5",
+  //   //   // "",
+  //   //   // "",
+  //   // )}
+  //   // className={cn("layout")}
+  //   className={cn(
+  //     `font-sans ${geistSans.variable} ${geistMono.variable} antialiased`,
+  //     "layout",
+  //     "w-full",
+
+  //     "flex",
+  //     "flex-col",
+  //     "items-center",
+  //     "",
+  //     "",
+  //   )}
+  // >
+
+  function redirectIfNotOnline() {
+    /* 
+      will check if user is online, if not it will automatically redirect from protected content to LogInPage 
+    */
+    // const pathname = usePathname();
+    // const [redirect, setRedirect()] = useState("");
+    // const [destination, setestination()] = useState("");
+    // href={{
+    //               pathname: "/login",
+    //               query: { from: pathname },
+    //             }}
+    // isOnline? setRedirect({
+    //               pathname: "/login",
+    //               query: { from: pathname, to: destination},
+    //             })
+  }
 
   return (
-    <html suppressHydrationWarning lang="en" className="">
+    <html
+      suppressHydrationWarning
+      lang="en"
+      className={cn("layout", "min-h-dvh", "", "")}
+    >
+      <head>
+        {/* TODO: add descriptive head for SEO / AEO */}
+        <title>2Do app</title>
+      </head>
       <body
         className={cn(
-          `font-sans ${geistSans.variable} ${geistMono.variable} antialiased`,
+          "relative",
           "flex",
           "flex-col",
-          // "gap-10",
-          "max-w-4xl",
-          // "min-w-2xl",
-          "place-self-center",
-          // "lg:p-10",
-          // "p-5",
-          // "mt-10 mb-20",
-          "my-20",
-          // "mx-auto",
-          // // "min-h-screen",
-          // "h-full",
-          // "min-h-full",
-          // "max-h-screen",
-          // // "min-h-lh",
-          // // "min-h-svh",
-          // // "min-h-auto",
-          // // "min-h-lvh",
-          // // "min-h-max",
-          // " py-30",
-          // " px-16",
-          // "bg-zinc-50",
-          // "dark:bg-zinc-900",
-          // "w-700",
-          "gap-5",
+          "min-h-dvh",
+          "w-full",
+          "m-0",
+          "items-center",
           "",
           "",
         )}
       >
-        <DarkModeButton />
-        <Notification
-          message="There is a known vulnerability in a dependency. Please be cautious."
-          storageKey="warning:dependency-v20260108"
-          moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
-          moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
-          moreText={`@modelcontextprotocol/sdk  <1.25.2
+        <header className={cn("w-screen", "", "")}>
+          <nav>
+            <NavBar />
+          </nav>
+        </header>
+
+        <main
+          className={cn(
+            "flex-1",
+            "flex",
+            "items-center",
+            "justify-center",
+            "",
+            "",
+          )}
+        >
+          <DarkModeButton />
+          <Notification
+            message="There is a known vulnerability in a dependency. Please be cautious."
+            storageKey="warning:dependency-v20260108"
+            moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
+            moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
+            moreText={`@modelcontextprotocol/sdk  <1.25.2
             Severity: high
             Anthropic's MCP TypeScript SDK has a ReDoS vulnerability - https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
             No fix available
@@ -296,10 +371,12 @@ export default function RootLayout({
             Depends on vulnerable versions of @modelcontextprotocol/sdk
             Depends on vulnerable versions of undici
             node_modules/next-devtools-mcp`}
-          type="warning"
-        />
+            type="warning"
+          />
 
-        {children}
+          {children}
+        </main>
+        <footer>{/* nothing to see here for now */}</footer>
       </body>
     </html>
   );

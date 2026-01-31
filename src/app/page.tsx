@@ -4,11 +4,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export default function Home() {
-  const pathname = usePathname();
-
   function handleLogout(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ): void {
@@ -29,9 +26,9 @@ export default function Home() {
   }
 
   return (
-    <main
+    <div
       className={cn(
-        " sm:py-32",
+        // " sm:py-32",
         " px-10",
         " sm:px-16",
         "dark:bg-black sm:items-start",
@@ -209,6 +206,8 @@ export default function Home() {
               "",
               "",
             )}
+            // href={"/todo"} //should redirect to login first
+
             href={"/todo"}
           >
             ToDo (Prisma)
@@ -219,37 +218,14 @@ export default function Home() {
               "",
               "",
             )}
+            // href={"/expressTodo"} //should redirect to login first
+
             href={"/expressTodo"}
           >
             ToDo (Express)
           </Link>
-          <Link
-            className={cn(
-              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
-              "",
-              "",
-            )}
-            href={{
-              pathname: "/login",
-              query: { from: pathname },
-            }}
-          >
-            Log in
-          </Link>
-          <Button
-            className={cn(
-              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
-              "",
-              "",
-            )}
-            type={"button"}
-            variant={"ghost"}
-            onClick={handleLogout}
-          >
-            Log out
-          </Button>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
