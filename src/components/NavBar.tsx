@@ -2,7 +2,7 @@
 import Image from "next/image";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 import {
   NavigationMenuContent,
@@ -28,14 +28,16 @@ import { cn } from "@lib/utils";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { useUser } from "@/app/providers";
+import { useRouter } from "next/navigation";
 
 export default function NavBar() {
   const { user, refreshUser, loading } = useUser();
   const pathname = usePathname();
+  const router = useRouter();
 
   // if (loading) return null; // Or a spinner if you want
 
-  async function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
+  const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     if (!user?.id) {
       console.warn("No userId available for logout.");
@@ -60,10 +62,11 @@ export default function NavBar() {
         console.log(data);
       }
       await refreshUser();
+      router.push("/");
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <NavigationMenu>
@@ -73,7 +76,7 @@ export default function NavBar() {
           className="hover:bg-transparent active:bg-transparent rounded-xl"
           href="/"
         >
-          2Do
+          <Image src="/logo.png" alt="2Do logo" width={50} height={50} />
         </NavigationMenuLink>
 
         <div id="nav-buttons-row" className="flex gap-2">
@@ -87,43 +90,37 @@ export default function NavBar() {
               id="buttons-when-logged-out"
               className={cn("visible contents", "", "")}
             >
-              <Button
+              <NavigationMenuLink
                 id="log-in-button"
-                type={"button"}
-                variant={"ghost"}
                 className={cn(
                   "cursor-pointer",
                   "shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
                   "w-full sm:w-fit",
                   "text-nowrap",
+                  "border-none",
+                  "shadow-none",
                   "",
                 )}
+                href={`/login?from=${encodeURIComponent(pathname)}`}
               >
-                <NavigationMenuLink
-                  href={`/login?from=${encodeURIComponent(pathname)}`}
-                >
-                  Log in
-                </NavigationMenuLink>
-              </Button>
+                Log in
+              </NavigationMenuLink>
 
-              <Button
+              <NavigationMenuLink
                 id="sign-up-button"
-                type={"button"}
-                variant={"ghost"}
                 className={cn(
                   "cursor-pointer",
                   "shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
                   "w-full sm:w-fit",
                   "text-nowrap",
+                  "border-none",
+                  "shadow-none",
                   "",
                 )}
+                href={`/login?from=${encodeURIComponent(pathname)}`}
               >
-                <NavigationMenuLink
-                  href={`/login?from=${encodeURIComponent(pathname)}`}
-                >
-                  Sign up
-                </NavigationMenuLink>
-              </Button>
+                Sign up
+              </NavigationMenuLink>
             </div>
           ) : (
             <div
@@ -146,7 +143,23 @@ export default function NavBar() {
                   />
                 </NavigationMenuLink>
               </div>
-              <Button
+              <NavigationMenuLink
+                id="log-out-button"
+                className={cn(
+                  "cursor-pointer",
+                  "shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
+                  "w-full sm:w-fit",
+                  "text-nowrap",
+                  "border-none",
+                  "shadow-none",
+                  "",
+                )}
+                href="/"
+                onClick={handleLogout}
+              >
+                Log out
+              </NavigationMenuLink>
+              {/* <NavigationMenuItem
                 id="log-out-button"
                 className={cn(
                   "cursor-pointer",
@@ -157,12 +170,15 @@ export default function NavBar() {
                   "dark:hover:bg-[#1a1a1a] hover:bg-stone-200",
                   "",
                 )}
-                type="button"
-                variant={"ghost"}
-                onClick={handleLogout}
               >
-                Log out
-              </Button>
+                <Button
+                  type="button"
+                  className="contents text-primary"
+                  onClick={handleLogout}
+                >
+                  Log out
+                </Button>
+              </NavigationMenuItem> */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button

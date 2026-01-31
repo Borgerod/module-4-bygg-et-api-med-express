@@ -9,6 +9,7 @@ import { authRouter } from "@/app/api/expressBackend/routers/auth.route";
 import os from "os";
 import cookieParser from "cookie-parser";
 import { Request, Response, NextFunction } from "express";
+import { isAuthenticated } from "@/app/api/expressBackend/middleware/isAuthenticated.middleware";
 
 dotenv.config();
 
@@ -74,23 +75,27 @@ function validateTableAndId(
 }
 
 ////* GET (w/query)
-app.get("/expressTodo", (req, res) => {
-  let query = 'SELECT * FROM "Todo"';
-  const params: unknown[] = [];
+app.get(
+  "/expressTodo",
+  isAuthenticated(["user", "admin"]), // Only allow logged-in users with these roles
+  (req, res) => {
+    let query = 'SELECT * FROM "Todo"';
+    const params: unknown[] = [];
 
-  if (req.query.done !== undefined) {
-    query += " WHERE done = ?";
-    params.push(req.query.done === "true" ? 1 : 0);
-  }
-  query += ' ORDER BY "createdAt" DESC, id DESC';
-  const stmt = db.prepare(query);
-  const rows = stmt.all(...params);
+    if (req.query.done !== undefined) {
+      query += " WHERE done = ?";
+      params.push(req.query.done === "true" ? 1 : 0);
+    }
+    query += ' ORDER BY "createdAt" DESC, id DESC';
+    const stmt = db.prepare(query);
+    const rows = stmt.all(...params);
 
-  res.json({
-    count: rows.length,
-    data: rows,
-  });
-});
+    res.json({
+      count: rows.length,
+      data: rows,
+    });
+  },
+);
 
 export type QueryParam = TodoProps[keyof TodoProps];
 

@@ -1,7 +1,11 @@
 import { getTodos, addTodo, updateTodo, deleteTodo } from "@/lib/todo";
+import { verifyToken } from "@/app/api/expressBackend/controllers/auth.controllers";
 
 // GET /api/todo
-export async function GET() {
+export async function GET(request: Request) {
+  if (!requireAuth(request)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   const todos = await getTodos();
   return new Response(JSON.stringify(todos), {
     status: 200,
@@ -11,6 +15,9 @@ export async function GET() {
 
 // POST /api/todo
 export async function POST(request: Request) {
+  if (!requireAuth(request)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   try {
     const { title, dueDate } = await request.json();
     let { tags } = await request.json();
@@ -29,7 +36,7 @@ export async function POST(request: Request) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
     if (tags !== undefined && !Array.isArray(tags)) {
@@ -40,7 +47,7 @@ export async function POST(request: Request) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
     if (tags === undefined) {
@@ -49,7 +56,7 @@ export async function POST(request: Request) {
     const todo = await addTodo(
       title,
       tags,
-      dueDate ? new Date(dueDate) : undefined
+      dueDate ? new Date(dueDate) : undefined,
     );
     return new Response(JSON.stringify(todo), {
       status: 201,
@@ -67,6 +74,9 @@ export async function POST(request: Request) {
 
 // PATCH /api/todo?id=1
 export async function PATCH(request: Request) {
+  if (!requireAuth(request)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   if (!id) {
@@ -91,6 +101,9 @@ export async function PATCH(request: Request) {
 
 // DELETE /api/todo?id=1
 export async function DELETE(request: Request) {
+  if (!requireAuth(request)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   if (!id) {
@@ -110,4 +123,19 @@ export async function DELETE(request: Request) {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
+}
+
+function requireAuth(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  const token = authHeader?.split(" ")[1];
+  if (!token) return null;
+  const payload = verifyToken(token);
+  if (
+    !payload ||
+    typeof payload === "string" ||
+    !["user", "admin"].includes(payload.role)
+  ) {
+    return null;
+  }
+  return payload;
 }

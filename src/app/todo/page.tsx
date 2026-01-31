@@ -41,8 +41,17 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import PeriodSelect from "./PeriodSelect";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cookies, headers } from "next/headers";
 
 export default async function Page() {
+  const cookieStore = cookies();
+  const token = (await cookieStore).get("accessToken")?.value;
+
+  if (!token) {
+    const pathname = (await headers()).get("x-pathname") || "/todo";
+    redirect(`/login?redirect=${encodeURIComponent(pathname)}`);
+  }
+
   const todos = await getTodos();
   async function handleAddTodo(formData: FormData) {
     "use server";

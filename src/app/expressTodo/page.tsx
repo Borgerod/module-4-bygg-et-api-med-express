@@ -26,6 +26,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { redirect } from "next/navigation";
 
 async function getTodos(): Promise<Todo[]> {
   const expressUrl =
@@ -33,7 +34,17 @@ async function getTodos(): Promise<Todo[]> {
   const url = expressUrl
     ? `${expressUrl.replace(/\/$/, "")}/expressTodo`
     : "/expressTodo";
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(url, { cache: "no-store", credentials: "include" });
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      // window.location.replace("/login");
+      // redirect("/login");
+      redirect(
+        `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
+      );
+    }
+    return [];
+  }
   const data = await res.json();
   return data.data || data;
 }

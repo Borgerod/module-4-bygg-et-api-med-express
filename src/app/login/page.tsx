@@ -13,6 +13,7 @@ import * as React from "react";
 import { Notification } from "@/components/ui/Notification";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useUser } from "@/app/providers";
 
 export default function LoginPage() {
@@ -22,10 +23,9 @@ export default function LoginPage() {
   const [buttonText, setButtonText] = useState("Login");
   const [notification, setNotification] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  // const searchParams = useSearchParams();
-  // const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
   const router = useRouter();
-  const referer = getReferer();
   const { refreshUser } = useUser();
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,7 +51,7 @@ export default function LoginPage() {
         setButtonText("Success");
         await refreshUser();
         setTimeout(() => {
-          router.push(referer || "/");
+          router.push(redirectTo);
         }, 1000);
       } else {
         const data = await res.json();
@@ -133,10 +133,4 @@ export default function LoginPage() {
       </Card>
     </>
   );
-}
-
-function getReferer(): string {
-  if (typeof document === "undefined") return "/";
-  const match = document.cookie.match(/(?:^|; )referer=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : "/";
 }

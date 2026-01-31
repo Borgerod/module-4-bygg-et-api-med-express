@@ -120,6 +120,18 @@ async function verifyRefreshToken(token: string) {
 
   return true;
 }
+function verifyToken(
+  token: string,
+): { role: string; user: { id: string } } | null {
+  try {
+    return jwt.verify(token, config.jwt.secret) as {
+      role: string;
+      user: { id: string };
+    };
+  } catch {
+    return null;
+  }
+}
 
-// export { login, logout, verifyToken, verifyRefreshToken, generateTokenPair };
-export { login, logout, verifyRefreshToken, generateTokenPair };
+export { login, logout, verifyToken, verifyRefreshToken, generateTokenPair };
+// export { login, logout, verifyRefreshToken, generateTokenPair };
