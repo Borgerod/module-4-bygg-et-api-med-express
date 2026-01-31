@@ -7,6 +7,7 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import * as userController from "@/app/api/expressBackend/controllers/users.controllers";
 import * as employeeController from "@/app/api/expressBackend/controllers/employees.controllers";
 import Employee from "@/app/api/expressBackend/models/employee.model";
+import { cookies } from "next/headers";
 
 function generateTokenPair(user: User) {
   const accessToken: string = jwt.sign(
@@ -37,6 +38,8 @@ export interface LoginResult {
 
 async function login(email: string, password: string): Promise<LoginResult> {
   const user = await User.findOne({ where: { email } });
+
+  // if (!user) return res.status(400).json({ message: "Invalid credentials" });
   if (!user) {
     throw new Error("Invalid email or password");
   }
@@ -91,15 +94,17 @@ async function login(email: string, password: string): Promise<LoginResult> {
 //   return proof;
 // }
 
-async function logout(refreshToken: string) {
-  await RefreshToken.destroy({
-    where: { token: refreshToken },
-  });
+async function logout(userId: string) {
+  try {
+    const deleted = await RefreshToken.destroy({ where: { userId } });
+    console.log(`Deleted ${deleted} refresh tokens for userId: ${userId}`);
+  } catch (error) {
+    console.error(
+      "could not find token by userId, might already be destroyed",
+      error,
+    );
+  }
   return { refreshTokensDeleted: true };
-}
-
-function verifyToken(token: string) {
-  return jwt.verify(token, config.jwt.secret);
 }
 
 async function verifyRefreshToken(token: string) {
@@ -116,4 +121,5 @@ async function verifyRefreshToken(token: string) {
   return true;
 }
 
-export { login, logout, verifyToken, verifyRefreshToken, generateTokenPair };
+// export { login, logout, verifyToken, verifyRefreshToken, generateTokenPair };
+export { login, logout, verifyRefreshToken, generateTokenPair };
