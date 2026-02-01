@@ -120,8 +120,7 @@ class Employee
     EmployeeAttributes,
     Omit<
       EmployeeAttributes,
-      // | "userId"
-      "id" | "employeeId" | "email" | "createdAt" | "updatedAt" | "lastLoggedIn"
+      "employeeId" | "email" | "createdAt" | "updatedAt" | "lastLoggedIn"
     >
   >
   implements EmployeeAttributes

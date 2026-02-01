@@ -251,14 +251,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch user from cookie on the server
   const cookieStore = cookies();
   const refreshToken = (await cookieStore).get("refreshToken")?.value;
   let initialUser = null;
+  let initialEmployee = null;
 
   if (refreshToken) {
     try {
-      const res = await fetch(
+      const refreshRes = await fetch(
         `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/refresh`,
         {
           method: "GET",
@@ -267,14 +267,49 @@ export default async function RootLayout({
           },
         },
       );
-      if (res.ok) {
-        const data = await res.json();
-        if (data.user?.id) {
-          initialUser = { id: data.user.id };
+      
+      if (refreshRes.ok) {
+        const refreshData = await refreshRes.json();
+        const userId = refreshData?.user?.id;
+        
+        if (userId) {
+          const userRes = await fetch(
+            `${process.env.NEXT_PUBLIC_EXPRESS_URL}/users/${userId}`,
+            {
+              method: "GET",
+              headers: {
+                Cookie: `refreshToken=${refreshToken}`,
+              },
+            },
+          );
+          
+          if (userRes.ok) {
+            initialUser = await userRes.json();
+            
+            if (initialUser?.userAccount) {
+              try {
+                const empRes = await fetch(
+                  `${process.env.NEXT_PUBLIC_EXPRESS_URL}/employees/${initialUser.userAccount}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Cookie: `refreshToken=${refreshToken}`,
+                    },
+                  },
+                );
+                if (empRes.ok) {
+                  initialEmployee = await empRes.json();
+                }
+              } catch {
+                initialEmployee = null;
+              }
+            }
+          }
         }
       }
     } catch {
       initialUser = null;
+      initialEmployee = null;
     }
   }
 
@@ -285,7 +320,6 @@ export default async function RootLayout({
       className={cn("layout", "min-h-dvh", "", "")}
     >
       <head>
-        {/* TODO: add descriptive head for SEO / AEO */}
         <title>2Do app</title>
       </head>
       <body
@@ -301,11 +335,10 @@ export default async function RootLayout({
           "",
         )}
       >
-        <UserProvider initialUser={initialUser}>
+        <UserProvider initialUser={initialUser} initialEmployee={initialEmployee}>
           <header className={cn("w-screen", "", "")}>
             <nav>
               <NavBar />
-              {/* All children below will have access to user context */}
             </nav>
           </header>
           <main

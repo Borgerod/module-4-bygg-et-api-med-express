@@ -31,6 +31,21 @@ employeesRouter.get(
   },
 );
 
+// employeesRouter.get(
+//   "/:userId",
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const userId: string = Array.isArray(req.params.userId)
+//         ? req.params.userId[0]
+//         : req.params.userId;
+//       const employees = await employeesController.getEmployeeByUserId(userId);
+//       res.status(200).json(employees);
+//     } catch (error) {
+//       next(error);
+//     }
+//   },
+// );
+
 employeesRouter.post(
   "/",
   async (req: Request, res: Response, next: NextFunction) => {

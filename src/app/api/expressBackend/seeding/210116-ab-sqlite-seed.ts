@@ -76,6 +76,7 @@ async function createStaticTestEmployee() {
   });
 
   await Employee.create({
+    id: staticUser.userAccount,
     userId: staticUser.id,
     firstname: "Test",
     middlename: "Static",
@@ -224,6 +225,7 @@ async function generateUsersAndEmployees(batchSize: number) {
     const staffRole = randomStaff.role;
 
     await Employee.create({
+      id: user.userAccount,
       userId: user.id,
       firstname,
       middlename,

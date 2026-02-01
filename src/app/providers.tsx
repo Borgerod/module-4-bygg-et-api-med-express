@@ -1,23 +1,27 @@
 "use client";
+
 import {
   createContext,
   useContext,
-  useEffect,
   useState,
   ReactNode,
+  useCallback,
 } from "react";
+import { User } from "@expressBackend/schema/user.schema";
+import { Employee } from "@expressBackend/schema/employee.schema";
 
-type User = { id: string };
 type UserContextType = {
   user: User | null;
+  employee: Employee | null;
   refreshUser: () => Promise<void>;
-  loading: boolean;
+  isLoading: boolean;
 };
 
 const UserContext = createContext<UserContextType>({
   user: null,
+  employee: null,
   refreshUser: async () => {},
-  loading: true,
+  isLoading: false,
 });
 
 export function useUser() {
@@ -27,39 +31,97 @@ export function useUser() {
 export function UserProvider({
   children,
   initialUser,
+  initialEmployee,
 }: {
   children: ReactNode;
   initialUser: User | null;
+  initialEmployee?: Employee | null;
 }) {
   const [user, setUser] = useState<User | null>(initialUser);
-  const [loading, setLoading] = useState(false);
+  const [employee, setEmployee] = useState<Employee | null>(
+    initialEmployee ?? null,
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchUser = async () => {
-    setLoading(true);
+  const refreshUser = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const url = `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/refresh`;
-      const res = await fetch(url, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.user?.id) {
-          setUser({ id: data.user.id });
+      const refreshRes = await fetch(
+        `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/refresh`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+
+      if (!refreshRes.ok) {
+        setUser(null);
+        setEmployee(null);
+        return;
+      }
+
+      const refreshData = await refreshRes.json();
+      const userId = refreshData?.user?.id;
+
+      if (!userId) {
+        setUser(null);
+        setEmployee(null);
+        return;
+      }
+
+      const userRes = await fetch(
+        `${process.env.NEXT_PUBLIC_EXPRESS_URL}/users/${userId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+
+      if (!userRes.ok) {
+        setUser(null);
+        setEmployee(null);
+        return;
+      }
+
+      const fullUser: User = await userRes.json();
+      setUser(fullUser);
+
+      if (fullUser?.userAccount) {
+        const empRes = await fetch(
+          `${process.env.NEXT_PUBLIC_EXPRESS_URL}/employees/${fullUser.userAccount}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+
+        if (empRes.ok) {
+          const empData = await empRes.json();
+          setEmployee(empData);
         } else {
-          setUser(null);
+          setEmployee(null);
         }
       } else {
-        setUser(null);
+        setEmployee(null);
       }
-    } catch {
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
       setUser(null);
+      setEmployee(null);
+    } finally {
+      setIsLoading(false);
     }
-    setLoading(false);
-  };
+  }, []);
 
   return (
-    <UserContext.Provider value={{ user, refreshUser: fetchUser, loading }}>
+    <UserContext.Provider
+      value={{
+        user,
+        employee,
+        refreshUser,
+        isLoading,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

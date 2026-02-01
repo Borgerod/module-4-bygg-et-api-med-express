@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useUser } from "@/app/providers";
+import redirect from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -46,13 +47,9 @@ export default function LoginPage() {
       );
 
       if (res.ok) {
-        setMessage("Login successful!");
-        setNotification(true);
-        setButtonText("Success");
+        setNotification(false);
         await refreshUser();
-        setTimeout(() => {
-          router.push(redirectTo);
-        }, 1000);
+        router.push(redirectTo);
       } else {
         const data = await res.json();
         setMessage(data.message || "Login failed");
@@ -61,6 +58,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       setMessage("Network error");
+      console.error("Network error: ", error);
       setNotification(true);
       setButtonText("Login");
     }

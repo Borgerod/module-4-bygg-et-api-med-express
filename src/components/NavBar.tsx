@@ -26,16 +26,23 @@ import {
 import { NavigationMenu } from "@radix-ui/react-navigation-menu";
 import { cn } from "@lib/utils";
 import { Button } from "./ui/button";
-import { useEffect, useState } from "react";
 import { useUser } from "@/app/providers";
 import { useRouter } from "next/navigation";
+import { Employee } from "@expressBackend/schema/employee.schema";
+import { User } from "@expressBackend/schema/user.schema";
+import { da } from "date-fns/locale";
 
 export default function NavBar() {
-  const { user, refreshUser, loading } = useUser();
+  const { user, employee, refreshUser } = useUser();
   const pathname = usePathname();
   const router = useRouter();
 
-  // if (loading) return null; // Or a spinner if you want
+  console.log("=== NavBar Debug ===");
+  console.log("user:", user);
+  console.log("employee:", employee);
+  console.log("employee?.firstname:", employee?.firstname);
+  console.log("user.email:", user?.email);
+  console.log("==================");
 
   const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
@@ -70,129 +77,53 @@ export default function NavBar() {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList className="flex p-2 px-5 w-full justify-between">
+      <NavigationMenuList className={cn("flex p-2 px-5 w-full justify-between", "", "")}>
         <NavigationMenuLink
           id="profile-button"
-          className="hover:bg-transparent active:bg-transparent rounded-xl"
+          className={cn("hover:bg-transparent active:bg-transparent rounded-xl", "", "")}
           href="/"
         >
           <Image src="/logo.png" alt="2Do logo" width={50} height={50} />
         </NavigationMenuLink>
 
-        <div id="nav-buttons-row" className="flex gap-2">
-          {loading ? (
-            <div className={cn("flex items-center", "", "")}>
-              {/* You can use a spinner, skeleton, or just keep space */}
-              <span className={cn("w-32 h-12", "", "")}></span>
-            </div>
-          ) : !user ? (
-            <div
-              id="buttons-when-logged-out"
-              className={cn("visible contents", "", "")}
-            >
-              <NavigationMenuLink
-                id="log-in-button"
-                className={cn(
-                  "cursor-pointer",
-                  "shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
-                  "w-full sm:w-fit",
-                  "text-nowrap",
-                  "border-none",
-                  "shadow-none",
-                  "",
-                )}
-                href={`/login?from=${encodeURIComponent(pathname)}`}
-              >
-                Log in
-              </NavigationMenuLink>
-
-              <NavigationMenuLink
-                id="sign-up-button"
-                className={cn(
-                  "cursor-pointer",
-                  "shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
-                  "w-full sm:w-fit",
-                  "text-nowrap",
-                  "border-none",
-                  "shadow-none",
-                  "",
-                )}
-                href={`/login?from=${encodeURIComponent(pathname)}`}
-              >
-                Sign up
-              </NavigationMenuLink>
-            </div>
-          ) : (
+        <div id="nav-buttons-row" className={cn("flex gap-2", "", "")}>
+          {user ? (
             <div
               id="buttons-when-logged-in"
               className={cn("visible contents", "", "")}
             >
-              <div id="user-diplay-row" className="flex items-center gap-2">
-                Hello Aleksander
+              <div id="user-diplay-row" className={cn("flex items-center gap-2", "", "")}>
+                <span>Hello {user.email}</span>
+                {employee?.firstname && <span>Hello {employee.firstname}</span>}
                 <NavigationMenuLink
                   id="profile-button"
                   href={`/user`}
-                  className="contents"
+                  className={cn("contents", "", "")}
                 >
                   <Image
                     src="/profile.png"
                     width={50}
                     height={50}
                     alt="user image"
-                    className="rounded-full bg-accent w-12 h-12 aspect-square"
+                    className={cn("rounded-full bg-accent w-12 h-12 aspect-square", "", "")}
                   />
                 </NavigationMenuLink>
               </div>
               <NavigationMenuLink
                 id="log-out-button"
-                className={cn(
-                  "cursor-pointer",
-                  "shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
-                  "w-full sm:w-fit",
-                  "text-nowrap",
-                  "border-none",
-                  "shadow-none",
-                  "",
-                )}
                 href="/"
                 onClick={handleLogout}
+                className={cn("contents", "", "")}
               >
-                Log out
-              </NavigationMenuLink>
-              {/* <NavigationMenuItem
-                id="log-out-button"
-                className={cn(
-                  "cursor-pointer",
-                  "h-12",
-                  "rounded-full",
-                  "rounded-xl",
-                  "hover:shadow-xs   transition-colors ",
-                  "dark:hover:bg-[#1a1a1a] hover:bg-stone-200",
-                  "",
-                )}
-              >
-                <Button
-                  type="button"
-                  className="contents text-primary"
-                  onClick={handleLogout}
-                >
+                <Button variant={"ghost"} size={"lg"}>
                   Log out
                 </Button>
-              </NavigationMenuItem> */}
+              </NavigationMenuLink>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     id="menu-dropdown-button"
-                    className={cn(
-                      "cursor-pointer",
-                      "h-12 w-12",
-                      "rounded-full",
-                      "rounded-xl",
-                      "hover:shadow-xs   transition-colors ",
-                      "dark:hover:bg-[#1a1a1a] hover:bg-stone-200",
-                      "",
-                    )}
-                    size={"icon"}
+                    size={"icon-lg"}
                     type={"button"}
                     variant={"ghost"}
                   >
@@ -212,6 +143,31 @@ export default function NavBar() {
                   <DropdownMenuItem disabled>API</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
+          ) : (
+            <div
+              id="buttons-when-logged-out"
+              className={cn("visible contents", "", "")}
+            >
+              <NavigationMenuLink
+                id="log-in-button"
+                href={`/login?from=${encodeURIComponent(pathname)}`}
+                className={cn("contents", "", "")}
+              >
+                <Button variant={"ghost"} size={"lg"}>
+                  Log in
+                </Button>
+              </NavigationMenuLink>
+
+              <NavigationMenuLink
+                id="sign-up-button"
+                href={`/login?from=${encodeURIComponent(pathname)}`}
+                className={cn("contents", "", "")}
+              >
+                <Button variant={"ghost"} size={"lg"}>
+                  Sign up
+                </Button>
+              </NavigationMenuLink>
             </div>
           )}
         </div>

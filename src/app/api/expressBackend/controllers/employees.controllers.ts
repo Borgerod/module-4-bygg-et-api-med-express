@@ -39,20 +39,20 @@ export async function getEmployees(): Promise<EmployeeSafe[]> {
       `GET /employees`,
       employees.map((employee) => ({
         id: employee.id,
-        employeeId: employee.employeeId,
-        firstname: employee.firstname,
-        lastname: employee.lastname,
-        email: employee.email,
-        countryCode: employee.countryCode,
-        phone: employee.phone,
-        department: employee.department,
-        position: employee.position,
-        role: employee.role,
-        isActive: employee.isActive,
-        isOnline: employee.isOnline,
-        createdAt: employee.createdAt,
-        updatedAt: employee.updatedAt,
-        lastLoggedIn: employee.lastLoggedIn,
+        // employeeId: employee.employeeId,
+        // firstname: employee.firstname,
+        // lastname: employee.lastname,
+        // email: employee.email,
+        // countryCode: employee.countryCode,
+        // phone: employee.phone,
+        // department: employee.department,
+        // position: employee.position,
+        // role: employee.role,
+        // isActive: employee.isActive,
+        // isOnline: employee.isOnline,
+        // createdAt: employee.createdAt,
+        // updatedAt: employee.updatedAt,
+        // lastLoggedIn: employee.lastLoggedIn,
       })),
     );
     return employees.map((employee) => employee.toJSON() as EmployeeSafe);
@@ -78,23 +78,25 @@ export async function getEmployeeById(id: string): Promise<EmployeeSafe> {
       console.error(`GET /employees/${id}`, { error: "Employee not found" });
       throw clientError;
     }
+
+    // TODO remove sensitive info
     console.info(`GET /employees/${id}`, {
       // I will return everything for now and cherrypick based on employee's (user) roles
       id: employee.id,
-      employeeId: employee.employeeId,
-      firstname: employee.firstname,
-      lastname: employee.lastname,
-      email: employee.email,
-      countryCode: employee.countryCode,
-      phone: employee.phone,
-      department: employee.department,
-      position: employee.position,
-      role: employee.role,
-      isActive: employee.isActive,
-      isOnline: employee.isOnline,
-      createdAt: employee.createdAt,
-      updatedAt: employee.updatedAt,
-      lastLoggedIn: employee.lastLoggedIn,
+      // employeeId: employee.employeeId,
+      // firstname: employee.firstname,
+      // lastname: employee.lastname,
+      // email: employee.email,
+      // countryCode: employee.countryCode,
+      // phone: employee.phone,
+      // department: employee.department,
+      // position: employee.position,
+      // role: employee.role,
+      // isActive: employee.isActive,
+      // isOnline: employee.isOnline,
+      // createdAt: employee.createdAt,
+      // updatedAt: employee.updatedAt,
+      // lastLoggedIn: employee.lastLoggedIn,
     });
     return employee.toJSON() as EmployeeSafe;
   } catch (error) {
@@ -108,13 +110,49 @@ export async function getEmployeeById(id: string): Promise<EmployeeSafe> {
   }
 }
 
-export async function createEmployee(createEmployeeData: EmployeeCreation) {
+// export async function getEmployeeByUserId(userId: string) {
+//   try {
+//     // const employee = await Employee.findByPk(userId);
+//     //  const employee = await Employee.findByPk(userId);
+//     // const employee = await Employee.findOne({ where: { id: userId } });
+//     // const employee = await Employee.findOne({ where: { user_id: userId } });
+//     const employee = await Employee.findOne({ where: { userId: user.id } });
+//     if (!employee) {
+//       const clientError = new Error("Employee not found");
+//       (clientError as Error & { status: number }).status = 404;
+//       console.error(`GET (by userId) /employees/${userId}`, {
+//         error: "Employee not found",
+//       });
+//       throw clientError;
+//     }
+
+//     return employee.toJSON() as EmployeeSafe;
+//   } catch (error) {
+//     console.error(`GET (by userId) /employees/${userId}`, {
+//       error: error instanceof Error ? error.message : error,
+//     });
+//     const clientError = new Error("Failed to fetch employee");
+//     (clientError as Error & { status: number }).status =
+//       getStatusFromError(error);
+//     throw clientError;
+//   }
+// }
+
+export async function createEmployee(
+  createEmployeeData: EmployeeCreation & {
+    userAccount?: string;
+    userId?: string;
+  },
+) {
   try {
     const validatedData = EmployeeSchemaCreate.parse(createEmployeeData);
 
     const employee = await Employee.create({
       ...validatedData,
-      userId: String((createEmployeeData as { userId?: string }).userId),
+      // Set id to userAccount for custom relation
+      id: createEmployeeData.userAccount ?? "",
+      // Set userId to user.id for standard relation
+      userId: String(createEmployeeData.userId ?? ""),
       isActive: false,
       isOnline: false,
     });
