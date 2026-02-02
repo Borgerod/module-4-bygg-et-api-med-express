@@ -59,3 +59,7 @@ export type UserType = z.infer<typeof UserSchemaBase>;
 export type User = z.infer<typeof UserSchemaBase>;
 export type UserCreation = z.infer<typeof UserSchemaCreate>;
 export type UserUpdate = z.infer<typeof UserSchemaUpdate>;
+
+import type { Employee } from "@expressBackend/schema/employee.schema";
+
+export type UserProfile = User & Employee;

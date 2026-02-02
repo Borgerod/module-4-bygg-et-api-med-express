@@ -1,0 +1,220 @@
+/* ! NOTE: removed `ts-node` from devDependencies to avoid a deprecation
+      - changes-made-to-ts-node: deleted `ts-node` from `package.json` devDependencies
+      - changes-made-to-tsconfig.json: updated `tsconfig.json` to use Node ESM resolution:
+        - "module": "nodenext"
+        - "moduleResolution": "nodenext"
+      If you later experience issues running `src/app/expressTodo/server.ts`, try:
+      - running it with `npx tsx src/app/expressTodo/server.ts`
+      - or reinstalling `ts-node` with a newer version: `npm install -D ts-node@latest`
+    */
+/* ! BUG REPORT !
+     !
+     ! 1. [Solved] Deleting a task right after adding it does not work. 
+     !      You need to refresh page in order to delete stuff.  
+     !      origin-trace: 
+     !        (endpoint)  onDelete(todo.id) [TaskRow.tsx :159]
+     !                    onDelete(todo.id) [TodoList.tsx :55]
+     !                    deleteTask        [page.tsx :158] 
+     !        (origin)    deleteTask        [TodoUtils.tsx :62] 
+     !        (API)       app.delete        [server.tsx :94]
+     !      known changes: 
+     !        delTodo [client.tsx :139] -> deleteTask 
+     !      evidence:
+     !        - 'error catching' fails; no errors are thrown.
+     !        -  getting 204 no content. but i get this regardless if it gets deleted or not.  
+     !        -  the state todos IS being updated correctly
+     !      
+     !      suspitions:
+     !      ////  - it might be stored locally and it is actually deleted in db
+     !            - [correct] it seems that both constructor and POST were making a UUID, so todo in UI has a different ID than the server untill you refresh. 
+     !      test:
+     !        - [will do] add "test (refreshed)", then refresh, then add "test (un-refreshed)",
+     !        - [has happened]: both items are immediatly added to db
+     !        - [will do] delete both items with delete button
+     !        - [has happened]: "test (refreshed)" was removed from db, "test (un-refreshed)" was not removed from db.
+     !        - added an extra un-refresh to delete just to make sure it is not only the last item that does not get deleted.
+     !      SOLUTION: make sure only the constructor handles UUID. 
+     ! 
+  */
+
+/** IMPORTANT NOTICE: Project description 
+    todo: add this to README
+    My project consists of two individual parts: 
+    
+    - prisma-soluton
+      - a pure NEXTjs solution using only up-to-date NEXTjs 16.1.1.
+      - uses a NEXTjs framework
+      - uses ui.shadcn front-end components.   
+      - using prisma for db integration and api handling.
+      - routing handled by NEXTjs
+      ? reasoning: I wanted to make the most modern solution I could make.
+      both server and project runs together on PORT:3000
+
+    - express-soluton
+      - a express oriented solution while still trying to maintain NEXTjs recommendations.
+      - uses a NEXTjs framework
+      - uses ui.shadcn front-end components.   
+      - uses express.js for api handling. 
+      - routing handled by NEXTjs
+      - borrows the generated DATABASE_URL from prisma (DATABASE_URL) (instead of using in-memory / json soluton).
+      - server runs seperatly from project on PORT:4000
+      ? reasoning: this part is built by following assignment instructions. 
+      
+    NOTE: This project comes with a 'export.json', which is a prereset / reset for the database. 
+          ? reasoning: So that the user has some data to go from (instructions includeed in README)
+*/
+/* * PROJECT COMPOSITION: Mandatory + Chosen Theme
+        
+      - Mandatory: 0. Authentication (required for all projects)
+          goal:
+            - provide secure user authentication and session management.
+          description:
+            - implement login with username and password
+            - validate and protect all endpoints using access tokens (JWT)
+            - ensure proper data validation for authentication requests
+            - handle token refresh and logout securely
+              
+      - Chosen Theme: 1. Gjøremål-API (1. Todo-API)
+          goal: 
+            - an API for administrating tasks.
+          description:
+            - create task with ['title','createdAt'] (optional: + ['dueDate', 'tags'])
+            - list all tasks 
+            - filter by '?done=true|false'
+            - sort by createdAt med ?sort=asc|desc
+              - asc: low to high
+              - desc: high to low
+            - get single task by id
+            - mark task as done/not-done (PATCH)
+            - delete tasks
+            - Eksempel-felter: id, title, done, dueDate, tags[], createdAt
+*/
+
+/* TODO check-list - before submitting assignment:
+      TODO 1.0 [ ]:   implement zod validation
+        todo 1.1 [ ]: validate atleast: ['body of POST/PUT/PATCH','parameters (f.ex. :id)','query (how relevant)' ]
+      TODO 2.0 [ ]:   make sure APIs are using correct method - https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods
+        todo 2.1 [ ]: refactor 'editing-data' api-method - swap PUT with PATCH
+      TODO 3.0 [X]:   make sure TS is written with ECMAScript Modules (ESM) syntax  
+      TODO 4.0 [ ]:   add descr-comments to non-obvious code 
+      TODO 5.0 [ ]:   use HTTP status codes - use concrete statuscodes for all responses (see *'status-code-examples')
+      TODO 6.0 [ ]:   (requirement) implement requirements for HTTP headers
+        todo 6.1 [ ]: Access token (Authorization: Bearer <accessToken>)
+        todo 6.1 [ ]: Refresh token (X-RefreshToken: <refreshToken>)
+                        Which means: 
+                          - protected endpoints has to require 'Authorization'
+                          - 'refresh' has to use 'X-RefreshToken'
+                          - 'logout' has to require both 'Authorization' og 'X-RefreshToken'
+
+      TODO 7.0 [ ]:   invalidate/disable tokens upon logout (simple mechanism that; remove a login and make further use impossible)
+        todo 7.1 [ ]: login-ID
+                      - upon login the server will assign UUID 
+                      - server saves this id to a list of active logins ('activeLogins') (in-memory eller i JSON-fil)
+                      - this id will be added to both; <accessToken> and <refreshToken> in f.ex.: the 'sid' field
+        todo 7.2 [ ]: using login-ID
+                      - server will check <accessToken> by: verifying that loginID is still in 'activeLogins'
+                      - if loginID not in activeLogins: return '401 Unauthorized'.
+      TODO 8.0 [ ]:   implement Authentication structure (see *'authentication-structure') (POST /v1/auth/login)
+                      - Input: { username, password } (need validation)
+                      if correct then:
+                      - create loginID (<accessToken>)
+                      - save loginID to activeLogins
+                      - Issue (generate) accessToken and refreshToken (JWTs (JSON Web Tokens) with a payload, containing an arbitrary but consistent generated login ID).
+                      - return '200 ok' with { <accessToken>, <refreshToken> }
+
+      TODO 9.0 [X]:   use CRUD-endpoints for your theme under /v1/... (see *'crud-example-structure')
+                      - note: /v1/ is for API versioning for, commong practice for older versions available for clients that haven’t upgraded
+      TODO 10.0 [ ]:  (prefer/not required) follow tips (see *'tips')
+      
+      TODO 11.0 [ ]:  finish README.md w/ install guide, api guide (what does what, headers etc) or use https://swagger.io/
+      TODO 12.0 [X]:  Edit is not updating db. 
+      
+      TODO 13.0 [X]:  fix delete bug [ref: BUG REPORT, 1]
+      TODO 14.0 [X]:  SAD NEWS: The old Warning component has been rolled back and the finished version no longer exists in commit history. Remake it.
+      
+      */
+
+/* * status-code-examples: 
+    - 200 OK: vellykket GET/PATCH med respons-body
+    - 201 Created: vellykket opprettelse (POST/PUT)
+    - 204 No Content: vellykket DELETE (uten body)
+    - 400 Bad Request: feil i forespørsel (f.eks. ugyldig/korrupt body/params/query)
+    - 401 Unauthorized: mangler/ugyldig token
+    - 403 Forbidden: mangler tillatelse (f.eks. bruker A prøver å slette oppføring opprettet av bruker B)
+    - 404 Not Found: ressurs ikke funnet (ukjent id)
+    - 422 Unprocessable Entity: validering feiler (400)
+  src: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
+*/
+
+/* * authentication-structure:
+    (POST /v1/auth/login)
+      - Input: { username, password } (need validation)
+      if correct then:
+      - create loginID 
+      - save loginID to activeLogins
+      - Issue (generate) <accessToken> and <refreshToken> (JWTs (JSON Web Tokens) with a payload, containing an arbitrary but consistent generated login ID).
+      - return '200 ok' with { <accessToken>, <refreshToken> }
+    
+    (GET /v1/auth/refresh)
+      - require headers: X-RefreshToken: <refreshToken>
+      - server will:
+        - verify <refreshToken>
+        - check 'loginID' is still valid (still in 'activeLogins')
+        - return '200 ok' with <accessToken>
+
+    (POST /v1/auth/logout)
+      - logout will: 
+        - invalidate / disable both <accessToken> and <refreshToken> by - removing 'loginID' from 'activeLogins'
+        - return '204 No Content'
+      "NOTE: Etter logout skal både access- og refresh-token bli avvist (401), fordi innloggings-ID-en ikke lenger er aktiv. Brukeren bør samtidig slette tokens på sin side."
+
+    (GET /v1/auth/validate (optional))
+      - require: Authorization: Bearer <accessToken>
+      - if ok: return '200 ok' with f.ex.: { user: <payload> } (nb: given payload does not contain any sensitive info)
+      - else: return '401 Unauthorized'
+*/
+
+/* * crud-example-structure:
+    Public
+      - GET /v1/health → { ok: true }
+    Protected (requires Authorization)
+      - GET /v1/<resource> → list
+      - GET /v1/<resource>/:id → fetch a specific entry
+      - POST /v1/<resource> → create a new entry, generate ID automatically (not idempotent)
+      - PUT /v1/<resource> → create a new entry, expect the ID to be provided in the request body (idempotent)
+      - PATCH /v1/<resource>/:id → update entry
+      - DELETE /v1/<resource>/:id → delete
+*/
+
+/* * tips:
+    - Create an auth middleware that:
+      ! warning: middleware is outdated, find better soluton
+      - reads the Authorization header (Bearer ...)
+      - verifies the JWT (JSON Web Tokens)
+      - checks that the login ID in the payload is still active
+      - attaches the payload to req.user
+      - Create a separate validate(schema) middleware to avoid repetition.
+
+    - Have a single error handler that provides consistent error responses, e.g. { error: { code, message, details } }
+
+    - Document anything that could be a source of confusion (e.g., if active logins disappear when the server restarts).
+
+    - Maintain clear separation between:
+      - endpoint definitions (routes)
+      - controllers/handlers (HTTP requests)
+      - business logic (services/use cases, functionality and flow not dependent on Express)
+      - data access (e.g., service for handling reading/writing to/from memory or JSON file)
+      - validation (validation schema [ref. schema] + a validate(schema) middleware that only sets up validation schema against the request)
+      - authentication/authorization (middleware)
+      - common error/response format (error handling)
+      - configuration/startup (setup, environment [ref. env], etc.)
+
+    - Start small:
+        1. Set up Express, start listening on any port (recommended default: 3000), then set up:
+        2. GET /v1/health
+        3. POST /v1/auth/login
+        4. GET /v1/auth/refresh
+        5. GET /v1/<resource>
+        6. ...and then implement the remaining endpoints
+
+*/

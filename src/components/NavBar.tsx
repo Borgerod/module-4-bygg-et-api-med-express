@@ -26,30 +26,25 @@ import {
 import { NavigationMenu } from "@radix-ui/react-navigation-menu";
 import { cn } from "@lib/utils";
 import { Button } from "./ui/button";
-import { useUser } from "@/app/providers";
+// import { useUser } from "@/app/providers";
 import { useRouter } from "next/navigation";
 import { Employee } from "@expressBackend/schema/employee.schema";
 import { User } from "@expressBackend/schema/user.schema";
 import { da } from "date-fns/locale";
-
+import { use, useContext } from "react";
+import { UserContext } from "@lib/userProvider";
 export default function NavBar() {
-  const { user, employee, refreshUser } = useUser();
   const pathname = usePathname();
   const router = useRouter();
-
-  console.log("=== NavBar Debug ===");
-  console.log("user:", user);
-  console.log("employee:", employee);
-  console.log("employee?.firstname:", employee?.firstname);
-  console.log("user.email:", user?.email);
-  console.log("==================");
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    throw new Error("useContext must be used within a UserProvider");
+  }
+  const { user, setUser } = userContext;
 
   const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    if (!user?.id) {
-      console.warn("No userId available for logout.");
-      return;
-    }
+
     const url = `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/logout`;
 
     const options: RequestInit = {
@@ -59,7 +54,7 @@ export default function NavBar() {
         "Content-Type": "application/json",
       },
       credentials: "include" as RequestCredentials,
-      body: JSON.stringify({ userId: user.id }),
+      body: JSON.stringify({ userId: user?.userId }),
     };
 
     try {
@@ -68,7 +63,7 @@ export default function NavBar() {
         const data = await response.json();
         console.log(data);
       }
-      await refreshUser();
+      setUser(null);
       router.push("/");
     } catch (error) {
       console.error(error);
@@ -77,10 +72,16 @@ export default function NavBar() {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList className={cn("flex p-2 px-5 w-full justify-between", "", "")}>
+      <NavigationMenuList
+        className={cn("flex p-2 px-5 w-full justify-between", "", "")}
+      >
         <NavigationMenuLink
           id="profile-button"
-          className={cn("hover:bg-transparent active:bg-transparent rounded-xl", "", "")}
+          className={cn(
+            "hover:bg-transparent active:bg-transparent rounded-xl",
+            "",
+            "",
+          )}
           href="/"
         >
           <Image src="/logo.png" alt="2Do logo" width={50} height={50} />
@@ -92,21 +93,29 @@ export default function NavBar() {
               id="buttons-when-logged-in"
               className={cn("visible contents", "", "")}
             >
-              <div id="user-diplay-row" className={cn("flex items-center gap-2", "", "")}>
-                <span>Hello {user.email}</span>
-                {employee?.firstname && <span>Hello {employee.firstname}</span>}
+              <div
+                id="user-diplay-row"
+                className={cn("flex items-center gap-2", "", "")}
+              >
+                <span>Hello {user.firstname}</span>
+
+                {/* {employee?.firstname && <span>Hello {employee.firstname}</span>} */}
                 <NavigationMenuLink
                   id="profile-button"
                   href={`/user`}
                   className={cn("contents", "", "")}
                 >
-                  <Image
+                  {/* <Image
                     src="/profile.png"
                     width={50}
                     height={50}
                     alt="user image"
-                    className={cn("rounded-full bg-accent w-12 h-12 aspect-square", "", "")}
-                  />
+                    className={cn(
+                      "rounded-full bg-accent w-12 h-12 aspect-square",
+                      "",
+                      "",
+                    )}
+                  /> */}
                 </NavigationMenuLink>
               </div>
               <NavigationMenuLink

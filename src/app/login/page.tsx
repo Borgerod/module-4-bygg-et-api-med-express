@@ -14,7 +14,7 @@ import { Notification } from "@/components/ui/Notification";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { useUser } from "@/app/providers";
+// import { useUser } from "@/app/providers";
 import redirect from "next/navigation";
 
 export default function LoginPage() {
@@ -27,7 +27,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
   const router = useRouter();
-  const { refreshUser } = useUser();
+  // const { refreshUser } = useUser();
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setButtonText("Logging in...");
@@ -48,7 +48,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         setNotification(false);
-        await refreshUser();
+        // await refreshUser();
         router.push(redirectTo);
       } else {
         const data = await res.json();

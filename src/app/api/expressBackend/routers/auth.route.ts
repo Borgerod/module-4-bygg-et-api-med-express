@@ -25,18 +25,72 @@ interface TokenPair {
   refreshToken: string;
 }
 
-const setAuthCookies = (res: Response, tokens: TokenPair) => {
-  res.cookie("refreshToken", tokens.refreshToken, {
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+const setAuthCookies = (res: Response, tokens: TokenPair, user: User) => {
+  const maxAge = 7 * 24 * 60 * 60 * 1000;
+  const minAge = 3 * 60 * 60 * 1000;
+
+  res.cookie("id", user.id, {
+    maxAge: maxAge,
     httpOnly: true,
     secure: true,
     sameSite: "none",
   });
-  res.cookie("accessToken", tokens.accessToken, {
-    maxAge: 3 * 60 * 60 * 1000,
+
+  res.cookie("email", user.email, {
+    maxAge: maxAge,
     httpOnly: true,
     secure: true,
     sameSite: "none",
+  });
+
+  res.cookie("username", user.username, {
+    maxAge: maxAge,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
+  res.cookie("refreshToken", tokens.refreshToken, {
+    maxAge: maxAge,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
+  res.cookie("accessToken", tokens.accessToken, {
+    maxAge: minAge,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+};
+
+const delAuthCookies = (res: Response) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: config.env !== "development",
+    path: "/",
+  });
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: config.env !== "development",
+    path: "/",
+  });
+
+  res.clearCookie("id", {
+    httpOnly: true,
+    secure: config.env !== "development",
+    path: "/",
+  });
+  res.clearCookie("email", {
+    httpOnly: true,
+    secure: config.env !== "development",
+    path: "/",
+  });
+  res.clearCookie("username", {
+    httpOnly: true,
+    secure: config.env !== "development",
+    path: "/",
   });
 };
 
@@ -80,7 +134,7 @@ const handleRefreshToken = async (
         : uuidv4(),
       loginAt: new Date(),
     });
-    setAuthCookies(res, tokens);
+    setAuthCookies(res, tokens, user);
     res.status(200).json({ success: true, ...tokens });
   } catch (error) {
     next(error);
@@ -121,7 +175,7 @@ authRouter.get(
         loginAt: new Date(),
       });
       // Set new tokens in cookies
-      setAuthCookies(res, tokens);
+      setAuthCookies(res, tokens, user);
       // Return the full user object (or select fields)
       res.json({
         user: { id: user.id, email: user.email, role: user.role },
@@ -160,10 +214,16 @@ authRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await login(email, password);
-    setAuthCookies(res, result);
-    // Find the user and return user object in response
     const user = await User.findOne({ where: { email } });
-    res.status(200).json({ user: user ? { id: user.id } : null, ...result });
+    if (user) {
+      setAuthCookies(res, result, user);
+      res.status(200).json({
+        user: { id: user.id, email: user.email, role: user.role },
+        ...result,
+      });
+    } else {
+      res.status(401).json({ user: null });
+    }
   } catch (err) {
     if (err instanceof Error) {
       res.status(500).json({ message: "Error logging in", error: err.message });
@@ -184,16 +244,18 @@ authRouter.post("/logout", async (req: Request, res: Response) => {
     } else {
       console.log("No userId provided in logout request.");
     }
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: config.env !== "development",
-      path: "/",
-    });
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: config.env !== "development",
-      path: "/",
-    });
+    delAuthCookies(res);
+    // res.clearCookie("refreshToken", {
+    //   httpOnly: true,
+    //   secure: config.env !== "development",
+    //   path: "/",
+    // });
+    // res.clearCookie("accessToken", {
+    //   httpOnly: true,
+    //   secure: config.env !== "development",
+    //   path: "/",
+    // });
+
     res.status(204).end();
   } catch (error) {
     console.error("failed to destroy cookies", error);
