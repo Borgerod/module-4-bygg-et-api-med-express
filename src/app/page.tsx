@@ -4,39 +4,16 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export default function Home() {
-  const pathname = usePathname();
-
-  function handleLogout(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ): void {
-    try {
-      event.preventDefault();
-      fetch("http://localhost:4000/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).finally(() => {
-        // window.location.href = "/login";
-      });
-    } catch (error) {
-      console.error("Error while logging out: ", error);
-    }
-  }
-
   return (
-    <main
+    <div
       className={cn(
-        " sm:py-32",
         " px-10",
         " sm:px-16",
-        "dark:bg-black sm:items-start",
+        " sm:items-start",
         "grid grid-rows-[1fr_auto_1fr]",
-        "gap-10 sm:gap-0",
+        "gap-10 sm:gap-10",
         "",
         "",
         "",
@@ -45,25 +22,27 @@ export default function Home() {
       <div
         id="project-header"
         className={cn(
-          "flex flex-col w-full  sm:flex-row sm:justify-between items-center",
+          "flex flex-col w-full  sm:flex-row sm:justify-between items-center gap-5",
           "",
           "",
         )}
       >
         <Image
           className={cn(
-            "h-50 w-50",
+            "h-50",
+            "w-100",
             "h-full w-full",
-            "min-h-20 min-w-20",
-            "max-h-40 max-w-40",
-            "aspect-square",
+            "min-h-10 min-w-30",
+            "max-h-30 max-w-40",
+            "",
+
             "",
             "",
           )}
-          src="/favicon.ico"
+          src="/logo.png"
           alt="ToDo logo"
-          width={100}
-          height={100}
+          width={200}
+          height={200}
           priority
         />
         <Card
@@ -209,6 +188,8 @@ export default function Home() {
               "",
               "",
             )}
+            // href={"/todo"} //should redirect to login first
+
             href={"/todo"}
           >
             ToDo (Prisma)
@@ -219,37 +200,14 @@ export default function Home() {
               "",
               "",
             )}
+            // href={"/expressTodo"} //should redirect to login first
+
             href={"/expressTodo"}
           >
             ToDo (Express)
           </Link>
-          <Link
-            className={cn(
-              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
-              "",
-              "",
-            )}
-            href={{
-              pathname: "/login",
-              query: { from: pathname },
-            }}
-          >
-            Log in
-          </Link>
-          <Button
-            className={cn(
-              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
-              "",
-              "",
-            )}
-            type={"button"}
-            variant={"ghost"}
-            onClick={handleLogout}
-          >
-            Log out
-          </Button>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

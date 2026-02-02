@@ -11,10 +11,11 @@ import { title } from "process";
 import { useState, useEffect, useRef } from "react";
 import * as React from "react";
 import { Notification } from "@/components/ui/Notification";
-// import { useRouter } from "next/router";
-// import { useRouter, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useUser } from "@/app/providers";
+import redirect from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -23,85 +24,49 @@ export default function LoginPage() {
   const [buttonText, setButtonText] = useState("Login");
   const [notification, setNotification] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  // const searchParams = useSearchParams();
-  // const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
   const router = useRouter();
-  const referer = getReferer();
-
-  // const [loginStatus, setLoginStatus] = useState(""); //related to UI messages "logging in.." "failed to login" etc. not related to tokens.
-  const [loginData, setLoginData] = useState({
-    accessToken: "",
-    refreshToken: "",
-  });
-  async function handleSubmit(e: React.FormEvent) {
+  const { refreshUser } = useUser();
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setButtonText("Logging in...");
     setNotification(false);
+
     try {
-      const url = "http://localhost:4000/auth/login";
-      const options = {
-        method: "POST",
-        headers: {
-          Accept: "*/*",
-          "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ email, password }),
         },
-        body: `{"email":"${email}","password":"${password}"}`,
-      };
-      const response = await fetch(url, options);
-      const text = await response.text();
-      // let data: { error?: string } = {};
-      let data;
-      // setLoginData(
-      //   )
-      // console.log("PRINTING DIFFERENT RESPONSE HANDLES");
-      // console.log("response.formData: ", response.formData());
-      // console.log("response.text: ");
-      // console.log("response.body: ", response.body);
-      // console.log("response.headers: ", response.headers.entries());
-      try {
-        data = JSON.parse(text);
-        setLoginData({
-          accessToken: data.accessToken,
-          refreshToken: data.refreshToken,
-        });
-        if (!data.error) {
-          if (referer) {
-            router.push(referer);
-          }
-        }
-      } catch {
-        data = { error: text };
-      }
-
-      if (data.error) {
-        setMessage("✗ Error: " + data.error);
-        setNotification(true);
-        setButtonText("Log in");
-      }
-
-      //  const userAgent = headersList.get('user-agent')
-
-      setButtonText("Logging in..");
-      // test: go back if it takes you out of the website, then take to home.
-      // http://localhost:3000/
-      // router.back();
-
-      // const prevPage = localStorage.getItem("prevPage");
-
-      // you can now use prevPage as needed
-    } catch (error) {
-      setMessage(
-        "✗ Error: " + (error instanceof Error ? error.name : "Failed"),
       );
+
+      if (res.ok) {
+        setNotification(false);
+        await refreshUser();
+        router.push(redirectTo);
+      } else {
+        const data = await res.json();
+        setMessage(data.message || "Login failed");
+        setNotification(true);
+        setButtonText("Login");
+      }
+    } catch (error) {
+      setMessage("Network error");
+      console.error("Network error: ", error);
       setNotification(true);
-      setButtonText("Log in");
+      setButtonText("Login");
     }
   }
   return (
     <>
       <Card className={cn("min-w-87.5 max-w-full mx-auto", "p-0", "")}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <FieldSet className={cn("p-5 w-full", "", "")}>
             <h1 className="text-2xl mb-4">Login</h1>
             {notification && <Notification message={message} type="warning" />}
@@ -164,16 +129,6 @@ export default function LoginPage() {
           </FieldSet>
         </form>
       </Card>
-      <Card>
-        {loginData.accessToken}
-        {loginData.refreshToken}
-      </Card>
     </>
   );
-}
-
-function getReferer(): string {
-  if (typeof document === "undefined") return "/";
-  const match = document.cookie.match(/(?:^|; )referer=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : "/";
 }
