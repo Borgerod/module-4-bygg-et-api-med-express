@@ -4,21 +4,17 @@ import User from "@/app/api/expressBackend/models/user.model";
 import { config } from "@/app/api/expressBackend/config/env.config";
 import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
 import jwt, { SignOptions } from "jsonwebtoken";
-import * as userController from "@/app/api/expressBackend/controllers/users.controllers";
 import * as employeeController from "@/app/api/expressBackend/controllers/employees.controllers";
 import Employee from "@/app/api/expressBackend/models/employee.model";
-import { cookies } from "next/headers";
 
 function generateTokenPair(user: User) {
   const accessToken: string = jwt.sign(
     {
       role: user.role,
-      user: {
-        id: user.id,
-      },
     },
     config.jwt.secret,
     {
+      subject: user.id,
       expiresIn: config.jwt.accessExpiration,
     } as SignOptions,
   );
@@ -39,7 +35,6 @@ export interface LoginResult {
 async function login(email: string, password: string): Promise<LoginResult> {
   const user = await User.findOne({ where: { email } });
 
-  // if (!user) return res.status(400).json({ message: "Invalid credentials" });
   if (!user) {
     throw new Error("Invalid email or password");
   }

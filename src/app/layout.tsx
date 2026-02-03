@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import { Notification } from "@/components/ui/Notification";
 import DarkModeButton from "@/components/DarkModeButton";
 import NavBar from "@/components/NavBar";
-import { cookies } from "next/headers";
 import UserProvider from "@lib/userProvider";
-import { getUser } from "@lib/user";
+import { getUserProfileFromDb } from "@lib/user";
+import { cookies } from "next/headers";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -33,7 +33,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getUser();
+  const user = await getUserProfileFromDb();
 
   return (
     <html

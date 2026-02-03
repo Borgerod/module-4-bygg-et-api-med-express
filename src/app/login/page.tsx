@@ -28,6 +28,7 @@ export default function LoginPage() {
   const redirectTo = searchParams.get("redirect") || "/";
   const router = useRouter();
   // const { refreshUser } = useUser();
+
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setButtonText("Logging in...");

@@ -25,30 +25,9 @@ interface TokenPair {
   refreshToken: string;
 }
 
-const setAuthCookies = (res: Response, tokens: TokenPair, user: User) => {
+const setAuthCookies = (res: Response, tokens: TokenPair) => {
   const maxAge = 7 * 24 * 60 * 60 * 1000;
   const minAge = 3 * 60 * 60 * 1000;
-
-  res.cookie("id", user.id, {
-    maxAge: maxAge,
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-
-  res.cookie("email", user.email, {
-    maxAge: maxAge,
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-
-  res.cookie("username", user.username, {
-    maxAge: maxAge,
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
 
   res.cookie("refreshToken", tokens.refreshToken, {
     maxAge: maxAge,
@@ -72,22 +51,6 @@ const delAuthCookies = (res: Response) => {
     path: "/",
   });
   res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: config.env !== "development",
-    path: "/",
-  });
-
-  res.clearCookie("id", {
-    httpOnly: true,
-    secure: config.env !== "development",
-    path: "/",
-  });
-  res.clearCookie("email", {
-    httpOnly: true,
-    secure: config.env !== "development",
-    path: "/",
-  });
-  res.clearCookie("username", {
     httpOnly: true,
     secure: config.env !== "development",
     path: "/",
@@ -134,7 +97,7 @@ const handleRefreshToken = async (
         : uuidv4(),
       loginAt: new Date(),
     });
-    setAuthCookies(res, tokens, user);
+    setAuthCookies(res, tokens);
     res.status(200).json({ success: true, ...tokens });
   } catch (error) {
     next(error);
@@ -175,7 +138,7 @@ authRouter.get(
         loginAt: new Date(),
       });
       // Set new tokens in cookies
-      setAuthCookies(res, tokens, user);
+      setAuthCookies(res, tokens);
       // Return the full user object (or select fields)
       res.json({
         user: { id: user.id, email: user.email, role: user.role },
@@ -216,7 +179,7 @@ authRouter.post("/login", async (req, res) => {
     const result = await login(email, password);
     const user = await User.findOne({ where: { email } });
     if (user) {
-      setAuthCookies(res, result, user);
+      setAuthCookies(res, result);
       res.status(200).json({
         user: { id: user.id, email: user.email, role: user.role },
         ...result,
