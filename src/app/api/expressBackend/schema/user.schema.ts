@@ -62,4 +62,4 @@ export type UserUpdate = z.infer<typeof UserSchemaUpdate>;
 
 import type { Employee } from "@expressBackend/schema/employee.schema";
 
-export type UserProfile = User & Employee;
+export type UserProfile = (User & Employee) | null;

@@ -1,16 +1,11 @@
 "use client";
 import Image from "next/image";
 
-import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import {
-  NavigationMenuContent,
-  NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { RxHamburgerMenu } from "react-icons/rx";
 import {
@@ -22,17 +17,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { NavigationMenu } from "@radix-ui/react-navigation-menu";
 import { cn } from "@lib/utils";
 import { Button } from "./ui/button";
-// import { useUser } from "@/app/providers";
 import { useRouter } from "next/navigation";
-import { Employee } from "@expressBackend/schema/employee.schema";
-import { User } from "@expressBackend/schema/user.schema";
-import { da } from "date-fns/locale";
-import { use, useContext } from "react";
+import { useContext } from "react";
 import { UserContext } from "@lib/userProvider";
+
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -98,8 +89,9 @@ export default function NavBar() {
                 className={cn("flex items-center gap-2", "", "")}
               >
                 <span>Hello {user.firstname}</span>
+                <span>Hello {user.username}</span>
+                <span>Hello {user.id}</span>
 
-                {/* {employee?.firstname && <span>Hello {employee.firstname}</span>} */}
                 <NavigationMenuLink
                   id="profile-button"
                   href={`/user`}

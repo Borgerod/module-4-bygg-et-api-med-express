@@ -7,8 +7,6 @@ import DarkModeButton from "@/components/DarkModeButton";
 import NavBar from "@/components/NavBar";
 import UserProvider from "@lib/userProvider";
 import { getUserProfileFromDb } from "@lib/user";
-import { cookies } from "next/headers";
-import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

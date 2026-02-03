@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useState, Dispatch, SetStateAction } from "react";
+import {
+  createContext,
+  useState,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+} from "react";
 import { UserProfile } from "@expressBackend/schema/user.schema";
 
 type UserContextType = {
@@ -20,6 +26,10 @@ export default function UserProvider({
   initialUser: UserProfile | null;
 }) {
   const [user, setUser] = useState<UserProfile | null>(initialUser);
+
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

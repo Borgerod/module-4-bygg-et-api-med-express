@@ -1,21 +1,19 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { DatePicker } from "@/components/ui/todo/DatePicker";
 import { cn } from "@lib/utils";
 import Link from "next/link";
-import { title } from "process";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import * as React from "react";
 import { Notification } from "@/components/ui/Notification";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-// import { useUser } from "@/app/providers";
-import redirect from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { UserContext } from "@lib/userProvider";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -27,7 +25,12 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
   const router = useRouter();
-  // const { refreshUser } = useUser();
+
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    throw new Error("useContext must be used within a UserProvider");
+  }
+  const { setUser } = userContext;
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -49,8 +52,10 @@ export default function LoginPage() {
 
       if (res.ok) {
         setNotification(false);
-        // await refreshUser();
+        const userData = await res.json();
+        setUser(userData);
         router.push(redirectTo);
+        router.refresh();
       } else {
         const data = await res.json();
         setMessage(data.message || "Login failed");
