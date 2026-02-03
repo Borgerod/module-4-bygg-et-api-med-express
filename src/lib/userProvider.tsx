@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useState,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { createContext, useState, Dispatch, SetStateAction } from "react";
 import { UserProfile } from "@expressBackend/schema/user.schema";
 
 type UserContextType = {
