@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { createContext, useState, Dispatch, SetStateAction } from "react";
 import { UserProfile } from "@expressBackend/schema/user.schema";
 
 type UserContextType = {
@@ -33,20 +27,3 @@ export default function UserProvider({
     </UserContext.Provider>
   );
 }
-
-// "use client";
-
-// import { createContext } from "react";
-// import { UserProfile } from "@expressBackend/schema/user.schema";
-
-// export const UserContext = createContext<Promise<UserProfile> | null>(null);
-
-// export default function UserProvider({
-//   children,
-//   userPromise,
-// }: {
-//   children: React.ReactNode;
-//   userPromise: Promise<UserProfile>;
-// }) {
-//   return <UserContext value={userPromise}>{children}</UserContext>;
-// }
