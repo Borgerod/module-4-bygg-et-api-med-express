@@ -110,33 +110,40 @@ export async function getEmployeeById(id: string): Promise<EmployeeSafe> {
   }
 }
 
-// export async function getEmployeeByUserId(userId: string) {
-//   try {
-//     // const employee = await Employee.findByPk(userId);
-//     //  const employee = await Employee.findByPk(userId);
-//     // const employee = await Employee.findOne({ where: { id: userId } });
-//     // const employee = await Employee.findOne({ where: { user_id: userId } });
-//     const employee = await Employee.findOne({ where: { userId: user.id } });
-//     if (!employee) {
-//       const clientError = new Error("Employee not found");
-//       (clientError as Error & { status: number }).status = 404;
-//       console.error(`GET (by userId) /employees/${userId}`, {
-//         error: "Employee not found",
-//       });
-//       throw clientError;
-//     }
+export async function getEmployeeByUserId(
+  userId: string,
+): Promise<EmployeeSafe> {
+  try {
+    const employee = await Employee.findOne({
+      where: { userId: userId },
+      attributes: { exclude: ["password"] },
+    });
 
-//     return employee.toJSON() as EmployeeSafe;
-//   } catch (error) {
-//     console.error(`GET (by userId) /employees/${userId}`, {
-//       error: error instanceof Error ? error.message : error,
-//     });
-//     const clientError = new Error("Failed to fetch employee");
-//     (clientError as Error & { status: number }).status =
-//       getStatusFromError(error);
-//     throw clientError;
-//   }
-// }
+    if (!employee) {
+      const clientError = new Error("Employee not found");
+      (clientError as Error & { status: number }).status = 404;
+      console.error(`GET /employees/by-user/${userId}`, {
+        error: "Employee not found",
+      });
+      throw clientError;
+    }
+
+    console.info(`GET /employees/by-user/${userId}`, {
+      id: employee.id,
+      userId: employee.userId,
+    });
+
+    return employee.toJSON() as EmployeeSafe;
+  } catch (error) {
+    console.error(`GET /employees/by-user/${userId}`, {
+      error: error instanceof Error ? error.message : error,
+    });
+    const clientError = new Error("Failed to fetch employee");
+    (clientError as Error & { status: number }).status =
+      getStatusFromError(error);
+    throw clientError;
+  }
+}
 
 export async function createEmployee(
   createEmployeeData: EmployeeCreation & {
@@ -203,13 +210,12 @@ export async function createEmployee(
     throw clientError;
   }
 }
+
 export async function updateEmployeeOnlineStatus(
   id: string,
   updateData: EmployeeLogin,
 ) {
   try {
-    // const employee = await Employee.findByPk(id);
-    //  const employee = await Employee.findByPk(id);
     const employee = await Employee.findOne({ where: { userId: id } });
     if (!employee) {
       const clientError = new Error("Employee not found");

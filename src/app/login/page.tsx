@@ -52,8 +52,16 @@ export default function LoginPage() {
 
       if (res.ok) {
         setNotification(false);
-        const userData = await res.json();
-        setUser(userData);
+
+        const profileRes = await fetch("/api/user-profile", {
+          credentials: "include",
+        });
+
+        if (profileRes.ok) {
+          const userProfile = await profileRes.json();
+          setUser(userProfile);
+        }
+
         router.push(redirectTo);
         router.refresh();
       } else {
