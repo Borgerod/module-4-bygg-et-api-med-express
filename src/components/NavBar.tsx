@@ -88,9 +88,10 @@ export default function NavBar() {
                 id="user-diplay-row"
                 className={cn("flex items-center gap-2", "", "")}
               >
-                <span>Hello {user.firstname}</span>
-                <span>Hello {user.username}</span>
-                <span>Hello {user.id}</span>
+                <span>
+                  {user.firstname}, {user.middlename ? user.middlename : ""}{" "}
+                  {user.lastname}
+                </span>
 
                 <NavigationMenuLink
                   id="profile-button"
@@ -162,7 +163,7 @@ export default function NavBar() {
 
               <NavigationMenuLink
                 id="sign-up-button"
-                href={`/login?from=${encodeURIComponent(pathname)}`}
+                href={`/signup?from=${encodeURIComponent(pathname)}`}
                 className={cn("contents", "", "")}
               >
                 <Button variant={"ghost"} size={"lg"}>

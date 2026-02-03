@@ -31,8 +31,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getUserProfileFromDb();
-
   return (
     <html
       suppressHydrationWarning
@@ -55,7 +53,7 @@ export default async function RootLayout({
           "",
         )}
       >
-        <UserProvider initialUser={user}>
+        <UserProvider>
           <header className={cn("w-screen", "", "")}>
             <nav>
               <NavBar />

@@ -5,7 +5,6 @@ import {
   useState,
   Dispatch,
   SetStateAction,
-  useEffect,
 } from "react";
 import { UserProfile } from "@expressBackend/schema/user.schema";
 
@@ -20,16 +19,10 @@ export const UserContext = createContext<UserContextType | undefined>(
 
 export default function UserProvider({
   children,
-  initialUser,
 }: {
   children: React.ReactNode;
-  initialUser: UserProfile | null;
 }) {
-  const [user, setUser] = useState<UserProfile | null>(initialUser);
-
-  useEffect(() => {
-    setUser(initialUser);
-  }, [initialUser]);
+  const [user, setUser] = useState<UserProfile | null>(null);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
