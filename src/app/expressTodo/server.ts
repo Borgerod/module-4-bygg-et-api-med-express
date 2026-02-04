@@ -7,9 +7,10 @@ import { sequelize } from "@/app/api/expressBackend/config/db.config";
 import { employeesRouter } from "@/app/api/expressBackend/routers/employee.route";
 import { authRouter } from "@/app/api/expressBackend/routers/auth.route";
 import os from "os";
-import cookieParser from "cookie-parser";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { isAuthenticated } from "@/app/api/expressBackend/middleware/isAuthenticated.middleware";
+import { useRequestId } from "@/app/api/expressBackend/middleware/useRequestId.middleware";
+import { configureApp } from "@expressBackend/config/server.config";
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ export const db = new Database(
 );
 
 const app = express();
+
+app.use(express.json());
 
 app.use((req, res, next) => {
   console.log(`[${req.method}] ${req.url}`);
@@ -42,10 +45,7 @@ app.use((req, res, next) => {
 });
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.set("trust proxy", true);
-app.use(cookieParser());
+app.use(useRequestId);
 
 // Routes
 app.use("/users", userRouter);
@@ -164,12 +164,15 @@ app.put("/expressTodo/:id", async (req, res) => {
   }
 });
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+//* ERROR HADNLER
+app.use((err: Error, req: Request, res: Response) => {
   res.status(500).json({
     error: err.message,
     stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
 });
+
+configureApp(app);
 
 sequelize
   .sync()

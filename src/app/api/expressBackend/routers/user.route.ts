@@ -38,7 +38,8 @@ userRouter.get(
 
 userRouter.post(
   "/",
-  isAuthenticated(["admin"]), //keep if userRegistration should be monitored by admins (for example if the only users for this app are employees)
+  // isAuthenticated(["admin"]), //keep if userRegistration should be monitored by admins (for example if the only users for this app are employees)
+  isAuthenticated(["admin", "self"]), //NOTE: same consern as in employee.route.
   validateRequest({ bodySchema: UserSchemaCreate }),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -52,6 +53,7 @@ userRouter.post(
 
 userRouter.patch(
   "/:id",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -68,6 +70,7 @@ userRouter.patch(
 
 userRouter.delete(
   "/:id",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -82,7 +85,7 @@ userRouter.delete(
 );
 
 // Catch-all 404 logger for unmatched routes
-userRouter.use((req: Request, res: Response, next: NextFunction) => {
+userRouter.use((req: Request, _res: Response, next: NextFunction) => {
   // Log in the same format as your controllers
   console.error(`${req.method} ${req.originalUrl}`, { error: "Not found" });
   const notFoundError = new Error("Not found") as Error & { status?: number };
@@ -91,31 +94,17 @@ userRouter.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Centralized error handler
-userRouter.use(
-  (err: unknown, req: Request, res: Response, next: NextFunction): void => {
-    if (res.headersSent) {
-      return;
-    }
+userRouter.use((err: ZodError | Error, _req: Request, res: Response): void => {
+  if (res.headersSent) {
+    return;
+  }
+  console.error("userRouter-Error:", err);
 
-    if (err instanceof ZodError) {
-      res.status(400).json({ error: err.issues });
-      return;
-    }
-
-    let status = 500;
-    let message = "Internal server error";
-    if (typeof err === "object" && err !== null && "message" in err) {
-      message = (err as { message: string }).message;
-      if (
-        "status" in err &&
-        typeof (err as { status: number }).status === "number"
-      ) {
-        status = (err as { status: number }).status;
-      }
-    }
-
-    res.status(status).json({ error: message });
-  },
-);
+  const status =
+    typeof (err as unknown as { status?: unknown }).status === "number"
+      ? (err as unknown as { status: number }).status
+      : 500;
+  res.status(status).json({ success: false, error: (err as Error).message });
+});
 
 export { userRouter };

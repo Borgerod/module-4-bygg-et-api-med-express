@@ -1,7 +1,7 @@
-import { ZodType } from "zod";
 import { Request, Response, NextFunction } from "express";
+import { ZodType } from "zod";
 
-const validateRequest =
+export const validateRequest =
   ({
     bodySchema,
     paramSchema,
@@ -10,10 +10,10 @@ const validateRequest =
   }: { [key: string]: ZodType } = {}) =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      bodySchema && bodySchema.parse(req.body);
-      paramSchema && paramSchema.parse(req.params);
-      querySchema && querySchema.parse(req.query);
-      headerSchema && headerSchema.parse(req.header);
+      if (bodySchema) bodySchema.parse(req.body);
+      if (paramSchema) paramSchema.parse(req.params);
+      if (querySchema) querySchema.parse(req.query);
+      if (headerSchema) headerSchema.parse(req.headers);
 
       console.log("[useValidate] Schema validation passed!");
 
@@ -23,5 +23,3 @@ const validateRequest =
       res.sendStatus(400);
     }
   };
-
-export { validateRequest };

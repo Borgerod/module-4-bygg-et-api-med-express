@@ -1,12 +1,14 @@
 import express, { Request, Response, NextFunction } from "express";
 import * as employeesController from "@/app/api/expressBackend/controllers/employees.controllers";
 import { ZodError } from "zod";
+import { isAuthenticated } from "@expressBackend/middleware/isAuthenticated.middleware";
 
 const employeesRouter = express.Router();
 
 employeesRouter.get(
   "/",
-  async (req: Request, res: Response, next: NextFunction) => {
+  isAuthenticated(["admin"]),
+  async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const employeess = await employeesController.getEmployees();
       res.status(200).json(employeess);
@@ -18,6 +20,7 @@ employeesRouter.get(
 
 employeesRouter.get(
   "/:id",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -33,6 +36,7 @@ employeesRouter.get(
 
 employeesRouter.get(
   "/by-user/:userId",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId: string = Array.isArray(req.params.userId)
@@ -48,6 +52,7 @@ employeesRouter.get(
 
 employeesRouter.post(
   "/",
+  isAuthenticated(["admin"]), //NOTE: this might complicate thing due to the fact that i have split up EmployeeCreation into two parts one filled by new employee and one by admin. ref:"src\app\signup\page.tsx"
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const employees = await employeesController.createEmployee(req.body);
@@ -60,6 +65,7 @@ employeesRouter.post(
 
 employeesRouter.patch(
   "/:id",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -78,6 +84,7 @@ employeesRouter.patch(
 // Update data for an employee based on id; if the id does not exist.
 employeesRouter.put(
   "/:id",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -94,6 +101,7 @@ employeesRouter.put(
 
 employeesRouter.delete(
   "/:id",
+  isAuthenticated(["admin", "self"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -108,7 +116,7 @@ employeesRouter.delete(
 );
 
 // Catch-all 404 logger for unmatched routes
-employeesRouter.use((req: Request, res: Response, next: NextFunction) => {
+employeesRouter.use((req: Request, _res: Response, next: NextFunction) => {
   // Log in the same format as your controllers
   console.error(`${req.method} ${req.originalUrl}`, { error: "Not found" });
   const notFoundError = new Error("Not found") as Error & { status?: number };
@@ -117,29 +125,19 @@ employeesRouter.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Centralized error handler
-employeesRouter.use((err: unknown, req: Request, res: Response): void => {
-  if (res.headersSent) {
-    return;
-  }
-
-  if (err instanceof ZodError) {
-    res.status(400).json({ error: err.issues });
-    return;
-  }
-
-  let status = 500;
-  let message = "Internal server error";
-  if (typeof err === "object" && err !== null && "message" in err) {
-    message = (err as { message: string }).message;
-    if (
-      "status" in err &&
-      typeof (err as { status: number }).status === "number"
-    ) {
-      status = (err as { status: number }).status;
+employeesRouter.use(
+  (err: ZodError | Error, _req: Request, res: Response): void => {
+    if (res.headersSent) {
+      return;
     }
-  }
+    console.error("employeesRouter-Error:", err);
 
-  res.status(status).json({ error: message });
-});
+    const status =
+      typeof (err as unknown as { status?: unknown }).status === "number"
+        ? (err as unknown as { status: number }).status
+        : 500;
+    res.status(status).json({ success: false, error: (err as Error).message });
+  },
+);
 
 export { employeesRouter };
