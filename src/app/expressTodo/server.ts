@@ -11,6 +11,7 @@ import { Request, Response } from "express";
 import { isAuthenticated } from "@/app/api/expressBackend/middleware/isAuthenticated.middleware";
 import { useRequestId } from "@/app/api/expressBackend/middleware/useRequestId.middleware";
 import { configureApp } from "@expressBackend/config/server.config";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ export const db = new Database(
 
 const app = express();
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.use((req, res, next) => {

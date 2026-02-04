@@ -1,6 +1,4 @@
-// import express from "express";
 import express, { Request, Response, NextFunction } from "express";
-
 import {
   generateTokenPair,
   login,
@@ -8,13 +6,8 @@ import {
   verifyRefreshToken,
 } from "@/app/api/expressBackend/controllers/auth.controllers";
 import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
-import {
-  AuthSchemaLogin,
-  AuthSchemaLogout,
-} from "@/app/api/expressBackend/schema/auth.schema";
 import jwt from "jsonwebtoken";
 import { config } from "@/app/api/expressBackend/config/env.config";
-import { validateRequest } from "@/app/api/expressBackend/middleware/useValidate.middleware";
 import User from "@/app/api/expressBackend/models/user.model";
 import { v4 as uuidv4 } from "uuid";
 
@@ -152,27 +145,6 @@ authRouter.get(
 );
 authRouter.get("/refresh/:token", handleRefreshToken);
 
-// authRouter.post(
-//   "/login",
-//   validateRequest({ bodySchema: AuthSchemaLogin }),
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     const { email, password } = req.body;
-//     try {
-//       const result = await login(email, password);
-//       setAuthCookies(res, result);
-//       res.json(result);
-//     } catch (error) {
-//       next(error);
-//       // res.sendStatus(err.cause ?? 401);
-//       return;
-//     }
-//   },
-// );
-
-import { SignOptions } from "jsonwebtoken";
-import { cookies } from "next/headers";
-import bcrypt from "bcrypt";
-
 authRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -208,16 +180,6 @@ authRouter.post("/logout", async (req: Request, res: Response) => {
       console.log("No userId provided in logout request.");
     }
     delAuthCookies(res);
-    // res.clearCookie("refreshToken", {
-    //   httpOnly: true,
-    //   secure: config.env !== "development",
-    //   path: "/",
-    // });
-    // res.clearCookie("accessToken", {
-    //   httpOnly: true,
-    //   secure: config.env !== "development",
-    //   path: "/",
-    // });
 
     res.status(204).end();
   } catch (error) {

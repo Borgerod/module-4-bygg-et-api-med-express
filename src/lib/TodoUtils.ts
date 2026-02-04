@@ -21,6 +21,7 @@ export default function TodoPropsUtils(
       const res = await fetch(api("/expressTodo"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           title: data.title,
           tags: data.tags,
@@ -46,6 +47,7 @@ export default function TodoPropsUtils(
   ): Promise<void> => {
     try {
       const res = await fetch(api(`/expressTodo/${table}/${id}`), {
+        credentials: "include",
         method: "DELETE",
       });
       const responseData: { message?: string; deletedId?: string } =
@@ -84,6 +86,7 @@ export default function TodoPropsUtils(
 
     try {
       const res = await fetch(api(`/expressTodo/${id}`), {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ done: newDone }),
@@ -112,6 +115,7 @@ export default function TodoPropsUtils(
 
     try {
       const res = await fetch(api(`/expressTodo/${id}`), {
+        credentials: "include",
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newText }),
