@@ -18,7 +18,8 @@ async function seed() {
     await testConnection();
     await syncDatabase();
 
-    await createStaticTestEmployee();
+    await createStaticTestEmployee("admin");
+    await createStaticTestEmployee("user");
 
     const userBatchSize: number = 8;
     await generateUsersAndEmployees(userBatchSize);
@@ -59,20 +60,13 @@ function randomPhoneNumber(): string {
   return number;
 }
 
-async function createStaticTestEmployee() {
+async function createStaticTestEmployee(role: "admin" | "user") {
   const staticUser = await User.create({
-    email: "test.employee@example.com",
-    password: "TestEmployee#2024",
-    role: "admin",
-    username: "testemployee",
+    email: `test.employee.${role}@example.com`,
+    password: "Strong_Password_420",
+    role: role,
+    username: `TestEmployee_${role.toUpperCase()}`,
     isActive: true,
-  });
-
-  generatedUserPasswords.push({
-    username: "testemployee",
-    email: "test.employee@example.com",
-    password: "TestEmployee#2024",
-    role: "admin",
   });
 
   await Employee.create({
