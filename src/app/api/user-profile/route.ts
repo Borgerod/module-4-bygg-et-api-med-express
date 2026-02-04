@@ -1,12 +1,16 @@
-import { getUserProfileFromDb } from "@lib/user";
 import { NextResponse } from "next/server";
+import { getUserProfileFromDb } from "@/lib/user";
+import { cookies } from "next/headers";
 
 export async function GET() {
-  try {
-    const user = await getUserProfileFromDb();
-    return NextResponse.json(user);
-  } catch (error) {
-    console.error("Failed to fetch user profile:", error);
-    return NextResponse.json(null, { status: 401 });
+  const user = await getUserProfileFromDb();
+  if (!user) {
+    const cookieStore = cookies();
+    (await cookieStore).delete("accessToken");
+    (await cookieStore).delete("refreshToken");
+    console.log("[user-profile] Invalid token detected, cookies cleared.");
+    return NextResponse.json(null);
   }
+  console.log("[user-profile] User authenticated:", user?.userId ?? "unknown");
+  return NextResponse.json(user);
 }

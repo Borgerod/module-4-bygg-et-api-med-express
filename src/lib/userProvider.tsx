@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useState, Dispatch, SetStateAction } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { UserProfile } from "@expressBackend/schema/user.schema";
 
 type UserContextType = {
@@ -18,6 +24,23 @@ export default function UserProvider({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await fetch("/api/user-profile");
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      }
+      setLoading(false);
+    };
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
