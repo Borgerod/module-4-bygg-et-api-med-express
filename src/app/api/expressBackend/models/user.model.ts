@@ -4,7 +4,7 @@ import sequelize from "@/app/api/expressBackend/config/db.config";
 
 interface UserAttributes {
   id: string;
-  userAccount: string;
+  userAccount?: string;
   username: string;
   email: string;
   password: string;
@@ -12,7 +12,6 @@ interface UserAttributes {
   createdAt?: Date;
   updatedAt?: Date;
   isActive: boolean;
-  // isOnline: boolean;
 }
 
 class User
@@ -57,8 +56,7 @@ User.init(
     },
     userAccount: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
+      allowNull: true,
       field: "user_account",
     },
     username: {

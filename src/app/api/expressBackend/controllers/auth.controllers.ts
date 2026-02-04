@@ -115,13 +115,11 @@ async function verifyRefreshToken(token: string) {
 
   return true;
 }
-function verifyToken(
-  token: string,
-): { role: string; user: { id: string } } | null {
+function verifyToken(token: string): { role: string; sub: string } | null {
   try {
     return jwt.verify(token, config.jwt.secret) as {
       role: string;
-      user: { id: string };
+      sub: string;
     };
   } catch {
     return null;

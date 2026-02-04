@@ -1,17 +1,13 @@
-// import { verifyToken } from "@expressBackend/controllers/auth.controller";
 import { verifyToken } from "@/app/api/expressBackend/controllers/auth.controllers";
 import { Request, Response, NextFunction } from "express";
-import { JwtPayload } from "jsonwebtoken";
-
-declare module "express-serve-static-core" {
-  interface Request {
-    payload?: JwtPayload & { user?: { id: string; role?: string } };
-  }
-}
 
 export function isAuthenticated(validRoles = ["user"]) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    let token;
+  return (
+    req: Request & { payload?: { role: string; sub: string } },
+    res: Response,
+    next: NextFunction,
+  ) => {
+    let token: string | undefined;
     if (req.headers["authorization"]) {
       token = req.headers["authorization"].split(" ")[1];
     } else if (req.cookies && req.cookies.accessToken) {
@@ -25,20 +21,16 @@ export function isAuthenticated(validRoles = ["user"]) {
 
     const payload = verifyToken(token);
 
-    if (typeof payload === "string" || !payload) {
+    if (
+      !payload ||
+      !(
+        (validRoles.includes("admin") && payload.role === "admin") ||
+        (validRoles.includes("self") && payload.sub === req.params?.id) ||
+        validRoles.includes(payload.role)
+      )
+    ) {
       res.sendStatus(403);
       return;
-    }
-
-    if (validRoles.includes("admin") && payload.role !== "admin") {
-      if (!validRoles.includes("self")) {
-        res.sendStatus(403);
-        return;
-      }
-      if (payload.user?.id !== req.params?.id) {
-        res.sendStatus(403);
-        return;
-      }
     }
 
     req.payload = payload;
