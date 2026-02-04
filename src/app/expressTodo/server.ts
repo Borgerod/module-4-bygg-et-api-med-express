@@ -165,12 +165,14 @@ app.put("/expressTodo/:id", async (req, res) => {
 });
 
 //* ERROR HADNLER
-app.use((err: Error, req: Request, res: Response) => {
-  res.status(500).json({
-    error: err.message,
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
-});
+app.use(
+  (err: Error, req: Request, res: Response, next: express.NextFunction) => {
+    res.status(500).json({
+      error: err.message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+  },
+);
 
 configureApp(app);
 
