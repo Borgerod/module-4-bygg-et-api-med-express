@@ -61,11 +61,13 @@ export default async function RootLayout({
           </header>
           <main
             className={cn(
-              "flex-1",
               "flex",
+              "flex-1",
+              "flex-col",
+              "gap-5",
               "items-center",
               "justify-center",
-              "",
+              "mb-5",
               "",
             )}
           >

@@ -90,10 +90,18 @@ export default async function Page() {
   }
 
   return (
-    <>
+    // <>
+    <div className={cn("space-y-4 flex flex-col", "", "")}>
       <Card
         id="table-card"
-        className={cn("flex flex-col", "max-h-150", "w-full", "", "")}
+        className={cn(
+          "flex flex-col",
+          "max-h-150",
+          "w-full",
+
+          "hidden",
+          "",
+        )}
       >
         <CardHeader className="shrink-0">
           <CardTitle>TO DO LIST</CardTitle>
@@ -220,8 +228,20 @@ export default async function Page() {
         </CardContent>
       </Card>
       {/* _______________________________________________ */}
+
       <Form className={cn("", "")} action={handleAddTodo}>
-        <Card id="form-card">
+        {/* <Card id="form-card" className={cn("flex flex-row w-full ", "", "")}> */}
+        <Card
+          id="table-card"
+          className={cn(
+            "flex flex-col",
+            "p-4",
+            "w-full",
+            "overflow-hidden",
+            "",
+            "",
+          )}
+        >
           {/* TODO: maybe add a "+ button" and make this a popup  */}
           <CardHeader>
             <CardTitle>Add new</CardTitle>
@@ -299,6 +319,7 @@ export default async function Page() {
           </CardContent>
         </Card>
       </Form>
-    </>
+    </div>
+    // {/* </> */}
   );
 }
