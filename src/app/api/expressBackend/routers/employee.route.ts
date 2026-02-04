@@ -20,7 +20,7 @@ employeesRouter.get(
 
 employeesRouter.get(
   "/:id",
-  isAuthenticated(["admin", "self"]),
+  isAuthenticated(["admin", "self", "user"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id: string = Array.isArray(req.params.id)
@@ -36,7 +36,7 @@ employeesRouter.get(
 
 employeesRouter.get(
   "/by-user/:userId",
-  isAuthenticated(["admin", "self"]),
+  isAuthenticated(["admin", "self", "user"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId: string = Array.isArray(req.params.userId)
