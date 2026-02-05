@@ -6,7 +6,6 @@ import { Todo } from "@types";
 import TodoUtils from "@lib/TodoUtils";
 import { toggleFilters } from "@lib/filter";
 import TodoList from "./TodoList";
-// import { cacheLife, cacheTag } from "next/cache";
 import TodoInput from "./TodoInput";
 import { FILTER, SORT_ORDERS } from "@lib/formConfig";
 import { sortArray } from "./sortArray";
@@ -28,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { redirect } from "next/navigation";
 
+// TODO: checkbox not working
 async function getTodos(): Promise<Todo[]> {
   const expressUrl =
     process.env.NEXT_PUBLIC_EXPRESS_URL ?? "http://localhost:4000";
