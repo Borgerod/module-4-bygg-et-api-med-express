@@ -1,7 +1,7 @@
 console.log("Initializing routes...");
 
 import { rootRouter } from "./root.route";
-// import { authRouter } from "./auth.route";
+import { authRouter } from "./auth.route";
 import { employeesRouter } from "./employee.route";
 import { userRouter } from "./user.route";
 
@@ -10,21 +10,20 @@ import type { Application, Router } from "express";
 const routes = {
   root: rootRouter,
   users: userRouter,
-  //   auth: authRouter,
+  auth: authRouter,
   employees: employeesRouter,
 };
 
 interface Routes {
   root: Router;
   users: Router;
-  //   auth: Router;
+  auth: Router;
   employees: Router;
 }
 
 function populateRoutes(app: Application): void {
   app.use("/", routes["root"]);
   console.log(`Added routes for collection "root" => "/"`);
-  app.use("/employees", employeesRouter);
   for (const collection in routes) {
     if (collection === "root") continue;
 
