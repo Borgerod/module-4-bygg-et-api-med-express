@@ -12,11 +12,15 @@ User.hasOne(Employee, {
 Employee.belongsTo(User, {
   foreignKey: "user_id",
   as: "user_account",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
 RefreshToken.belongsTo(User, {
-  foreignKey: "userId",
-  as: "user_id",
+  foreignKey: { name: "userId", allowNull: false },
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+  constraints: true,
 });
 
 // Export models and sequelize instance
