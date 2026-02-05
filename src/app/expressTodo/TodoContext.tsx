@@ -3,9 +3,6 @@
 import { Todo } from "@types";
 import { createContext, useContext, ReactNode } from "react";
 
-// context7
-// #next-devtools
-
 type TodoContextType = {
   todos: Todo[];
 };

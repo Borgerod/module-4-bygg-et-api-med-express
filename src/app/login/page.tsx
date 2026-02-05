@@ -78,71 +78,71 @@ export default function LoginPage() {
     }
   }
   return (
-    <>
-      <Card className={cn("min-w-87.5 max-w-full mx-auto", "p-0", "")}>
-        <form onSubmit={handleLogin}>
-          <FieldSet className={cn("p-5 w-full", "", "")}>
-            <h1 className="text-2xl mb-4">Login</h1>
-            {notification && <Notification message={message} type="warning" />}
+    // <>
+    <Card className={cn("min-w-87.5", "max-w-full", "mx-auto", "p-0", "", "")}>
+      <form onSubmit={handleLogin}>
+        <FieldSet className={cn("p-5 w-full", "", "")}>
+          <h1 className="text-2xl mb-4">Login</h1>
+          {notification && <Notification message={message} type="warning" />}
 
-            <Field className={cn("w-full", "", "")}>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="off"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-                className={cn("min-h-10 resize-none w-full", "", "")}
-              />
-            </Field>
-            <Field className={cn("w-full", "", "")}>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="off"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="password"
-                className={cn("w-full", "", "")}
-              />
-            </Field>
-            <FieldGroup
-              id="field-subgroup"
-              className={cn(
-                "w-full h-fit flex flex-col gap-y-2 items-stretch justify-center",
-                "",
-                "",
-              )}
-            >
-              <span className="flex justify-between items-center">
-                <span className="flex gap-2 items-center text-xs">
-                  <Checkbox
-                    checked={rememberMe}
-                    onCheckedChange={(checked: boolean) =>
-                      setRememberMe(checked === true)
-                    }
-                  />
-                  <span className="text-nowrap">remember me</span>
-                </span>
-                <Button className="px-0 text-xs" type="button" variant={"link"}>
-                  <Link href={"/reset-password"}>Forgot password?</Link>
-                </Button>
+          <Field className={cn("w-full", "", "")}>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="off"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+              className={cn("min-h-10 resize-none w-full", "", "")}
+            />
+          </Field>
+          <Field className={cn("w-full", "", "")}>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="off"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
+              className={cn("w-full", "", "")}
+            />
+          </Field>
+          <FieldGroup
+            id="field-subgroup"
+            className={cn(
+              "w-full h-fit flex flex-col gap-y-2 items-stretch justify-center",
+              "",
+              "",
+            )}
+          >
+            <span className="flex justify-between items-center">
+              <span className="flex gap-2 items-center text-xs">
+                <Checkbox
+                  checked={rememberMe}
+                  onCheckedChange={(checked: boolean) =>
+                    setRememberMe(checked === true)
+                  }
+                />
+                <span className="text-nowrap">remember me</span>
               </span>
-              <Button type="submit" className="w-full">
-                {buttonText ? buttonText : "Log in"}
+              <Button className="px-0 text-xs" type="button" variant={"link"}>
+                <Link href={"/reset-password"}>Forgot password?</Link>
               </Button>
+            </span>
+            <Button type="submit" className="w-full">
+              {buttonText ? buttonText : "Log in"}
+            </Button>
 
-              <Button className="text-xs" type="button" variant={"outline"}>
-                <Link href={"/signup"}>Signup</Link>
-              </Button>
-            </FieldGroup>
-          </FieldSet>
-        </form>
-      </Card>
-    </>
+            <Button className="text-xs" type="button" variant={"outline"}>
+              <Link href={"/signup"}>Signup</Link>
+            </Button>
+          </FieldGroup>
+        </FieldSet>
+      </form>
+    </Card>
+    // </>
   );
 }

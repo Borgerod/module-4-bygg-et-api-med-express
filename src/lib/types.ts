@@ -4,7 +4,7 @@ export interface TodoProps {
   id: string;
   done: boolean;
   title: string;
-  dueDate: Date;
+  dueDate: Date | null;
   tags: string;
   createdAt: Date;
 }
@@ -17,7 +17,7 @@ export class Todo implements TodoProps {
   title: string;
   tags: string;
   createdAt: Date;
-  dueDate: Date;
+  dueDate: Date | null;
 
   constructor(body: Partial<TodoProps>) {
     this.id = body.id ?? randomUUID();

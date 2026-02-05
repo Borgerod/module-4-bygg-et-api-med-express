@@ -22,17 +22,19 @@ const setAuthCookies = (res: Response, tokens: TokenPair) => {
   const maxAge = 7 * 24 * 60 * 60 * 1000;
   const minAge = 3 * 60 * 60 * 1000;
 
+  // todo: ask about 'secure:'
+
   res.cookie("refreshToken", tokens.refreshToken, {
     maxAge: maxAge,
     httpOnly: true,
-    secure: true,
+    secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
     sameSite: "none",
   });
 
   res.cookie("accessToken", tokens.accessToken, {
     maxAge: minAge,
     httpOnly: true,
-    secure: true,
+    secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
     sameSite: "none",
   });
 };
@@ -40,12 +42,13 @@ const setAuthCookies = (res: Response, tokens: TokenPair) => {
 const delAuthCookies = (res: Response) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: config.env !== "development",
+    secure: config.env !== "development", //? should maybe ser to secure:true ?
     path: "/",
   });
+
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: config.env !== "development",
+    secure: config.env !== "development", //? should maybe ser to secure:true ?
     path: "/",
   });
 };
@@ -97,6 +100,7 @@ const handleRefreshToken = async (
     return;
   }
 };
+
 authRouter.get(
   "/refresh",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -143,6 +147,7 @@ authRouter.get(
     }
   },
 );
+
 authRouter.get("/refresh/:token", handleRefreshToken);
 
 authRouter.post("/login", async (req, res) => {
@@ -172,7 +177,7 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", async (req: Request, res: Response) => {
   try {
-    console.log("Logout request body:", req.body); // Add this line
+    console.log("Logout request body:", req.body);
     const userId = req.body?.userId;
     if (userId) {
       await logout(userId);
@@ -180,7 +185,6 @@ authRouter.post("/logout", async (req: Request, res: Response) => {
       console.log("No userId provided in logout request.");
     }
     delAuthCookies(res);
-
     res.status(204).end();
   } catch (error) {
     console.error("failed to destroy cookies", error);

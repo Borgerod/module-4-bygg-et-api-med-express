@@ -48,7 +48,9 @@ export default async function RootLayout({
           "min-h-dvh",
           "w-full",
           "m-0",
+          "gap-0",
           "items-center",
+          "mb-10",
           "",
           "",
         )}
@@ -61,13 +63,12 @@ export default async function RootLayout({
           </header>
           <main
             className={cn(
-              "flex",
               "flex-1",
-              "flex-col",
+              "grid",
               "gap-5",
               "items-center",
-              "justify-center",
-              "mb-5",
+              "content-center",
+              "",
               "",
             )}
           >

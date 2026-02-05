@@ -50,6 +50,7 @@ const namingProb = {
   hasDoubleLastNameSpace: 0.06,
   hasDoubleLastNameHyphen: 0.06,
 };
+
 function randomPhoneNumber(): string {
   const starts = ["4", "9", "8"];
   const start = starts[Math.floor(Math.random() * starts.length)];
