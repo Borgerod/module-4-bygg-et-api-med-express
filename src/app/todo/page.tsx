@@ -2,20 +2,9 @@ import { Button } from "@/components/ui/button";
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-// import { cacheLife, cacheTag } from "next/cache";
-
-// import { DatePicker } from "@/components/ui/todo/DatePicker";
 import { Calendar28 as DatePicker } from "./DatePicker";
-import { addTodo, deleteTodo, getTodos, updateTodo } from "@/lib/todo";
+import { addTodo } from "@/lib/todo";
 import { cn } from "@/lib/utils";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import Form from "next/form";
 import { redirect } from "next/navigation";
@@ -28,23 +17,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Badge } from "@/components/ui/badge";
-import TodoCheckbox from "@/components/ui/todo/TodoCheckbox";
-
-import { LuX } from "react-icons/lu";
 import {
   Table,
   TableHeader,
   TableBody,
   TableRow,
   TableHead,
-  TableCell,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import PeriodSelect from "./PeriodSelect";
-import { Checkbox } from "@/components/ui/checkbox";
 import { cookies, headers } from "next/headers";
-import { TodoItem } from "./TodoItem";
 import TodoList from "./todoList";
 
 export default async function Page({
@@ -103,7 +85,6 @@ export default async function Page({
         className={cn(
           "flex flex-col",
           "w-full",
-          // "w-300",
           "max-w-full",
 
           "",
@@ -118,7 +99,6 @@ export default async function Page({
           </CardDescription>
           <CardAction>
             <PeriodSelect />
-            {/* <PeriodSelect value={period} onChange={setPeriod} /> */}
           </CardAction>
         </CardHeader>
         <CardContent className="flex-1 min-h-0 p-0">
@@ -192,18 +172,7 @@ export default async function Page({
                 )}
               >
                 <Field>
-                  {/* <DatePicker
-                    id="dueDate"
-                    name="dueDate"
-                    // type="date"
-                    placeholder="Due Date"
-                  /> */}
-                  <DatePicker
-                  // id="dueDate"
-                  // name="dueDate"
-                  // value={dueDate}
-                  // onSelect={(v: string) => setDueDate(v)}
-                  />
+                  <DatePicker />
                 </Field>
                 <Field>
                   <Input

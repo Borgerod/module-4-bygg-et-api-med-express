@@ -6,6 +6,7 @@ type Filter = {
   period?: string;
 };
 
+// todo: use this
 type SearchParams = {
   sort?: string;
   query?: string;

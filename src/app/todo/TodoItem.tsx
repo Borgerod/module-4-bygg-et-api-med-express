@@ -2,23 +2,21 @@ import { Button } from "@/components/ui/button";
 import { TableRow, TableCell } from "@/components/ui/table";
 import TodoCheckbox from "@/components/ui/todo/TodoCheckbox";
 import { cn } from "@/lib/utils";
-// import { Badge, Form } from "lucide-react";
-import { todo } from "node:test";
-import { TodoType, TodoProps } from "@/lib/types";
+import { TodoType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { LuX } from "react-icons/lu";
 import { redirect } from "next/navigation";
 import { deleteTodo, updateTodo } from "@lib/todo";
 
-// import { Form } from "@/components/ui/form";
 import Form from "next/form";
 
+// todo: use this
 type TodoItemProps = {
   title: string;
   completed: boolean;
 };
+
 async function handleToggleTodo(formData: FormData) {
-  // async function handleToggleTodo(prevState: unknown, formData: FormData) {
   "use server";
   const id = formData.get("id") as string;
   const done = formData.get("done") === "on";
