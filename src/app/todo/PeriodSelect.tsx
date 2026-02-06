@@ -43,11 +43,7 @@ export default function PeriodSelect() {
           "",
         )}
       >
-        {period === "All"
-          ? "Showing "
-          : period === "today"
-            ? "Showing tasks for "
-            : "Showing tasks for this "}
+        {period === "all" ? "Showing " : "Showing tasks for "}
 
         <Select value={period} onValueChange={handleChange}>
           <SelectTrigger className="w-fit">

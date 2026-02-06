@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import PeriodSelect from "./PeriodSelect";
 import { cookies, headers } from "next/headers";
 import TodoList from "./todoList";
+import SortSelect from "./SortSelect";
 
 export default async function Page({
   searchParams,
@@ -87,6 +88,7 @@ export default async function Page({
           "flex flex-col",
           "w-full",
           "max-w-full",
+          "md:min-w-150",
 
           "",
           "",
@@ -98,7 +100,8 @@ export default async function Page({
           <CardDescription>
             Manage, monitor and edit your schedule
           </CardDescription>
-          <CardAction>
+          <CardAction className="flex gap-5">
+            <SortSelect />
             <PeriodSelect />
           </CardAction>
         </CardHeader>

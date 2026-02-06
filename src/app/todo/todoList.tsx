@@ -3,14 +3,7 @@ import { TodoItem } from "./TodoItem";
 import { getTodos } from "@lib/todo";
 
 type Filter = {
-  period?: string;
-};
-
-// todo: use this
-type SearchParams = {
-  sort?: string;
-  query?: string;
-  filter?: Filter;
+  period: string;
 };
 
 export default async function TodoList({
@@ -18,14 +11,15 @@ export default async function TodoList({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const params = await searchParams;
-  const period =
-    typeof params.period === "string"
-      ? params.period
-      : Array.isArray(params.period)
-        ? params.period[0]
-        : undefined;
+  const { page = "1", sort = "dueDate,asc", query = "" } = await searchParams;
 
+  const filters = await searchParams;
+  const period =
+    typeof filters.period === "string"
+      ? filters.period
+      : Array.isArray(filters.period)
+        ? filters.period[0]
+        : undefined;
   const todos = await getTodos();
 
   function filterByPeriod(todos: TodoType[], period: string | undefined) {
@@ -76,8 +70,54 @@ export default async function TodoList({
         return todos;
     }
   }
-
   const filteredTodos: TodoType[] = filterByPeriod(todos, period);
 
-  return filteredTodos.map((todo, i) => <TodoItem key={i} {...todo} />);
+  function sortBy(todos: TodoType[], sortString: string) {
+    const [fieldName, order] = sortString.split(",").map((s) => s.trim());
+
+    const field = fieldName as keyof TodoType;
+
+    switch (order) {
+      case "asc":
+        return [...todos].sort(
+          (a, b) =>
+            new Date(a[field] as string).getTime() -
+            new Date(b[field] as string).getTime(),
+        );
+
+      case "desc":
+        return [...todos].sort(
+          (a, b) =>
+            new Date(b[field] as string).getTime() -
+            new Date(a[field] as string).getTime(),
+        );
+
+      case "az":
+        return [...todos].sort((a, b) =>
+          (a[field] as string).localeCompare(b[field] as string),
+        );
+
+      case "za":
+        return [...todos].sort((a, b) =>
+          (b[field] as string).localeCompare(a[field] as string),
+        );
+
+      case "az":
+        return [...todos].sort((a, b) =>
+          (a[field] as string).localeCompare(b[field] as string),
+        );
+
+      case "za":
+        console.log("FIELD NAME: ", field);
+        return [...todos].sort((a, b) =>
+          (b[field] as string).localeCompare(a[field] as string),
+        );
+      default:
+        return todos;
+    }
+  }
+
+  const sortedTodos = sortBy(filteredTodos, sort as string);
+
+  return sortedTodos?.map((todo, i) => <TodoItem key={i} {...todo} />) ?? [];
 }
