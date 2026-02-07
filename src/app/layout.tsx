@@ -48,13 +48,12 @@ export default async function RootLayout({
           "h-dvh",
           "w-full",
           "gap-0",
-          "bg-blue-300",
           "",
           "",
         )}
       >
         <UserProvider>
-          <header className={cn("w-full", "bg-red-200", "", "")}>
+          <header className={cn("w-full", "", "")}>
             <nav className={cn("w-full", "", "")}>
               <NavBar />
             </nav>
@@ -69,7 +68,6 @@ export default async function RootLayout({
               "items-start",
               "justify-start",
               "gap-5",
-              "bg-green-100",
               "",
               "",
             )}

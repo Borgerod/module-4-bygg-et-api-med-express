@@ -70,7 +70,6 @@ export default function NavBar() {
           "px-5",
           "w-full",
           "justify-between",
-          "bg-amber-100",
           "h-15",
           "overflow-x-auto",
           "",
