@@ -1,9 +1,6 @@
 "use client";
-// import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-// import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
-// import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/todo/DatePicker";
 import { cn } from "@lib/utils";
 import Link from "next/link";
@@ -92,7 +89,7 @@ export default function Page() {
   // TODO: refactor - i feel like this should be split up into two forms. one issued to the new employee and one issued to the employer to finish complete the form.
   // which would be linked with the addmission key for saftey (and relation)
   return (
-    <div className="flex flex-col gap-5 w-full">
+    <div className="flex flex-col gap-5 w-full mb-10">
       <h1 className="text-xl "> Employee Registration </h1>
       <Tabs defaultValue="employee-form" className="">
         <TabsList>

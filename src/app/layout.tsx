@@ -61,12 +61,12 @@ export default async function RootLayout({
             className={cn(
               "max-w-4xl",
               "mx-auto",
-              "p-6",
               "flex",
               "flex-col",
               "items-start",
               "justify-start",
               "gap-5",
+
               "",
               "",
             )}

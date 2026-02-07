@@ -185,7 +185,7 @@ export default function Home() {
         <h3 className="text-2xl leading-10 text-stone-600 dark:text-stone-300 self-start">
           Pages
         </h3>
-        <hr className="border-t  w-full border-stone-400 dark:border-white/[.145]" />
+        <hr className="border-t w-full border-stone-400 dark:border-white/[.145]" />
         <div className="flex flex-col w-full gap-4 text-base font-medium sm:flex-row ">
           <Link
             className={cn(
