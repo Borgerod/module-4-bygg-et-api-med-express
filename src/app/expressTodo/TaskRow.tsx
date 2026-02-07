@@ -98,14 +98,17 @@ export default function TaskRow({
           className={cn(
             "",
             {
-              "text-primary": new Date(todo.dueDate) > new Date(),
-              "text-warning": new Date(todo.dueDate) <= new Date(),
+              "text-primary":
+                todo.dueDate && new Date(todo.dueDate) > new Date(),
+              "text-warning":
+                todo.dueDate && new Date(todo.dueDate) <= new Date(),
             },
             "",
             "",
           )}
         >
           {(() => {
+            if (!todo.dueDate) return "-";
             const dateStr: string =
               todo.dueDate instanceof Date
                 ? todo.dueDate.toISOString()
