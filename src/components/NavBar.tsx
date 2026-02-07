@@ -64,7 +64,18 @@ export default function NavBar() {
   return (
     <NavigationMenu>
       <NavigationMenuList
-        className={cn("flex p-2 px-5 w-full justify-between", "h-15 ", "", "")}
+        className={cn(
+          "flex",
+          "p-2",
+          "px-5",
+          "w-full",
+          "justify-between",
+          "bg-amber-100",
+          "h-15",
+          "overflow-x-auto",
+          "",
+          "",
+        )}
       >
         <NavigationMenuLink
           id="profile-button"
@@ -78,9 +89,6 @@ export default function NavBar() {
             height={50}
             className={cn(
               "h-7 w-12",
-              // "dark:brightness-300",
-              // "dark:opacity-70",
-              // "dark:saturate-90",
               "dark:opacity-90",
               "dark:brightness-120",
               "dark:saturate-70",

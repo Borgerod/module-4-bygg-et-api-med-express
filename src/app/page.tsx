@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@lib/utils";
 import Image from "next/image";
@@ -9,12 +8,13 @@ export default function Home() {
   return (
     <div
       className={cn(
-        " px-10",
-        " sm:px-16",
-        " sm:items-start",
-        "grid grid-rows-[1fr_auto_1fr]",
-        "gap-10 sm:gap-10",
-        "",
+        "flex-1",
+        "flex",
+        "flex-col",
+        "justify-center",
+        "min-h-[90vh]",
+        "gap-10",
+        "max-w-4xl",
         "",
         "",
       )}
@@ -34,9 +34,6 @@ export default function Home() {
             "h-full w-full",
             "min-h-10 min-w-30",
             "max-h-30 max-w-40",
-            // "dark:brightness-300",
-            // "dark:opacity-70",
-            // "dark:saturate-90",
             "dark:opacity-90",
             "dark:brightness-120",
             "dark:saturate-70",
@@ -79,12 +76,10 @@ export default function Home() {
       <div
         id="project-description"
         className="flex flex-col  gap-5 items-start "
-        // className="flex flex-col items-center gap-5  sm:items-start sm:text-left text-start"
       >
         <h1
           suppressHydrationWarning
           className={cn(
-            // "max-w-xs text-3xl font-semibold  tracking-tight text-black dark:text-stone-50",
             "max-w-xs text-3xl font-semibold  tracking-tight ",
             "",
             "",
@@ -94,7 +89,6 @@ export default function Home() {
         </h1>
         <p
           className={cn(
-            // "max-w-md text-lg leading-8 text-stone-600 dark:text-stone-400",
             "max-w-md text-lg leading-8 text-stone-600 dark:text-stone-400",
             "",
             "",
@@ -199,8 +193,6 @@ export default function Home() {
               "",
               "",
             )}
-            // href={"/todo"} //should redirect to login first
-
             href={"/todo"}
           >
             ToDo (Prisma)
@@ -211,8 +203,6 @@ export default function Home() {
               "",
               "",
             )}
-            // href={"/expressTodo"} //should redirect to login first
-
             href={"/expressTodo"}
           >
             ToDo (Express)

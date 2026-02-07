@@ -79,7 +79,15 @@ export default function Page() {
   }
   return (
     <TodoProvider todos={todos}>
-      <div className={cn("space-y-4 flex flex-col", "", "")}>
+      <div
+        className={cn(
+          "space-y-4 flex flex-col",
+          "my-auto",
+
+          "",
+          "",
+        )}
+      >
         <TodoInput onAdd={addTask} />
 
         <Card

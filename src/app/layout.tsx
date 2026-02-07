@@ -45,29 +45,31 @@ export default async function RootLayout({
           "relative",
           "flex",
           "flex-col",
-          "min-h-dvh",
+          "h-dvh",
           "w-full",
-          "m-0",
           "gap-0",
-          "items-center",
-          "mb-10",
+          "bg-blue-300",
           "",
           "",
         )}
       >
         <UserProvider>
-          <header className={cn("w-screen", "", "")}>
-            <nav>
+          <header className={cn("w-full", "bg-red-200", "", "")}>
+            <nav className={cn("w-full", "", "")}>
               <NavBar />
             </nav>
           </header>
           <main
             className={cn(
-              "flex-1",
-              "grid",
+              "max-w-4xl",
+              "mx-auto",
+              "p-6",
+              "flex",
+              "flex-col",
+              "items-start",
+              "justify-start",
               "gap-5",
-              "items-center",
-              "content-center",
+              "bg-green-100",
               "",
               "",
             )}
@@ -91,7 +93,6 @@ export default async function RootLayout({
             {children}
             <DarkModeButton />
           </main>
-
           <footer></footer>
         </UserProvider>
       </body>

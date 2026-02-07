@@ -79,8 +79,7 @@ export default async function Page({
   // }
 
   return (
-    // <>
-    <div className={cn("space-y-4 flex flex-col", "", "")}>
+    <div className={cn("space-y-4 flex flex-col", "min-w-2xl", "", "", "")}>
       <Card
         id="table-card"
         className={cn(
@@ -128,7 +127,6 @@ export default async function Page({
       {/* _______________________________________________ */}
 
       <Form className={cn("", "")} action={handleAddTodo}>
-        {/* <Card id="form-card" className={cn("flex flex-row w-full ", "", "")}> */}
         <Card
           id="table-card"
           className={cn(
@@ -207,6 +205,5 @@ export default async function Page({
         </Card>
       </Form>
     </div>
-    // {/* </> */}
   );
 }
