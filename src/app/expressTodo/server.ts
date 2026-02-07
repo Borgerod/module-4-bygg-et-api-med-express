@@ -150,16 +150,38 @@ app.delete("/expressTodo/:table/:id", (req, res) => {
   }
 });
 
-////* PUT | EDIT
-app.put("/expressTodo/:id", async (req, res) => {
+////* PATCH | EDIT
+app.patch("/expressTodo/:id", (req, res) => {
   const { id } = req.params;
-  const { title } = req.body;
+  const allowedFields = ["title", "done", "dueDate", "tags"];
+  const changes = Object.fromEntries(
+    Object.entries(req.body)
+      .filter(
+        ([key, value]) => allowedFields.includes(key) && value !== undefined,
+      )
+      .map(([key, value]) =>
+        key === "done" ? [key, value ? 1 : 0] : [key, value],
+      ),
+  );
+
+  if (Object.keys(changes).length === 0) {
+    return res.status(400).json({ error: "No valid fields to update" });
+  }
+
+  const setClause = Object.keys(changes)
+    .map((key) => `"${key}" = ?`)
+    .join(", ");
+  const values = Object.values(changes);
+  values.push(id);
+
   try {
-    const stmt = db.prepare("UPDATE todo SET title = ? WHERE id = ?");
-    const result = stmt.run(title, id);
+    const stmt = db.prepare(`UPDATE "Todo" SET ${setClause} WHERE id = ?`);
+    const result = stmt.run(...values);
+
     if (result.changes === 0) {
       return res.status(404).json({ error: "Not found" });
     }
+
     res.json({ success: true });
   } catch (error) {
     console.error(error);
