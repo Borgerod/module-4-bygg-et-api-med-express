@@ -34,6 +34,12 @@ export default function Home() {
             "h-full w-full",
             "min-h-10 min-w-30",
             "max-h-30 max-w-40",
+            // "dark:brightness-300",
+            // "dark:opacity-70",
+            // "dark:saturate-90",
+            "dark:opacity-90",
+            "dark:brightness-120",
+            "dark:saturate-70",
             "",
 
             "",
@@ -47,7 +53,7 @@ export default function Home() {
         />
         <Card
           className={cn(
-            "p-5 text-md leading-0 text-zinc-600 dark:text-zinc-400 w-full h-fit ",
+            "p-5 text-md leading-0 text-stone-600 dark:text-stone-400 w-full h-fit ",
             "min-w-fit",
             "max-w-100",
             "text-nowrap",
@@ -72,12 +78,14 @@ export default function Home() {
 
       <div
         id="project-description"
-        className="flex flex-col items-center gap-5 text-center sm:items-start sm:text-left text-left"
+        className="flex flex-col  gap-5 items-start "
+        // className="flex flex-col items-center gap-5  sm:items-start sm:text-left text-start"
       >
         <h1
           suppressHydrationWarning
           className={cn(
-            "max-w-xs text-3xl font-semibold  tracking-tight text-black dark:text-zinc-50",
+            // "max-w-xs text-3xl font-semibold  tracking-tight text-black dark:text-stone-50",
+            "max-w-xs text-3xl font-semibold  tracking-tight ",
             "",
             "",
           )}
@@ -86,7 +94,8 @@ export default function Home() {
         </h1>
         <p
           className={cn(
-            "max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400",
+            // "max-w-md text-lg leading-8 text-stone-600 dark:text-stone-400",
+            "max-w-md text-lg leading-8 text-stone-600 dark:text-stone-400",
             "",
             "",
           )}
@@ -95,7 +104,7 @@ export default function Home() {
           <a
             href="https://nextjs.org"
             className={cn(
-              "font-medium text-zinc-950 dark:text-zinc-50",
+              "font-medium text-stone-950 dark:text-stone-50",
               "",
               "",
             )}
@@ -106,7 +115,7 @@ export default function Home() {
           <a
             href="https://expressjs.com/"
             className={cn(
-              "font-medium text-zinc-950 dark:text-zinc-50",
+              "font-medium text-stone-950 dark:text-stone-50",
               "",
               "",
             )}
@@ -117,7 +126,7 @@ export default function Home() {
           <a
             href="https://www.sqlite.org/"
             className={cn(
-              "font-medium text-zinc-950 dark:text-zinc-50",
+              "font-medium text-stone-950 dark:text-stone-50",
               "",
               "",
             )}
@@ -128,7 +137,7 @@ export default function Home() {
           <a
             href="https://www.prisma.io/"
             className={cn(
-              "font-medium text-zinc-950 dark:text-zinc-50",
+              "font-medium text-stone-950 dark:text-stone-50",
               "",
               "",
             )}
@@ -139,7 +148,7 @@ export default function Home() {
           <a
             href="https://ui.shadcn.com/"
             className={cn(
-              "font-medium text-zinc-950 dark:text-zinc-50",
+              "font-medium text-stone-950 dark:text-stone-50",
               "",
               "",
             )}
@@ -151,7 +160,7 @@ export default function Home() {
         <div>
           <p
             className={cn(
-              "max-w-md text-lg leading-5 text-zinc-600 dark:text-zinc-400",
+              "max-w-md text-lg leading-5 text-stone-600 dark:text-stone-400",
               "text-start",
               "",
               "",
@@ -161,7 +170,7 @@ export default function Home() {
           </p>
           <ul
             className={cn(
-              "list-disc pl-5 text-zinc-600 dark:text-zinc-400",
+              "list-disc pl-5 text-stone-600 dark:text-stone-400",
               "px-10",
               "",
               "",
@@ -179,8 +188,10 @@ export default function Home() {
         id="project-routes"
         className="flex flex-col items-center gap-5 text-center sm:items-start sm:text-left"
       >
-        <h3 className="text-2xl leading-10 text-stone-600 self-start">Pages</h3>
-        <hr className="border-t  w-full border-stone-400" />
+        <h3 className="text-2xl leading-10 text-stone-600 dark:text-stone-300 self-start">
+          Pages
+        </h3>
+        <hr className="border-t  w-full border-stone-400 dark:border-white/[.145]" />
         <div className="flex flex-col w-full gap-4 text-base font-medium sm:flex-row ">
           <Link
             className={cn(
