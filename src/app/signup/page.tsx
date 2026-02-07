@@ -631,7 +631,9 @@ export default function Page() {
                         <SelectTrigger>
                           <SelectValue placeholder="Department" />
                         </SelectTrigger>
-                        <SelectContent>{getOptions(departments)}</SelectContent>
+                        <SelectContent position="popper">
+                          {getOptions(departments)}
+                        </SelectContent>
                       </Select>
                     </Field>
                     <Field className="w-full max-w-xs">
@@ -640,7 +642,9 @@ export default function Page() {
                         <SelectTrigger>
                           <SelectValue placeholder="Position" />
                         </SelectTrigger>
-                        <SelectContent>{getOptions(positions)}</SelectContent>
+                        <SelectContent position="popper">
+                          {getOptions(positions)}
+                        </SelectContent>
                       </Select>
                     </Field>
                   </FieldGroup>
@@ -655,8 +659,10 @@ export default function Page() {
                     <SelectTrigger>
                       <SelectValue placeholder="Role" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectContent>{getOptions(roles)}</SelectContent>
+                    <SelectContent position="popper">
+                      <SelectContent position="popper">
+                        {getOptions(roles)}
+                      </SelectContent>
                     </SelectContent>
                   </Select>
                   {/* todo: maybe make the important roles such as admin and superadmin to be colored red*/}

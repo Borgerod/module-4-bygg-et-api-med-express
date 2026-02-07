@@ -96,7 +96,6 @@ export default function TaskRow({
       <TableCell className={cn("py-2 whitespace-nowrap w-24", "", "")}>
         <span
           className={cn(
-            "",
             {
               "text-primary":
                 todo.dueDate && new Date(todo.dueDate) > new Date(),

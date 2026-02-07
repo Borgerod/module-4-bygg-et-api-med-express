@@ -153,7 +153,7 @@ export default function Page() {
                 <SelectTrigger className="w-fit">
                   <SelectValue placeholder={sortBy} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                   {Object.values(SORT_ORDERS).map((label) => (
                     <SelectItem key={label} value={label}>
                       {label}

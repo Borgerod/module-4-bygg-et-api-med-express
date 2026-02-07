@@ -53,7 +53,7 @@ export default function PeriodSelect() {
           <SelectTrigger className="w-fit">
             <SelectValue placeholder="Period" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper">
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="today">Today</SelectItem>
             <SelectItem value="tomorrow">tomorrow</SelectItem>

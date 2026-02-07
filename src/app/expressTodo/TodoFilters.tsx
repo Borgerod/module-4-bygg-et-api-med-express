@@ -100,7 +100,7 @@ export default function TodoFilters({ filter, setFilter }: Props) {
                 <SelectTrigger className={cn("w-fit", "", "")}>
                   <SelectValue placeholder={FILTER.done.all} />
                 </SelectTrigger>
-                <SelectContent className={cn("", "", "")}>
+                <SelectContent position="popper">
                   <SelectGroup>
                     <SelectLabel>Completed</SelectLabel>
                     {Object.values(FILTER.done).map((label: string) => (
@@ -122,7 +122,7 @@ export default function TodoFilters({ filter, setFilter }: Props) {
                 <SelectTrigger className={cn("w-fit", "", "")}>
                   <SelectValue placeholder={FILTER.period.all} />
                 </SelectTrigger>
-                <SelectContent className={cn("", "", "")}>
+                <SelectContent position="popper">
                   <SelectGroup>
                     <SelectLabel>Period</SelectLabel>
                     {Object.values(FILTER.period).map((label: string) => (
@@ -146,7 +146,6 @@ export default function TodoFilters({ filter, setFilter }: Props) {
                       return (
                         <Badge
                           key={tag}
-                          // type="button"
                           role="checkbox"
                           variant="secondary"
                           aria-checked={isActive}
@@ -154,9 +153,10 @@ export default function TodoFilters({ filter, setFilter }: Props) {
                           className={cn(
                             "text-xs break-all",
                             "cursor-pointer",
-                            "rounded-full border px-3 py-1 transition-colors",
+                            "border-0 border-transparent",
+                            "rounded-full px-3 py-1 transition-colors",
                             isActive
-                              ? "bg-primary/50 text-primary-foreground border-muted hover:bg-primary/90"
+                              ? "bg-primary/90 text-primary-foreground border-muted hover:bg-primary/90"
                               : "border-border text-muted-foreground hover:border-primary hover:text-primary",
                             "",
                             "",
