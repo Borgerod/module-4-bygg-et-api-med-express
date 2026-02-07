@@ -6,7 +6,6 @@ import { Notification } from "@/components/ui/Notification";
 import DarkModeButton from "@/components/DarkModeButton";
 import NavBar from "@/components/NavBar";
 import UserProvider from "@lib/userProvider";
-import { getUserProfileFromDb } from "@lib/user";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
