@@ -10,6 +10,8 @@ type TodoCreateInput = {
 async function main() {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
+  const yesterday = new Date(currentDate);
+  yesterday.setDate(currentDate.getDate() - 1);
 
   const tomorrow = new Date(currentDate);
   tomorrow.setDate(currentDate.getDate() + 1);
@@ -31,6 +33,24 @@ async function main() {
 
   const todos: TodoCreateInput[] = [
     {
+      title: "Change to summer tires",
+      tags: "car",
+      done: true,
+      dueDate: pastDate,
+    },
+    {
+      title: "EU controll",
+      tags: "car",
+      done: true,
+      dueDate: new Date(pastDate.setHours(12, 15, 0, 0)),
+    },
+    {
+      title: "Pick up kids from school",
+      tags: "family, errands",
+      done: true,
+      dueDate: new Date(yesterday.setHours(15, 30, 0, 0)),
+    },
+    {
       title: "Call doctor about rash",
       tags: "healthcare,meeting,doctor",
       dueDate: pastDate,
@@ -38,6 +58,11 @@ async function main() {
     {
       title: "Read a book",
       tags: "leisure",
+    },
+    {
+      title: "Pick up kids from schoool",
+      tags: "family, errands",
+      dueDate: new Date(currentDate.setHours(15, 30, 0, 0)),
     },
     {
       title: "Buy groceries",
@@ -82,7 +107,7 @@ async function main() {
     {
       title: "Finish project",
       tags: "work,urgent",
-      dueDate: nextWeek2,
+      dueDate: new Date(nextWeek2.setHours(9, 0, 0, 0)),
     },
     {
       title: "Go back home, with lots of milk",
