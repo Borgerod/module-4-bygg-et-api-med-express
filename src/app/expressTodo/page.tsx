@@ -79,7 +79,15 @@ export default function Page() {
   }
   return (
     <TodoProvider todos={todos}>
-      <div className={cn("space-y-4 flex flex-col", "", "")}>
+      <div
+        className={cn(
+          "space-y-4 flex flex-col",
+          "my-auto",
+
+          "",
+          "",
+        )}
+      >
         <TodoInput onAdd={addTask} />
 
         <Card
@@ -145,7 +153,7 @@ export default function Page() {
                 <SelectTrigger className="w-fit">
                   <SelectValue placeholder={sortBy} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                   {Object.values(SORT_ORDERS).map((label) => (
                     <SelectItem key={label} value={label}>
                       {label}

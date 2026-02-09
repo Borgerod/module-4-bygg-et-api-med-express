@@ -1,12 +1,13 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { useActionState, useRef } from "react";
+import { cn } from "@/lib/utils";
+import { useRef } from "react";
 
 type TodoCheckboxProps = {
   todoId: string;
   done: boolean;
-  onToggle: (prevState: any, formData: FormData) => Promise<void>;
+  onToggle: (formData: FormData) => Promise<void>;
 };
 
 export default function TodoCheckbox({
@@ -14,11 +15,10 @@ export default function TodoCheckbox({
   done,
   onToggle,
 }: TodoCheckboxProps) {
-  const [, formAction] = useActionState(onToggle, null);
   const formRef = useRef<HTMLFormElement>(null);
 
   return (
-    <form ref={formRef} action={formAction} className="todo-inline-form">
+    <form ref={formRef} action={onToggle} className={cn("inline", "", "")}>
       <input type="hidden" name="id" value={todoId} />
       <Checkbox
         name="done"

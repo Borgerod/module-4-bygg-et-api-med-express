@@ -6,7 +6,6 @@ import { Notification } from "@/components/ui/Notification";
 import DarkModeButton from "@/components/DarkModeButton";
 import NavBar from "@/components/NavBar";
 import UserProvider from "@lib/userProvider";
-import { getUserProfileFromDb } from "@lib/user";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,29 +44,29 @@ export default async function RootLayout({
           "relative",
           "flex",
           "flex-col",
-          "min-h-dvh",
+          "h-dvh",
           "w-full",
-          "m-0",
           "gap-0",
-          "items-center",
-          "mb-10",
           "",
           "",
         )}
       >
         <UserProvider>
-          <header className={cn("w-screen", "", "")}>
-            <nav>
+          <header className={cn("w-full", "", "")}>
+            <nav className={cn("w-full", "", "")}>
               <NavBar />
             </nav>
           </header>
           <main
             className={cn(
-              "flex-1",
-              "grid",
+              "max-w-4xl",
+              "mx-auto",
+              "flex",
+              "flex-col",
+              "items-start",
+              "justify-start",
               "gap-5",
-              "items-center",
-              "content-center",
+
               "",
               "",
             )}
@@ -91,7 +90,6 @@ export default async function RootLayout({
             {children}
             <DarkModeButton />
           </main>
-
           <footer></footer>
         </UserProvider>
       </body>

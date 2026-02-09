@@ -63,6 +63,7 @@
     NOTE: This project comes with a 'export.json', which is a prereset / reset for the database. 
           ? reasoning: So that the user has some data to go from (instructions includeed in README)
 */
+
 /* * PROJECT COMPOSITION: Mandatory + Chosen Theme
         
       - Mandatory: 0. Authentication (required for all projects)

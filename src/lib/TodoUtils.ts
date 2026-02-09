@@ -45,6 +45,11 @@ export default function TodoPropsUtils(
     id: string,
     table: string = "Todo",
   ): Promise<void> => {
+    let prevTodos: Todo[] = [];
+    setTodos((prev) => {
+      prevTodos = prev;
+      return prev.filter((todo) => todo.id !== id);
+    });
     try {
       const res = await fetch(api(`/expressTodo/${table}/${id}`), {
         credentials: "include",
@@ -69,8 +74,7 @@ export default function TodoPropsUtils(
       }
     } catch (error) {
       console.error("Failed to delete task:", error);
-      // Optionally refetch or rollback
-      // todo. add roll back
+      setTodos(prevTodos);
     }
   };
 
@@ -78,16 +82,20 @@ export default function TodoPropsUtils(
     id: string,
     currentDone: boolean,
   ): Promise<void> {
+    let prevTodos: Todo[] = [];
     const newDone = !currentDone;
 
-    setTodos((prev: Todo[]) =>
-      prev.map((todo) => (todo.id === id ? { ...todo, done: newDone } : todo)),
-    );
+    setTodos((prev: Todo[]) => {
+      prevTodos = prev;
+      return prev.map((todo) =>
+        todo.id === id ? { ...todo, done: newDone } : todo,
+      );
+    });
 
     try {
       const res = await fetch(api(`/expressTodo/${id}`), {
         credentials: "include",
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ done: newDone }),
       });
@@ -99,24 +107,23 @@ export default function TodoPropsUtils(
       console.log("Task toggled successfully");
     } catch (error) {
       console.error("Failed to toggle task:", error);
-      // Rollback on error
-      setTodos((prev: Todo[]) =>
-        prev.map((todo) =>
-          todo.id === id ? { ...todo, done: currentDone } : todo,
-        ),
-      );
+      setTodos(prevTodos);
     }
   }
 
   const editTask = async (id: string, newText: string): Promise<void> => {
-    setTodos((prev: Todo[]) =>
-      prev.map((todo) => (todo.id === id ? { ...todo, title: newText } : todo)),
-    );
+    let prevTodos: Todo[] = [];
+    setTodos((prev: Todo[]) => {
+      prevTodos = prev;
+      return prev.map((todo) =>
+        todo.id === id ? { ...todo, title: newText } : todo,
+      );
+    });
 
     try {
       const res = await fetch(api(`/expressTodo/${id}`), {
         credentials: "include",
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newText }),
       });
@@ -126,13 +133,7 @@ export default function TodoPropsUtils(
       }
     } catch (error) {
       console.error("Failed to edit task:", error);
-      // Rollback on error
-      setTodos((prev: Todo[]) =>
-        // todo: test this
-        prev.map((todo) =>
-          todo.id === id ? { ...todo, title: newText } : todo,
-        ),
-      );
+      setTodos(prevTodos);
     }
   };
 

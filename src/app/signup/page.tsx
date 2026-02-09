@@ -1,9 +1,6 @@
 "use client";
-// import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-// import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
-// import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/todo/DatePicker";
 import { cn } from "@lib/utils";
 import Link from "next/link";
@@ -92,7 +89,7 @@ export default function Page() {
   // TODO: refactor - i feel like this should be split up into two forms. one issued to the new employee and one issued to the employer to finish complete the form.
   // which would be linked with the addmission key for saftey (and relation)
   return (
-    <div className="flex flex-col gap-5 w-full">
+    <div className="flex flex-col gap-5 w-full mb-10">
       <h1 className="text-xl "> Employee Registration </h1>
       <Tabs defaultValue="employee-form" className="">
         <TabsList>
@@ -631,7 +628,9 @@ export default function Page() {
                         <SelectTrigger>
                           <SelectValue placeholder="Department" />
                         </SelectTrigger>
-                        <SelectContent>{getOptions(departments)}</SelectContent>
+                        <SelectContent position="popper">
+                          {getOptions(departments)}
+                        </SelectContent>
                       </Select>
                     </Field>
                     <Field className="w-full max-w-xs">
@@ -640,7 +639,9 @@ export default function Page() {
                         <SelectTrigger>
                           <SelectValue placeholder="Position" />
                         </SelectTrigger>
-                        <SelectContent>{getOptions(positions)}</SelectContent>
+                        <SelectContent position="popper">
+                          {getOptions(positions)}
+                        </SelectContent>
                       </Select>
                     </Field>
                   </FieldGroup>
@@ -655,8 +656,10 @@ export default function Page() {
                     <SelectTrigger>
                       <SelectValue placeholder="Role" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectContent>{getOptions(roles)}</SelectContent>
+                    <SelectContent position="popper">
+                      <SelectContent position="popper">
+                        {getOptions(roles)}
+                      </SelectContent>
                     </SelectContent>
                   </Select>
                   {/* todo: maybe make the important roles such as admin and superadmin to be colored red*/}

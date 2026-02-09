@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { LuX } from "react-icons/lu";
 import { redirect } from "next/navigation";
 import { deleteTodo, updateTodo } from "@lib/todo";
-
 import Form from "next/form";
 
 // todo: use this

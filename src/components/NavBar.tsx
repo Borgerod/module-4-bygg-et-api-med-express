@@ -64,18 +64,37 @@ export default function NavBar() {
   return (
     <NavigationMenu>
       <NavigationMenuList
-        className={cn("flex p-2 px-5 w-full justify-between", "", "")}
+        className={cn(
+          "flex",
+          "p-2",
+          "px-5",
+          "w-full",
+          "justify-between",
+          "h-15",
+          "overflow-x-auto",
+          "",
+          "",
+        )}
       >
         <NavigationMenuLink
           id="profile-button"
-          className={cn(
-            "hover:bg-transparent active:bg-transparent rounded-xl",
-            "",
-            "",
-          )}
+          className={cn("contents", "", "")}
           href="/"
         >
-          <Image src="/logo.png" alt="2Do logo" width={50} height={50} />
+          <Image
+            src="/logo.png"
+            alt="2Do logo"
+            width={50}
+            height={50}
+            className={cn(
+              "h-7 w-12",
+              "dark:opacity-90",
+              "dark:brightness-120",
+              "dark:saturate-70",
+              "",
+              "",
+            )}
+          />
         </NavigationMenuLink>
 
         <div id="nav-buttons-row" className={cn("flex gap-2", "", "")}>
