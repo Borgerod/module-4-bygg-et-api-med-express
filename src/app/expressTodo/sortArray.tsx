@@ -10,7 +10,7 @@ const sortNewest = (column: string, array: TodoType[]) => {
     column === "dueDate"
       ? getTime(a.dueDate ?? DEFAULT_DATE) - getTime(b.dueDate ?? DEFAULT_DATE)
       : getTime(a.createdAt ?? DEFAULT_DATE) -
-        getTime(b.createdAt ?? DEFAULT_DATE)
+        getTime(b.createdAt ?? DEFAULT_DATE),
   );
 };
 
@@ -21,7 +21,7 @@ const sortOldest = (column: string, array: TodoType[]) => {
     column === "dueDate"
       ? getTime(b.dueDate ?? DEFAULT_DATE) - getTime(a.dueDate ?? DEFAULT_DATE)
       : getTime(b.createdAt ?? DEFAULT_DATE) -
-        getTime(a.createdAt ?? DEFAULT_DATE)
+        getTime(a.createdAt ?? DEFAULT_DATE),
   );
 };
 
@@ -42,13 +42,9 @@ function getTime(date?: Date | string): number {
   return new Date(date).getTime();
 }
 
-// export async function sortArray(
-//   sortOrderValue: string,
-//   todos: TodoType[]
-// ): Promise<TodoType[]> {
 export function sortArray(
   sortOrderValue: string,
-  todos: TodoType[]
+  todos: TodoType[],
 ): TodoType[] {
   const sorted = [...todos];
   let result: TodoType[];

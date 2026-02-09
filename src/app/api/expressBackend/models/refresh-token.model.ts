@@ -1,29 +1,5 @@
 import { DataTypes } from "sequelize";
 import sequelize from "@/app/api/expressBackend/config/db.config.js";
-import User from "./user.model";
-
-// const RefreshToken = sequelize.define(
-//   "RefreshToken",
-//   {
-//     userId: {
-//       type: DataTypes.UUIDV4,
-//       primaryKey: true,
-//       unique: true,
-//     },
-//     token: {
-//       type: DataTypes.TEXT,
-//       allowNull: true,
-//       defaultValue: null,
-//       unique: true,
-//     },
-//   },
-//   {
-//     tableName: "activeRefreshTokens",
-//     timestamps: true,
-//   },
-// );
-
-// export default RefreshToken;
 
 /* * RefreshToken w/ unique ID's * */
 const RefreshToken = sequelize.define(
@@ -74,6 +50,12 @@ const RefreshToken = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
       field: "updated_at",
+    },
+    rememberMe: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: "remember_me",
     },
   },
   {

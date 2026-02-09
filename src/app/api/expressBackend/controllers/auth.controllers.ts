@@ -7,7 +7,10 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import * as employeeController from "@/app/api/expressBackend/controllers/employees.controllers";
 import Employee from "@/app/api/expressBackend/models/employee.model";
 
-function generateTokenPair(user: User) {
+function generateTokenPair(user: User, rememberMe = false) {
+  const accessExpiration = rememberMe ? "7d" : config.jwt.accessExpiration;
+  const refreshExpiration = rememberMe ? "30d" : config.jwt.refreshExpiration;
+
   const accessToken: string = jwt.sign(
     {
       role: user.role,
@@ -15,12 +18,12 @@ function generateTokenPair(user: User) {
     config.jwt.secret,
     {
       subject: user.id,
-      expiresIn: config.jwt.accessExpiration,
+      expiresIn: accessExpiration,
     } as SignOptions,
   );
 
   const refreshToken: string = jwt.sign({ id: user.id }, config.jwt.secret, {
-    expiresIn: config.jwt.refreshExpiration,
+    expiresIn: refreshExpiration,
   } as SignOptions);
 
   return { accessToken, refreshToken };
@@ -32,7 +35,11 @@ export interface LoginResult {
   refreshToken: string;
 }
 
-async function login(email: string, password: string): Promise<LoginResult> {
+async function login(
+  email: string,
+  password: string,
+  rememberMe = false,
+): Promise<LoginResult> {
   const user = await User.findOne({ where: { email } });
 
   if (!user) {
@@ -42,7 +49,7 @@ async function login(email: string, password: string): Promise<LoginResult> {
   if (!result) {
     throw new Error("Invalid email or password");
   }
-  const tokens = generateTokenPair(user);
+  const tokens = generateTokenPair(user, rememberMe);
   const sessionId = uuidv4();
   try {
     await RefreshToken.create({
@@ -50,6 +57,7 @@ async function login(email: string, password: string): Promise<LoginResult> {
       token: tokens.refreshToken,
       sessionId,
       loginAt: new Date(),
+      rememberMe,
     });
     await employeeController.updateEmployeeOnlineStatus(user.id, {
       isOnline: true,
@@ -66,28 +74,6 @@ async function login(email: string, password: string): Promise<LoginResult> {
 
   return { success: true, ...tokens };
 }
-
-// async function logout(id: string) {
-//   await employeeController.updateEmployeeOnlineStatus(id, {
-//     isOnline: false,
-//     lastLoggedIn: new Date(),
-//   });
-//   await RefreshToken.destroy({
-//     where: { userId: id },
-//   });
-//   const employee = await employeeController.getEmployeeById(id);
-//   const proof = {
-//     userId: id,
-//     email: employee?.email,
-//     isOnline: employee?.isOnline,
-//     lastLoggedIn: employee?.lastLoggedIn,
-//     refreshTokensDeleted: true,
-//   };
-//   console.info(
-//     `User ${employee?.email} was succsessfully logged OUT:\n${JSON.stringify(employee, null, 2)},\n${JSON.stringify(proof, null, 2)}`,
-//   );
-//   return proof;
-// }
 
 async function logout(userId: string) {
   try {
@@ -115,6 +101,7 @@ async function verifyRefreshToken(token: string) {
 
   return true;
 }
+
 function verifyToken(token: string): { role: string; sub: string } | null {
   try {
     return jwt.verify(token, config.jwt.secret) as {
@@ -127,4 +114,3 @@ function verifyToken(token: string): { role: string; sub: string } | null {
 }
 
 export { login, logout, verifyToken, verifyRefreshToken, generateTokenPair };
-// export { login, logout, verifyRefreshToken, generateTokenPair };

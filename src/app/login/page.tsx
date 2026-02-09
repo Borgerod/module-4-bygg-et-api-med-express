@@ -46,7 +46,7 @@ export default function LoginPage() {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, rememberMe }),
         },
       );
 

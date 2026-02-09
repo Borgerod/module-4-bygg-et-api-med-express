@@ -7,4 +7,5 @@ export const ActiveRefreshToken = z.object({
   loginAt: z.date(),
   logoutAt: z.date().optional(),
   sessionId: z.string(),
+  rememberMe: z.boolean(),
 });

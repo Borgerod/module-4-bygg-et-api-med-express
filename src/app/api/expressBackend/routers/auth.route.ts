@@ -18,21 +18,27 @@ interface TokenPair {
   refreshToken: string;
 }
 
-const setAuthCookies = (res: Response, tokens: TokenPair) => {
-  const maxAge = 7 * 24 * 60 * 60 * 1000;
-  const minAge = 3 * 60 * 60 * 1000;
-
-  // todo: ask about 'secure:'
+const setAuthCookies = (
+  res: Response,
+  tokens: TokenPair,
+  rememberMe = false,
+) => {
+  const refreshMaxAge = rememberMe
+    ? 30 * 24 * 60 * 60 * 1000
+    : 7 * 24 * 60 * 60 * 1000;
+  const accessMaxAge = rememberMe
+    ? 7 * 24 * 60 * 60 * 1000
+    : 3 * 60 * 60 * 1000;
 
   res.cookie("refreshToken", tokens.refreshToken, {
-    maxAge: maxAge,
+    ...(rememberMe ? { maxAge: refreshMaxAge } : {}),
     httpOnly: true,
     secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
     sameSite: "none",
   });
 
   res.cookie("accessToken", tokens.accessToken, {
-    maxAge: minAge,
+    ...(rememberMe ? { maxAge: accessMaxAge } : {}),
     httpOnly: true,
     secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
     sameSite: "none",
@@ -92,8 +98,9 @@ const handleRefreshToken = async (
         ? (existingToken.get("sessionId") as string)
         : uuidv4(),
       loginAt: new Date(),
+      rememberMe: (existingToken?.get("rememberMe") as boolean) ?? false,
     });
-    setAuthCookies(res, tokens);
+    setAuthCookies(res, tokens, true);
     res.status(200).json({ success: true, ...tokens });
   } catch (error) {
     next(error);
@@ -125,18 +132,23 @@ authRouter.get(
         res.status(200).json({ user: null });
         return;
       }
-      // Generate new tokens
-      const tokens = generateTokenPair(user);
-      // Update the refresh token in DB for this user
+
+      const existingToken = await RefreshToken.findOne({
+        where: { token: refreshToken },
+      });
+      const rememberMe = (existingToken?.get("rememberMe") as boolean) ?? false;
+
+      const tokens = generateTokenPair(user, rememberMe);
       await RefreshToken.upsert({
         userId: user.id,
         token: tokens.refreshToken,
-        sessionId: uuidv4(),
+        sessionId: existingToken
+          ? (existingToken.get("sessionId") as string)
+          : uuidv4(),
         loginAt: new Date(),
+        rememberMe,
       });
-      // Set new tokens in cookies
-      setAuthCookies(res, tokens);
-      // Return the full user object (or select fields)
+      setAuthCookies(res, tokens, rememberMe);
       res.json({
         user: { id: user.id, email: user.email, role: user.role },
         ...tokens,
@@ -151,12 +163,12 @@ authRouter.get(
 authRouter.get("/refresh/:token", handleRefreshToken);
 
 authRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
   try {
-    const result = await login(email, password);
+    const result = await login(email, password, rememberMe === true);
     const user = await User.findOne({ where: { email } });
     if (user) {
-      setAuthCookies(res, result);
+      setAuthCookies(res, result, rememberMe === true);
       res.status(200).json({
         user: { id: user.id, email: user.email, role: user.role },
         ...result,
