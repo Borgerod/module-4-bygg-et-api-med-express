@@ -6,6 +6,7 @@ import { Notification } from "@/components/ui/Notification";
 import DarkModeButton from "@/components/DarkModeButton";
 import NavBar from "@/components/NavBar";
 import UserProvider from "@lib/userProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,7 +67,7 @@ export default async function RootLayout({
               "items-start",
               "justify-start",
               "gap-5",
-
+              "py-10",
               "",
               "",
             )}
@@ -87,7 +88,7 @@ export default async function RootLayout({
                     node_modules/next-devtools-mcp`}
               type="warning"
             />
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
             <DarkModeButton />
           </main>
           <footer></footer>
