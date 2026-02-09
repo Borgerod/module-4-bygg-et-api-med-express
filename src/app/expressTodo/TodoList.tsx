@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { TodoType } from "@types";
 import {
   Table,
@@ -11,6 +11,7 @@ import {
 import { cn } from "@lib/utils";
 
 import TaskRow from "./TaskRow";
+import TodoFilters, { FilterType } from "./TodoFilters";
 
 interface TodoListProps {
   todos: TodoType[];
@@ -18,6 +19,8 @@ interface TodoListProps {
   onToggle: (id: string, currentDone: boolean) => Promise<void>;
   onEdit: (id: string, newText: string) => Promise<void>;
   setTodos: React.Dispatch<React.SetStateAction<TodoType[]>>;
+  filter: FilterType;
+  setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
 }
 
 export default function TodoList({
@@ -25,7 +28,18 @@ export default function TodoList({
   onDelete,
   onToggle,
   setTodos,
+  filter,
+  setFilter,
 }: TodoListProps) {
+  const filteredTodos = todos.filter((todo) => {
+    if (filter.includeTags.length === 0) return true;
+    const todoTags =
+      typeof todo.tags === "string"
+        ? todo.tags.split(",").map((t) => t.trim())
+        : [];
+    return filter.includeTags.every((tag) => todoTags.includes(tag));
+  });
+
   if (!Array.isArray(todos)) return null;
 
   return (
@@ -45,34 +59,17 @@ export default function TodoList({
       </TableHeader>
 
       <TableBody className={cn("divide-y", "", "")}>
-        {todos.length > 0 ? (
-          todos.map((todo) => (
-            <TaskRow
-              key={todo.id}
-              todo={todo}
-              todos={todos}
-              setTodos={setTodos}
-              onDelete={onDelete}
-              onToggle={onToggle}
-            />
-          ))
-        ) : (
-          <TableRow>
-            <td
-              colSpan={6}
-              className={cn(
-                "text-center py-4 text-muted-foreground",
-                "max-w-160",
-                "min-w-100",
-                "flex",
-                "",
-                "",
-              )}
-            >
-              No tasks...
-            </td>
-          </TableRow>
-        )}
+        {filteredTodos.map((todo) => (
+          <TaskRow
+            key={todo.id}
+            todo={todo}
+            todos={todos}
+            setTodos={setTodos}
+            onDelete={onDelete}
+            onToggle={onToggle}
+            setFilter={setFilter}
+          />
+        ))}
       </TableBody>
     </Table>
   );

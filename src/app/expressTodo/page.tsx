@@ -10,6 +10,10 @@ import TodoInput from "./TodoInput";
 import { FILTER, SORT_ORDERS } from "@lib/formConfig";
 import { sortArray } from "./sortArray";
 import { cn } from "@/lib/utils";
+import { CiCircleInfo } from "react-icons/ci";
+import { FaInfo } from "react-icons/fa";
+import { BsInfoLg } from "react-icons/bs";
+
 import {
   Card,
   CardAction,
@@ -26,6 +30,14 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { redirect } from "next/navigation";
+import { Icon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 // TODO: checkbox not working
 async function getTodos(): Promise<Todo[]> {
@@ -53,13 +65,13 @@ export default function Page() {
   const selectPeriod = FILTER.period.all;
 
   const [filter, setFilter] = useState<FilterType>({
-    sortBy: "",
+    sortBy: "", //todo i dont think filter should have sortby, it doesnt disturb anything but i should remove it for cleanliness sake.
     selectPeriod: "",
-    isDone: "",
+    isDone: FILTER.done.active,
     includeTags: [],
   });
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortBy, setSortBy] = useState(SORT_ORDERS.createdat_asc);
+  const [sortBy, setSortBy] = useState(SORT_ORDERS.duedate_asc);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -79,27 +91,12 @@ export default function Page() {
   }
   return (
     <TodoProvider todos={todos}>
-      <div
-        className={cn(
-          "space-y-4 flex flex-col",
-          "my-auto",
-
-          "",
-          "",
-        )}
-      >
+      <div className={cn("space-y-4 flex flex-col", "my-auto", "", "")}>
         <TodoInput onAdd={addTask} />
 
         <Card
           id="table-card"
-          className={cn(
-            "flex flex-col",
-            "p-4",
-            "w-full",
-            "overflow-hidden",
-            "",
-            "",
-          )}
+          className={cn("flex flex-col", "p-4", "w-full", "", "")}
         >
           <CardHeader className="w-full px-0">
             <CardTitle>TO DO LIST</CardTitle>
@@ -139,6 +136,80 @@ export default function Page() {
             className="flex flex-row w-full justify-between items-center gap-2 "
           >
             <TodoFilters {...{ filter, setFilter, sortBy, setSortBy }} />
+            <Button
+              type="button"
+              variant="outline"
+              className={cn("ml-2", "", "")}
+              onClick={() =>
+                setFilter({
+                  sortBy: "",
+                  selectPeriod: "",
+                  isDone: FILTER.done.active,
+                  includeTags: [],
+                })
+              }
+            >
+              Reset filters
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  id="delete-button close-button"
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Delete todo"
+                  className="mr-auto text-muted-foreground"
+                >
+                  <BsInfoLg />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="p-4">
+                color coding:
+                <ul className="flex flex-col gap-1 px-2">
+                  <li>
+                    {" "}
+                    -{" "}
+                    <span className="text-[oklch(0.704_0.191_22.216)]">
+                      red due dates
+                    </span>{" "}
+                    means that it is over due (will also contain a red overdue
+                    tag)
+                  </li>
+                  <li>
+                    {" "}
+                    -{" "}
+                    <span className="text-[oklch(0.8_0.15_145)]">
+                      green due dates
+                    </span>{" "}
+                    means that it is due today
+                  </li>
+                  <li>
+                    {" "}
+                    - <span className="font-semibold">today&#39;s tasks </span>
+                    will also uses a stronger font{" "}
+                  </li>
+                </ul>
+                Special tags:
+                <ul className="flex flex-col gap-1 px-2">
+                  <li>
+                    {" "}
+                    - overdue tags will contain:{" "}
+                    <Badge className="bg-[oklch(0.704_0.191_22.216)] text-primary">
+                      overdue
+                    </Badge>
+                    + &quot;overdue&quot; tag
+                  </li>
+                  <li>
+                    {" "}
+                    - urgent tasks will contain a yellow{" "}
+                    <Badge className="bg-[oklch(0.85_0.12_87.98)] text-primary">
+                      urgent
+                    </Badge>
+                  </li>
+                </ul>
+              </TooltipContent>
+            </Tooltip>
             <div
               id="sortby-select"
               className="flex flex-row w-fit items-center gap-2 text-sm"
@@ -178,6 +249,8 @@ export default function Page() {
               onToggle={toggleComplete}
               onEdit={editTask}
               setTodos={setTodos}
+              filter={filter}
+              setFilter={setFilter}
             />
           </CardContent>
         </Card>
