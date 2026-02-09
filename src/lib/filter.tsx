@@ -15,9 +15,7 @@ const normalizeTags = (tags?: TodoType["tags"]): string[] => {
 const matchesIncludeTags = (todo: TodoType, includeTags: string[]): boolean => {
   if (includeTags.length === 0) return true;
   const todoTags = normalizeTags(todo.tags).map((tag) => tag.toLowerCase());
-  return includeTags.every((tag) =>
-    todoTags.includes(tag.toLowerCase()),
-  );
+  return includeTags.every((tag) => todoTags.includes(tag.toLowerCase()));
 };
 
 export const toggleFilters = (
@@ -47,7 +45,7 @@ export const toggleFilters = (
   };
 
   const inRange = (item: TodoType, start: number, end: number) => {
-    const time = new Date(item.dueDate).getTime();
+    const time = item.dueDate ? new Date(item.dueDate).getTime() : NaN;
     return time >= start && time <= end;
   };
 
@@ -57,6 +55,7 @@ export const toggleFilters = (
       today.setHours(0, 0, 0, 0);
       result = result.filter(
         (item) =>
+          item.dueDate &&
           new Date(item.dueDate).setHours(0, 0, 0, 0) === today.getTime(),
       );
       break;
@@ -67,8 +66,9 @@ export const toggleFilters = (
       today.setHours(0, 0, 0, 0);
       result = result.filter(
         (item) =>
+          item.dueDate &&
           new Date(item.dueDate).setHours(0, 0, 0, 0) ===
-          today.getTime() + 86_400_000,
+            today.getTime() + 86_400_000,
       );
       break;
     }
