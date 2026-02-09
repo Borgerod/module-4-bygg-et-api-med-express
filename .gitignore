@@ -43,6 +43,8 @@ next-env.d.ts
 #db
 **/dev.db
 dev.db
+# **/reqLog.txt
+# reqLog.txt
 
 # backups
 _BACKUP_FILES
