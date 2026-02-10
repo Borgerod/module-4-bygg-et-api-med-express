@@ -102,16 +102,6 @@ export default async function TodoList({
           (b[field] as string).localeCompare(a[field] as string),
         );
 
-      case "az":
-        return [...todos].sort((a, b) =>
-          (a[field] as string).localeCompare(b[field] as string),
-        );
-
-      case "za":
-        console.log("FIELD NAME: ", field);
-        return [...todos].sort((a, b) =>
-          (b[field] as string).localeCompare(a[field] as string),
-        );
       default:
         return todos;
     }

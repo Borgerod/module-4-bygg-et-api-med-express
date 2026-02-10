@@ -31,12 +31,12 @@ export default function SortSelect() {
       <SelectContent position="popper" className="">
         <SelectGroup>
           <SelectLabel> Date created </SelectLabel>
-          <SelectItem value="createdAt,asc">Newest</SelectItem>
-          <SelectItem value="createdAt,dsc">Oldest</SelectItem>
+          <SelectItem value="createdAt,desc">Newest</SelectItem>
+          <SelectItem value="createdAt,asc">Oldest</SelectItem>
           <SelectSeparator />
           <SelectLabel> Due date </SelectLabel>
           <SelectItem value="dueDate,asc">Soonest</SelectItem>
-          <SelectItem value="dueDate,dsc">Latest</SelectItem>
+          <SelectItem value="dueDate,desc">Latest</SelectItem>
           <SelectSeparator />
           <SelectLabel> Alphabetical </SelectLabel>
           <SelectItem value="title,az">A-Z</SelectItem>
