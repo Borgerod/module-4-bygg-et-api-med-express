@@ -1,7 +1,4 @@
 "use client";
-
-// import { useState } from "react";
-
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Select,
@@ -17,8 +14,6 @@ import {
 export default function SortSelect() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  //   const sort = searchParams.get("sort") ?? "asc";
-  // const sort = searchParams.get("sort") ?? "createdAt,asc";
   const sort = searchParams.get("sort") ?? "createdAt,asc";
 
   //handleChange
@@ -29,29 +24,6 @@ export default function SortSelect() {
   }
 
   return (
-    /* ALT 1 */
-    // <Select value={sort} onValueChange={setSort}>
-    //   <SelectTrigger>
-    //     <SelectValue placeholder="Sort direction" />
-    //   </SelectTrigger>
-    //   <SelectContent position="popper" className="">
-    //     <SelectGroup>
-    //       <SelectLabel> Date created </SelectLabel>
-    //       <SelectItem value="asc">Newest</SelectItem>
-    //       <SelectItem value="dsc">Oldest</SelectItem>
-    //       <SelectSeparator />
-    //       <SelectLabel> Due date </SelectLabel>
-    //       <SelectItem value="asc">Soonest</SelectItem>
-    //       <SelectItem value="dsc">Latest</SelectItem>
-    //       <SelectSeparator />
-    //       <SelectLabel> Alphabetical </SelectLabel>
-    //       <SelectItem value="az">A-Z</SelectItem>
-    //       <SelectItem value="za">Z-A</SelectItem>
-    //     </SelectGroup>
-    //   </SelectContent>
-    // </Select>
-
-    /* ALT 2 */
     <Select value={sort} onValueChange={setSort}>
       <SelectTrigger>
         <SelectValue placeholder="Sort direction" />
