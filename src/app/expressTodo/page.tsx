@@ -139,7 +139,7 @@ export default function Page() {
             <Button
               type="button"
               variant="outline"
-              className={cn("ml-2", "", "")}
+              className={cn("ml-2", "font-normal", "")}
               onClick={() =>
                 setFilter({
                   sortBy: "",
@@ -198,7 +198,6 @@ export default function Page() {
                     <Badge className="bg-[oklch(0.704_0.191_22.216)] text-primary">
                       overdue
                     </Badge>
-                    + &quot;overdue&quot; tag
                   </li>
                   <li>
                     {" "}
@@ -210,6 +209,7 @@ export default function Page() {
                 </ul>
               </TooltipContent>
             </Tooltip>
+
             <div
               id="sortby-select"
               className="flex flex-row w-fit items-center gap-2 text-sm"
