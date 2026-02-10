@@ -7,7 +7,7 @@ import { TodoType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { LuX } from "react-icons/lu";
 import Form from "next/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { handleToggleTodo, handleDeleteTodo } from "./actions";
 
 export function TodoItem(todo: TodoType) {
@@ -17,8 +17,11 @@ export function TodoItem(todo: TodoType) {
     .filter(Boolean);
 
   return (
-    <TableRow key={todo.id} className="align-top">
-      <TableCell id="done complete checkbox checkbox-cell" className="py-2">
+    <TableRow key={todo.id} className={cn("align-top", "gap-0", "", "")}>
+      <TableCell
+        id="done complete checkbox checkbox-cell"
+        className={cn("py-1 px-2", "", "")}
+      >
         <TodoCheckbox
           todoId={todo.id}
           done={todo.done}
@@ -27,38 +30,82 @@ export function TodoItem(todo: TodoType) {
       </TableCell>
       <TableCell
         id="title title-cell task task-cell"
-        className="py-2 wrap-break-word min-w-50 max-w-75"
+        className={cn(
+          "py-1 px-2 wrap-break-word min-w-20 max-w-40 truncate",
+          "",
+          "",
+        )}
       >
-        <p className={cn("h-full w-full", "text-wrap")}>{todo.title}</p>
+        <p className={cn("h-full w-full text-wrap truncate", "", "")}>
+          {todo.title}
+        </p>
       </TableCell>
-      <TableCell id="dueDate due-date-cell" className="py-2 whitespace-nowrap">
+      <TableCell
+        id="dueDate due-date-cell"
+        className={cn("py-1 px-2 whitespace-nowrap", "", "")}
+      >
         {todo.dueDate ? (
-          new Date(todo.dueDate).toLocaleDateString("nb-NO", {
-            dateStyle: "medium",
-          })
+          <>
+            <span className={cn("hidden lg:inline", "", "")}>
+              {(() => {
+                const date = new Date(todo.dueDate);
+                const locale = "nb-NO";
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = String(date.getFullYear()).slice(-2);
+                const timeStr = date.toLocaleTimeString(locale, {
+                  timeStyle: "short",
+                });
+                return `${day}.${month}.${year} ${timeStr}`;
+              })()}
+            </span>
+            <span className={cn("hidden sm:inline lg:hidden", "", "")}>
+              {(() => {
+                const date = new Date(todo.dueDate);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = String(date.getFullYear()).slice(-2);
+                const timeStr = date.toLocaleTimeString("nb-NO", {
+                  timeStyle: "short",
+                });
+                return `${day}.${month}.${year} ${timeStr}`;
+              })()}
+            </span>
+            <span className={cn("inline sm:hidden", "", "")}>
+              {(() => {
+                const date = new Date(todo.dueDate);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = String(date.getFullYear()).slice(-2);
+                return `${day}.${month}.${year}`;
+              })()}
+            </span>
+          </>
         ) : (
           <span>-</span>
         )}
       </TableCell>
-
-      <TableCell className="py-2">
-        <Stacks tagArray={tags} />
+      <TableCell className={cn("py-1 px-2", "", "")}>
+        <TagArray tagArray={tags} />
       </TableCell>
-
       <TableCell
         id="createdAt created-at-cell"
-        className="py-2 whitespace-nowrap"
+        className={cn(
+          "py-1 px-2 whitespace-nowrap hidden md:table-cell",
+          "",
+          "",
+        )}
       >
         {todo.createdAt
-          ? new Date(todo.createdAt).toLocaleDateString("nb-NO", {
-              dateStyle: "medium",
+          ? new Date(todo.createdAt).toLocaleString("nb-NO", {
+              timeStyle: "short",
+              dateStyle: "short",
             })
           : "N/A"}
       </TableCell>
-
       <TableCell
         id="actions actions-cell delete delete-todo delete-button-cell"
-        className="py-2"
+        className={cn("py-1 px-0", "", "")}
       >
         <Form action={handleDeleteTodo} className={cn("inline")}>
           <input type="hidden" name="id" value={todo.id} />
@@ -77,25 +124,53 @@ export function TodoItem(todo: TodoType) {
   );
 }
 
-type StacksProps = {
+type TagArrayProps = {
   tagArray: string[];
 };
 
-function Stacks({ tagArray }: StacksProps) {
-  const [itemsToShow, setItemsToShow] = useState(3);
+function TagArray({ tagArray }: TagArrayProps) {
+  const getDefaultItemsToShow = () => {
+    if (typeof window !== "undefined") {
+      if (window.matchMedia("(min-width: 1024px)").matches) {
+        return 3;
+      } else if (window.matchMedia("(min-width: 640px)").matches) {
+        return 2;
+      } else {
+        return 1;
+      }
+    }
+    return 3;
+  };
+
+  const [itemsToShow, setItemsToShow] = useState(getDefaultItemsToShow);
+
+  useEffect(() => {
+    const updateItems = () => {
+      if (window.matchMedia("(min-width: 1024px)").matches) {
+        setItemsToShow(3);
+      } else if (window.matchMedia("(min-width: 640px)").matches) {
+        setItemsToShow(2);
+      } else {
+        setItemsToShow(1);
+      }
+    };
+    window.addEventListener("resize", updateItems);
+    return () => window.removeEventListener("resize", updateItems);
+  }, []);
+
   const showmore = () => {
     setItemsToShow(tagArray.length);
   };
 
   const showless = () => {
-    setItemsToShow(3);
+    setItemsToShow(getDefaultItemsToShow());
   };
 
   return (
     <div
       className={cn(
-        "flex items-center gap-1  h-full w-full",
-        itemsToShow > 3 ? "flex-wrap" : "flex-nowrap",
+        "flex items-center gap-1 h-full w-full",
+        itemsToShow < tagArray.length ? "flex-nowrap" : "flex-wrap",
         "",
       )}
     >
@@ -105,14 +180,14 @@ function Stacks({ tagArray }: StacksProps) {
           variant={"secondary"}
           className={cn("flex items-center h-full", "", "")}
         >
-          {tagArray.length > 3 && index === itemsToShow - 1 ? (
+          {tagArray.length > itemsToShow && index === itemsToShow - 1 ? (
             <button
-              onClick={itemsToShow === 3 ? showmore : showless}
+              onClick={itemsToShow === tagArray.length ? showless : showmore}
               className={cn("flex items-center h-full", "", "")}
             >
-              {itemsToShow === 3
-                ? `+ ${tagArray.length - 3} tags`
-                : "Show Less"}
+              {itemsToShow === tagArray.length
+                ? "Show Less"
+                : `+ ${tagArray.length - itemsToShow} tags`}
             </button>
           ) : (
             <span className={cn("block", "", "")}>{tag}</span>
