@@ -61,24 +61,6 @@ export default async function Page({
     redirect("/todo");
   }
 
-  // async function handleDeleteTodo(formData: FormData) {
-  //   "use server";
-  //   const id = formData.get("id") as string;
-  //   if (id) {
-  //     await deleteTodo(id);
-  //   }
-  //   redirect("/todo");
-  // }
-
-  // async function handleToggleTodo(formData: FormData) {
-  //   // async function handleToggleTodo(prevState: unknown, formData: FormData) {
-  //   "use server";
-  //   const id = formData.get("id") as string;
-  //   const done = formData.get("done") === "on";
-  //   await updateTodo(id, { done });
-  //   redirect("/todo");
-  // }
-
   return (
     <div className={cn("space-y-4 flex flex-col", "min-w-2xl", "", "", "")}>
       <Card
@@ -128,7 +110,6 @@ export default async function Page({
         </CardContent>
       </Card>
       {/* _______________________________________________ */}
-
       <Form className={cn("", "")} action={handleAddTodo}>
         <Card
           id="table-card"
