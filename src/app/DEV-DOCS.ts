@@ -92,30 +92,30 @@
 */
 
 /* TODO check-list - before submitting assignment:
-      TODO 1.0 [ ]:   implement zod validation
-        todo 1.1 [ ]: validate atleast: ['body of POST/PUT/PATCH','parameters (f.ex. :id)','query (how relevant)' ]
-      TODO 2.0 [ ]:   make sure APIs are using correct method - https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods
-        todo 2.1 [ ]: refactor 'editing-data' api-method - swap PUT with PATCH
+      TODO 1.0 [x]:   implement zod validation
+        todo 1.1 [x]: validate atleast: ['body of POST/PUT/PATCH','parameters (f.ex. :id)','query (how relevant)' ]
+      TODO 2.0 [x]:   make sure APIs are using correct method - https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods
+        todo 2.1 [x]: refactor 'editing-data' api-method - swap PUT with PATCH
       TODO 3.0 [X]:   make sure TS is written with ECMAScript Modules (ESM) syntax  
-      TODO 4.0 [ ]:   add descr-comments to non-obvious code 
+      TODO 4.0 [x]:   add descr-comments to non-obvious code 
       TODO 5.0 [ ]:   use HTTP status codes - use concrete statuscodes for all responses (see *'status-code-examples')
-      TODO 6.0 [ ]:   (requirement) implement requirements for HTTP headers
-        todo 6.1 [ ]: Access token (Authorization: Bearer <accessToken>)
-        todo 6.1 [ ]: Refresh token (X-RefreshToken: <refreshToken>)
+      TODO 6.0 [x]:   (requirement) implement requirements for HTTP headers
+        todo 6.1 [x]: Access token (Authorization: Bearer <accessToken>)
+        todo 6.1 [x]: Refresh token (X-RefreshToken: <refreshToken>)
                         Which means: 
                           - protected endpoints has to require 'Authorization'
                           - 'refresh' has to use 'X-RefreshToken'
                           - 'logout' has to require both 'Authorization' og 'X-RefreshToken'
 
-      TODO 7.0 [ ]:   invalidate/disable tokens upon logout (simple mechanism that; remove a login and make further use impossible)
+      TODO 7.0 [x]:   invalidate/disable tokens upon logout (simple mechanism that; remove a login and make further use impossible)
         todo 7.1 [ ]: login-ID
                       - upon login the server will assign UUID 
                       - server saves this id to a list of active logins ('activeLogins') (in-memory eller i JSON-fil)
                       - this id will be added to both; <accessToken> and <refreshToken> in f.ex.: the 'sid' field
-        todo 7.2 [ ]: using login-ID
+        todo 7.2 [x]: using login-ID
                       - server will check <accessToken> by: verifying that loginID is still in 'activeLogins'
                       - if loginID not in activeLogins: return '401 Unauthorized'.
-      TODO 8.0 [ ]:   implement Authentication structure (see *'authentication-structure') (POST /v1/auth/login)
+      TODO 8.0 [x]:   implement Authentication structure (see *'authentication-structure') (POST /v1/auth/login)
                       - Input: { username, password } (need validation)
                       if correct then:
                       - create loginID (<accessToken>)
