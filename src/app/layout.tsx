@@ -7,6 +7,7 @@ import DarkModeButton from "@/components/DarkModeButton";
 import NavBar from "@/components/NavBar";
 import UserProvider from "@lib/userProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,32 +53,38 @@ export default async function RootLayout({
           "",
         )}
       >
-        <UserProvider>
-          <header className={cn("w-full", "", "")}>
-            <nav className={cn("w-full", "", "")}>
-              <NavBar />
-            </nav>
-          </header>
-          <main
-            className={cn(
-              "max-w-4xl",
-              "mx-auto",
-              "flex",
-              "flex-col",
-              "items-start",
-              "justify-start",
-              "gap-5",
-              "py-10",
-              "",
-              "",
-            )}
-          >
-            <Notification
-              message="There is a known vulnerability in a dependency. Please be cautious."
-              storageKey="warning:dependency-v20260108"
-              moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
-              moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
-              moreText={`@modelcontextprotocol/sdk  <1.25.2
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <UserProvider>
+            <header className={cn("w-full", "", "")}>
+              <nav className={cn("w-full", "", "")}>
+                <NavBar />
+              </nav>
+            </header>
+            <main
+              className={cn(
+                "max-w-4xl",
+                "mx-auto",
+                "flex",
+                "flex-col",
+                "items-start",
+                "justify-start",
+                "gap-5",
+                "py-10",
+                "",
+                "",
+              )}
+            >
+              <Notification
+                message="There is a known vulnerability in a dependency. Please be cautious."
+                storageKey="warning:dependency-v20260108"
+                moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
+                moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
+                moreText={`@modelcontextprotocol/sdk  <1.25.2
                     Severity: high
                     Anthropic's MCP TypeScript SDK has a ReDoS vulnerability - https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
                     No fix available
@@ -86,13 +93,14 @@ export default async function RootLayout({
                     Depends on vulnerable versions of @modelcontextprotocol/sdk
                     Depends on vulnerable versions of undici
                     node_modules/next-devtools-mcp`}
-              type="warning"
-            />
-            <TooltipProvider>{children}</TooltipProvider>
-            <DarkModeButton />
-          </main>
-          <footer></footer>
-        </UserProvider>
+                type="warning"
+              />
+              <TooltipProvider>{children}</TooltipProvider>
+              <DarkModeButton />
+            </main>
+            <footer></footer>
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
