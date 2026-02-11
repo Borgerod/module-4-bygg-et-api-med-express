@@ -32,6 +32,7 @@ export type FilterType = {
 };
 
 type Props = {
+  id?: string;
   filter: FilterType;
   setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
   sortBy: string;
@@ -52,7 +53,7 @@ const extractTodoTags = (tags?: Todo["tags"]): string[] => {
 const getUniqueTags = (todos: Todo[]) =>
   Array.from(new Set(todos.flatMap((todo) => extractTodoTags(todo.tags))));
 
-export default function TodoFilters({ filter, setFilter }: Props) {
+export default function TodoFilters({ id, filter, setFilter }: Props) {
   const { todos } = useTodos();
 
   const uniqueTags = getUniqueTags(todos);
@@ -69,10 +70,13 @@ export default function TodoFilters({ filter, setFilter }: Props) {
 
   return (
     <>
-      <div id="open-filter-button">
+      <div id={id}>
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant={"outline"} className="text-sm font-normal">
+            <Button
+              variant={"outline"}
+              className={cn("text-sm font-normal", "", "")}
+            >
               Filter
             </Button>
           </SheetTrigger>

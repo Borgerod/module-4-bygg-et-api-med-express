@@ -65,11 +65,13 @@ export default function Page() {
   const selectPeriod = FILTER.period.all;
 
   const [filter, setFilter] = useState<FilterType>({
-    sortBy: "", //todo i dont think filter should have sortby, it doesnt disturb anything but i should remove it for cleanliness sake.
+    // todo i dont think filter should have sortby, it doesnt disturb anything but i should remove it for cleanliness sake.
+    sortBy: "",
     selectPeriod: "",
     isDone: FILTER.done.active,
     includeTags: [],
   });
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortBy, setSortBy] = useState(SORT_ORDERS.duedate_asc);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -105,39 +107,22 @@ export default function Page() {
               ) task(s)
             </CardDescription>
             <CardAction>
-              <div
-                className={cn(
-                  "flex flex-col items-end text-muted-foreground text-end",
-                  "gap-2",
-                  "py-2",
-                  "",
-                  "",
-                )}
-              >
-                <div className="text-nowrap  gap-1 text-sm flex flex-row">
-                  {/* Showing */}
-                  <h2
-                    className={cn(
-                      "text-3xl uppercase",
-                      "leading-4",
-                      "text-primary",
-                      "",
-                      "",
-                    )}
-                  >
-                    {selectPeriod}
-                  </h2>
-                </div>
-              </div>
+              <h2 className={cn("text-3xl uppercase", "", "")}>
+                {selectPeriod}
+              </h2>
             </CardAction>
           </CardHeader>
           <div
             id="listconfig-section filter sort "
             className="flex flex-row w-full justify-between items-center gap-2 "
           >
-            <TodoFilters {...{ filter, setFilter, sortBy, setSortBy }} />
+            <TodoFilters
+              id="filter filter-button filter-component"
+              {...{ filter, setFilter, sortBy, setSortBy }}
+            />
             <Button
-              type="button"
+              id="reset-filter reset button"
+              type="reset"
               variant="outline"
               className={cn("ml-2", "font-normal", "")}
               onClick={() =>
@@ -151,10 +136,12 @@ export default function Page() {
             >
               Reset filters
             </Button>
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  id="delete-button close-button"
+                  // NB: NOT a button - I use this button only for the styling, it has no function to it.
+                  id="tooltip info information instructions not-in-use"
                   type="button"
                   variant="outline"
                   size="icon"
