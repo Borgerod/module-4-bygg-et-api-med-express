@@ -30,10 +30,8 @@ export default function TaskRow({
   const [newText, setNewText] = useState<string>(todo.title || "");
   const [visibleTagCount, setVisibleTagCount] = useState<number | null>(null);
   const tagsContainerRef = useRef<HTMLDivElement>(null);
-
   const [showMore, setShowMore] = useState<boolean>(false);
   const { editTask } = TodoPropsUtils(todos, setTodos);
-
   const isOverdue: boolean =
     !todo.done && !!todo.dueDate && new Date(todo.dueDate) < new Date();
   const isToday =
@@ -144,16 +142,7 @@ export default function TaskRow({
   const overflowCount = totalTags - displayedTags;
 
   return (
-    <TableRow
-      key={todo.id}
-      className={cn(
-        "align-top",
-
-        "",
-        "",
-        "",
-      )}
-    >
+    <TableRow key={todo.id} className={cn("align-top", "", "")}>
       <TableCell
         id="checkbox is-done done"
         className={cn("py-2 w-fit", "", "")}
@@ -189,8 +178,6 @@ export default function TaskRow({
                 todo.dueDate && new Date(todo.dueDate) > new Date(),
               "text-warning": isOverdue,
               "text-success": isToday,
-              // "font-semibold": isToday,
-              // "text-muted-foreground": !isToday,
             },
             "",
             "",
@@ -212,26 +199,12 @@ export default function TaskRow({
         </span>
       </TableCell>
 
-      <TableCell
-        id="tags"
-        className={cn(
-          "py-2 ",
-
-          // "flex",
-          // "max-w-70",
-          // "w-full",
-          // "w-fit",
-          // "w-20!",
-          "",
-        )}
-      >
-        {/* <TableCell id="tags" className={cn("py-2 w-full", "", "")}> */}
+      <TableCell id="tags" className={cn("py-2 ", "")}>
         <div
           ref={tagsContainerRef}
           className={cn(
             "w-fit",
             "w-full",
-            // "max-w-full",
             "max-w-70",
             "flex gap-1",
             showMore ? "flex-wrap" : "flex-nowrap",
@@ -242,7 +215,9 @@ export default function TaskRow({
         >
           <Badge
             className={cn(
-              isOverdue ? "bg-warning-border text-primary" : "hidden",
+              isOverdue ? "block" : "hidden",
+              "bg-warning-border text-primary",
+              "dark:bg-warning-bg dark:text-warning-text dark:border dark:border-warning-border",
               "",
             )}
           >
@@ -250,12 +225,16 @@ export default function TaskRow({
           </Badge>
           {tags.map((tag: string, i: number) => (
             <Badge
+              id="tag tag-badge"
               key={i}
               variant="secondary"
               className={cn(
                 "text-xs break-all",
                 "cursor-pointer",
-                tag.trim() === "urgent" ? "bg-issue-border text-primary" : "",
+                tag.trim() === "urgent"
+                  ? "bg-issue-border text-primary dark:bg-issue-bg dark:text-issue-text dark:border dark:border-issue-border"
+                  : "",
+
                 visibleTagCount !== null &&
                   !showMore &&
                   i >= visibleTagCount - (isOverdue ? 1 : 0)

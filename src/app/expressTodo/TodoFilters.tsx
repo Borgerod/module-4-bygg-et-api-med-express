@@ -23,9 +23,9 @@ import { FILTER } from "@lib/formConfig";
 import { useTodos } from "./TodoContext";
 import { Todo } from "@types";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 export type FilterType = {
-  sortBy: string;
   selectPeriod: string;
   isDone: string;
   includeTags: string[];
@@ -35,8 +35,6 @@ type Props = {
   id?: string;
   filter: FilterType;
   setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const extractTodoTags = (tags?: Todo["tags"]): string[] => {
@@ -55,6 +53,10 @@ const getUniqueTags = (todos: Todo[]) =>
 
 export default function TodoFilters({ id, filter, setFilter }: Props) {
   const { todos } = useTodos();
+  const lenFiltersApplied =
+    (filter.selectPeriod && filter.selectPeriod !== FILTER.period.all ? 1 : 0) +
+    (filter.isDone !== FILTER.done.active ? 1 : 0) +
+    (filter.includeTags?.length || 0);
 
   const uniqueTags = getUniqueTags(todos);
 
@@ -70,14 +72,32 @@ export default function TodoFilters({ id, filter, setFilter }: Props) {
 
   return (
     <>
-      <div id={id}>
+      {/* <div id={id} className="contents w-fit h-fit"> */}
+      <div
+        id={id}
+        className="contents w-fit h-fit grid grid-cols-2 grid-rows-1"
+      >
         <Sheet>
-          <SheetTrigger asChild>
+          <SheetTrigger asChild className="col-span-2 row-start-1">
             <Button
               variant={"outline"}
-              className={cn("text-sm font-normal", "", "")}
+              className={cn(
+                "text-sm font-normal col-span-2 row-start-1 relative",
+                "",
+                "",
+              )}
             >
               Filter
+              <span
+                className={cn(
+                  "absolute -top-1.5 -right-1.5 w-4 h-4 bg-warning-base/80 text-primary-foreground rounded-full text-xs flex items-center justify-center",
+                  lenFiltersApplied ? "" : "hidden",
+                  "",
+                  "",
+                )}
+              >
+                {lenFiltersApplied}
+              </span>
             </Button>
           </SheetTrigger>
           <SheetContent>

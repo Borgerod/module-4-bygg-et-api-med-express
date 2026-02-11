@@ -10,10 +10,7 @@ import TodoInput from "./TodoInput";
 import { FILTER, SORT_ORDERS } from "@lib/formConfig";
 import { sortArray } from "./sortArray";
 import { cn } from "@/lib/utils";
-import { CiCircleInfo } from "react-icons/ci";
-import { FaInfo } from "react-icons/fa";
 import { BsInfoLg } from "react-icons/bs";
-
 import {
   Card,
   CardAction,
@@ -30,7 +27,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { redirect } from "next/navigation";
-import { Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -39,7 +35,6 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 
-// TODO: checkbox not working
 async function getTodos(): Promise<Todo[]> {
   const expressUrl =
     process.env.NEXT_PUBLIC_EXPRESS_URL ?? "http://localhost:4000";
@@ -49,8 +44,6 @@ async function getTodos(): Promise<Todo[]> {
   const res = await fetch(url, { cache: "no-store", credentials: "include" });
   if (res.status === 401) {
     if (typeof window !== "undefined") {
-      // window.location.replace("/login");
-      // redirect("/login");
       redirect(
         `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
       );
@@ -65,8 +58,6 @@ export default function Page() {
   const selectPeriod = FILTER.period.all;
 
   const [filter, setFilter] = useState<FilterType>({
-    // todo i dont think filter should have sortby, it doesnt disturb anything but i should remove it for cleanliness sake.
-    sortBy: "",
     selectPeriod: "",
     isDone: FILTER.done.active,
     includeTags: [],
@@ -118,7 +109,10 @@ export default function Page() {
           >
             <TodoFilters
               id="filter filter-button filter-component"
-              {...{ filter, setFilter, sortBy, setSortBy }}
+              {...{
+                filter,
+                setFilter,
+              }}
             />
             <Button
               id="reset-filter reset button"
@@ -127,7 +121,6 @@ export default function Page() {
               className={cn("ml-2", "font-normal", "")}
               onClick={() =>
                 setFilter({
-                  sortBy: "",
                   selectPeriod: "",
                   isDone: FILTER.done.active,
                   includeTags: [],
