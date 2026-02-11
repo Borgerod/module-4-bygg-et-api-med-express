@@ -172,7 +172,7 @@ export function DatePicker({
   const [date, setDate] = React.useState<Date | undefined>(initialDate);
   const [month, setMonth] = React.useState<Date | undefined>(initialDate);
   const [inputValue, setInputValue] = React.useState<string>(
-    formatDate(initialDate)
+    formatDate(initialDate),
   );
 
   // Keep everything in sync without useEffect
@@ -224,7 +224,7 @@ export function DatePicker({
               className={cn(
                 "absolute top-1/2 right-2 size-6 -translate-y-1/2",
                 "",
-                ""
+                "",
               )}
             >
               <CalendarIcon className="size-3.5" />

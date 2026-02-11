@@ -62,17 +62,17 @@ export function Calendar28() {
 
   return (
     <div
-      className={cn("flex flex-row gap-4 items-center max-w-xs mx-auto", "")}
+      className={cn("grid grid-cols-2 gap-4 max-w-xs mx-auto w-full", "", "")}
     >
       <input type="hidden" name="dueDate" value={getCombinedDateTime()} />
-      <div className={cn("flex flex-col gap-0", "")}>
-        <div className={cn("relative flex gap-0", "")}>
+      <div className={cn("flex flex-col gap-0 w-full min-w-0", "", "")}>
+        <div className={cn("relative flex gap-0 w-full min-w-0", "")}>
           <Input
             id="dueDateDisplay"
             name="dueDateDisplay"
             value={value}
             placeholder="Due date"
-            className={cn(" px-2 w-30", "")}
+            className={cn("px-2 w-full min-w-0", "", "")}
             onChange={(e) => {
               const newDate = new Date(e.target.value);
               setValue(e.target.value);
@@ -96,15 +96,17 @@ export function Calendar28() {
                 className={cn(
                   "absolute top-1/2 right-2 size-6 -translate-y-1/2",
                   "",
+                  "",
                 )}
               >
-                <CalendarIcon className={cn("size-3.5", "")} />
-                <span className={cn("sr-only", "")}>Select date</span>
+                <CalendarIcon className={cn("size-3.5", "", "")} />
+                <span className={cn("sr-only", "", "")}>Select date</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={cn("w-auto overflow-hidden p-0", "")}
-              align="end"
+              className={cn("w-auto overflow-hidden p-0", "", "")}
+              // align="end"
+              align="center"
               alignOffset={-8}
               sideOffset={10}
             >
@@ -127,14 +129,33 @@ export function Calendar28() {
       <div
         tabIndex={0}
         className={cn(
-          "flex flex-col gap-0 px-2 m-0 w-20",
+          "flex flex-col gap-0 px-2 m-0 w-full min-w-0",
           "border rounded-lg flex flex-row",
           "items-center",
           "justify-start",
-          "focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none",
-          "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:outline-none",
-          "bg-accent",
-          "",
+          "border-input",
+          "border",
+          "file:border-0",
+          "focus-visible:border-ring",
+          "aria-invalid:border-destructive",
+          "selection:bg-primary",
+          "dark:bg-input/30",
+          "bg-transparent",
+          "file:bg-transparent",
+          "disabled:pointer-events-none",
+          "disabled:cursor-not-allowed",
+          "disabled:opacity-50",
+          "md:text-sm",
+          "focus-visible:border-ring",
+          "focus-within:border-ring",
+          "focus-visible:ring-ring/50",
+          "focus-within:ring-ring/50",
+          "focus-visible:ring-[3px]",
+          "focus-within:ring-[3px]",
+          "aria-invalid:ring-destructive/20",
+          "dark:aria-invalid:ring-destructive/40",
+          "aria-invalid:border-destructive",
+          "transition-[color,box-shadow]",
           "",
           "",
         )}
@@ -169,7 +190,7 @@ export function Calendar28() {
             }
           }}
           className={cn(
-            "font-mono px-0 py-1 text-sm w-15",
+            "font-mono px-0 py-1 text-sm w-full min-w-0",
             "border-transparent",
             "bg-transparent!",
             "shadow-none",
@@ -185,7 +206,7 @@ export function Calendar28() {
             "",
           )}
         />
-        <IoMdTime className={cn("m-0 p-0 h-6 w-6 text-xl ", "", "")} />
+        <IoMdTime className={cn("m-0 p-0 h-5 w-5 ", "", "")} />
       </div>
     </div>
   );

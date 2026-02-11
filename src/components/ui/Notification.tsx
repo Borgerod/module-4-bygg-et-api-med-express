@@ -18,7 +18,7 @@ import {
   FiXCircle,
 } from "react-icons/fi";
 import { BsArrowUpRightCircle } from "react-icons/bs";
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState } from "react";
 
 type WarningType =
   | "info"
@@ -64,33 +64,19 @@ export function Notification(props: WarningProps) {
     moreTitle,
     moreText,
     type = "default",
-    // visible: visibleProp,
   } = props;
 
   const color = COLOR_MAP[type];
 
-  // const [visible, setVisible] = useState<boolean | undefined>(false);
-  const [visible, setVisible] = useState<boolean>(false);
-
-  useEffect(() => {
+  const [visible, setVisible] = useState<boolean>(() => {
     if (storageKey) {
       const isDismissed = localStorage.getItem(storageKey) === "dismissed";
-      setVisible(!isDismissed);
-      // try {
-      // } catch {
-      //   setVisible(true);
-      // }
+      return !isDismissed;
     }
-  }, [storageKey]);
+    return true;
+  });
 
-  // if (storageKey) {
-  //   if (!visible) return null;
-  // } else {
-  //   if (!visible) return null;
-  // }
-  if (storageKey) {
-    if (!visible) return null;
-  }
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const dismiss = () => {
     if (storageKey) {
@@ -101,127 +87,141 @@ export function Notification(props: WarningProps) {
     }
   };
 
-  return (
-    <Card
-      className={cn(
-        "mx-auto p-5 gap-2 w-full max-w-3xl border",
-        `bg-${color} dark:bg-${color}-dark`,
-        `border-${color} dark:border-${color}-dark`,
-        `text-${color} dark:text-${color}-dark`,
-        "",
-        "",
-      )}
-    >
-      <div
-        className={cn("flex items-center justify-between gap-2", "", "", "")}
-      >
-        <span
-          className={cn(
-            "mr-2 shrink-0",
-            `text-${color} dark:text-${color}-dark`,
-            "",
-            "",
-          )}
-        >
-          {ICONS[type]}
-        </span>
-        <h4
-          className={cn(
-            "text-sm font-semibold",
-            `text-${color} dark:text-${color}-dark`,
-            "mt-1",
-            "mr-auto",
-            "",
-            "",
-          )}
-        >
-          {type.charAt(0).toUpperCase() + type.slice(1)}
-        </h4>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Dismiss warning"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dismiss();
-          }}
-          className={cn(
-            "shrink-0",
-            `color-${color}`,
-            `hover:bg-darker hover:text-darker`,
-            storageKey ? "visibel" : "hidden",
-          )}
-        >
-          <FiX className="w-4 h-4" aria-hidden />
-        </Button>
-      </div>
+  if (!visible) {
+    return null;
+  }
 
-      <CardContent className="px-0 ">
-        <Collapsible className="rounded-md">
-          <div className="flex-1 text-sm">
-            <p className={cn(`text-${color} dark:text-${color}-dark`, "", "")}>
-              {message}
-            </p>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="link"
-                size="sm"
-                className={cn(
-                  `text-${color} dark:text-${color}-dark`,
-                  "bg-transparent border-none p-0 h-auto",
-                  "cursor-pointer",
-                  moreText ? "visible" : "hidden",
-                  "",
-                  "",
-                )}
-              >
-                Read more
-              </Button>
-            </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent
+  return (
+    <div className={cn("max-w-4xl w-full self-center", "py-5 px-5")}>
+      {" "}
+      <Card
+        className={cn(
+          "mx-auto ",
+          "p-5",
+          "m-0",
+          " gap-2 w-full border",
+          `bg-${color} dark:bg-${color}-dark`,
+          `border-${color} dark:border-${color}-dark`,
+          `text-${color} dark:text-${color}-dark`,
+          "max-w-4xl",
+          "",
+        )}
+      >
+        <div
+          className={cn("flex items-center justify-between gap-2", "", "", "")}
+        >
+          <span
             className={cn(
-              "flex flex-col items-start gap-2 text-sm w-full mt-2",
+              "mr-2 shrink-0",
               `text-${color} dark:text-${color}-dark`,
               "",
               "",
             )}
           >
-            <pre
+            {ICONS[type]}
+          </span>
+          <h4
+            className={cn(
+              "text-sm font-semibold",
+              `text-${color} dark:text-${color}-dark`,
+              "mt-1",
+              "mr-auto",
+              "",
+              "",
+            )}
+          >
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+          </h4>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Dismiss warning"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              dismiss();
+            }}
+            className={cn(
+              "shrink-0",
+
+              `color-${color}`,
+              `hover:bg-darker hover:text-darker`,
+              storageKey ? "visibel" : "hidden",
+            )}
+          >
+            <FiX className="w-4 h-4" aria-hidden />
+          </Button>
+        </div>
+
+        <CardContent className="px-0 ">
+          <Collapsible className="rounded-md">
+            <div className="flex-1 text-sm">
+              <p
+                className={cn(`text-${color} dark:text-${color}-dark`, "", "")}
+              >
+                {message}
+              </p>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={() => setIsOpen(!isOpen)}
+                  className={cn(
+                    `text-${color} dark:text-${color}-dark`,
+                    "bg-transparent border-none p-0 h-auto",
+                    "cursor-pointer",
+                    moreText ? "visible" : "hidden",
+                    "",
+                    "",
+                  )}
+                >
+                  {isOpen ? "Read less" : "Read more"}
+                </Button>
+              </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent
               className={cn(
-                "font-mono whitespace-pre-wrap word-break-words text-xs rounded p-2 w-full",
-                `bg-${color} bg-opacity-10 dark:bg-${color}-dark dark:bg-opacity-20`,
+                "flex flex-col items-start gap-2 text-sm w-full mt-2",
                 `text-${color} dark:text-${color}-dark`,
                 "",
                 "",
               )}
             >
-              {moreText ??
-                // "This dependency has a reported security vulnerability. Check the advisory for details and upgrade to a patched version when available."}
-                ""}
-            </pre>
-            {moreUrl && (
-              <Link
-                href={moreUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <pre
                 className={cn(
-                  "underline flex flex-row items-center",
-                  "hover:opacity-80",
+                  "font-mono whitespace-pre-wrap word-break-words text-xs rounded p-2 w-full",
+                  `bg-${color} bg-opacity-10 dark:bg-${color}-dark dark:bg-opacity-20`,
                   `text-${color} dark:text-${color}-dark`,
-                  "gap-2",
                   "",
                   "",
                 )}
               >
-                {moreTitle ?? "View on GitHub"}
-                <BsArrowUpRightCircle size={16} />
-              </Link>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
-      </CardContent>
-    </Card>
+                {moreText ??
+                  // "This dependency has a reported security vulnerability. Check the advisory for details and upgrade to a patched version when available."}
+                  ""}
+              </pre>
+              {moreUrl && (
+                <Link
+                  href={moreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "underline flex flex-row items-center",
+                    "hover:opacity-80",
+                    `text-${color} dark:text-${color}-dark`,
+                    "gap-2",
+                    "",
+                    "",
+                  )}
+                >
+                  {moreTitle ?? "View on GitHub"}
+                  <BsArrowUpRightCircle size={16} />
+                </Link>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

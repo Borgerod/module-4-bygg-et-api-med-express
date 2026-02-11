@@ -83,10 +83,19 @@ export default function LoginPage() {
         "flex-1",
         "flex",
         "flex-col",
-        "justify-center",
-        "min-h-[90vh]",
+        "h-full",
+        "justify-around",
+        "sm:justify-center",
+        "justify-self-center",
+        "self-center",
+        "place-self-center",
         "gap-10",
+        "py-5",
         "max-w-4xl",
+        "sm:pb-30",
+        "pb-30",
+        "",
+        "",
       )}
     >
       <Card

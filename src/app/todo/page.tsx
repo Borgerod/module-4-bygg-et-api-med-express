@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { FieldGroup, Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar28 as DatePicker } from "./DatePicker";
@@ -30,6 +30,7 @@ import { cookies, headers } from "next/headers";
 import TodoList from "./todoList";
 import SortSelect from "./SortSelect";
 import { HiOutlinePlusSm } from "react-icons/hi";
+import ScrollToBottomButton from "./ScrollToBottomButton";
 
 export default async function Page({
   searchParams,
@@ -84,27 +85,27 @@ export default async function Page({
           "w-fit",
           "border-0 sm:border",
           "shadow-none sm:shadow",
-
-          "",
+          "gap-3",
           "",
           "",
         )}
       >
-        <CardHeader className="shrink-0">
+        <CardHeader className="shrink-0 p-0 sm:px-6 relative ">
           <CardTitle>TO DO LIST</CardTitle>
-          <CardDescription>
+          <CardDescription className="sm:col-span-1 col-span-full sm:col-start-1">
             Manage, monitor and edit your schedule
           </CardDescription>
-          <CardAction className="flex gap-5">
+
+          <ScrollToBottomButton />
+
+          <CardAction className="flex mt-2 gap-5 row-start-3 col-span-full col-start-1 flex-row justify-between w-full">
             <SortSelect />
             <PeriodSelect />
           </CardAction>
         </CardHeader>
         <CardContent className="flex-1 min-h-0 p-0 sm:px-6">
           <ScrollArea className="h-full">
-            <div
-            // className="px-6 pb-4"
-            >
+            <div>
               <Table className={cn("w-auto table-auto", "", "")}>
                 <TableHeader className="sticky top-0 bg-background z-10">
                   <TableRow
@@ -120,11 +121,11 @@ export default async function Page({
                           key={`h-${i}`}
                           className={cn(
                             "py-1 px-1 whitespace-nowrap",
-                            h === "Task" ? "max-w-[8rem] truncate" : "",
-                            h === "Tags" ? "max-w-[6rem] truncate" : "",
-                            h === "Due" ? "max-w-[7rem] truncate" : "",
+                            h === "Task" ? "max-w-32 truncate" : "",
+                            h === "Tags" ? "max-w-24 truncate" : "",
+                            h === "Due" ? "max-w-28 truncate" : "",
                             h === "Created"
-                              ? "hidden md:table-cell max-w-[7rem] truncate"
+                              ? "hidden md:table-cell max-w-28 truncate"
                               : "",
                             "",
                           )}
@@ -144,7 +145,7 @@ export default async function Page({
         </CardContent>
       </Card>
       {/* _______________________________________________ */}
-      <Form className={cn("w-full", "px-2", "")} action={handleAddTodo}>
+      <Form className={cn("w-full", "mb-2", "")} action={handleAddTodo}>
         <Card
           id="table-card"
           className={cn(
@@ -190,13 +191,13 @@ export default async function Page({
               <div
                 id="field-subgroup"
                 className={cn(
-                  "flex flex-row",
                   "grid",
-                  "grid-cols-[1fr_auto]",
-                  "grid-cols-[auto_1fr]",
-                  "gap-5",
-                  "h-fit",
-                  "h-full",
+                  "sm:grid-cols-[auto_1fr]",
+                  "grid-cols-1",
+                  "grid-rows-1",
+                  "items-center",
+                  "gap-0",
+                  "sm:gap-4",
                   "",
                   "",
                 )}

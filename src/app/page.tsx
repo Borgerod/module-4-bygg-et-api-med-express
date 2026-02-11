@@ -11,9 +11,11 @@ export default function Home() {
         "flex-1",
         "flex",
         "flex-col",
-        "justify-center",
-        "min-h-[90vh]",
+        "h-full",
+        "justify-around",
+        "sm:justify-center",
         "gap-10",
+        "py-5",
         "max-w-4xl",
         "",
         "",
@@ -37,8 +39,6 @@ export default function Home() {
             "dark:opacity-90",
             "dark:brightness-120",
             "dark:saturate-70",
-            "",
-
             "",
             "",
           )}

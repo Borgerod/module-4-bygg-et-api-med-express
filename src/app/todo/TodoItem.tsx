@@ -136,7 +136,7 @@ function TagArray({ tagArray }: TagArrayProps) {
       } else if (window.matchMedia("(min-width: 640px)").matches) {
         return 2;
       } else {
-        return 1;
+        return 0;
       }
     }
     return 3;
@@ -151,7 +151,7 @@ function TagArray({ tagArray }: TagArrayProps) {
       } else if (window.matchMedia("(min-width: 640px)").matches) {
         setItemsToShow(2);
       } else {
-        setItemsToShow(1);
+        setItemsToShow(0);
       }
     };
     window.addEventListener("resize", updateItems);
@@ -165,6 +165,24 @@ function TagArray({ tagArray }: TagArrayProps) {
   const showless = () => {
     setItemsToShow(getDefaultItemsToShow());
   };
+
+  if (itemsToShow === 0 && tagArray.length > 0) {
+    return (
+      <div className={cn("flex items-center gap-1 h-full w-full", "", "")}>
+        <Badge
+          variant={"secondary"}
+          className={cn("flex items-center h-full", "", "")}
+        >
+          <button
+            onClick={showmore}
+            className={cn("flex items-center h-full", "", "")}
+          >
+            + {tagArray.length} tags
+          </button>
+        </Badge>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -105,9 +105,9 @@ export default function NavBar() {
             >
               <div
                 id="user-diplay-row"
-                className={cn("flex items-center gap-2", "", "")}
+                className={cn("flex w-fit items-center gap-1 sm:gap-2", "", "")}
               >
-                <span>
+                <span className="contents text-nowrap">
                   {user.firstname}, {user.middlename ? user.middlename : ""}{" "}
                   {user.lastname}
                 </span>
@@ -134,7 +134,7 @@ export default function NavBar() {
                 id="log-out-button"
                 href="/"
                 onClick={handleLogout}
-                className={cn("contents", "", "")}
+                className={cn("hidden sm:contents", "", "")}
               >
                 <Button variant={"ghost"} size={"lg"}>
                   Log out
@@ -158,10 +158,29 @@ export default function NavBar() {
                     <DropdownMenuItem>Billing</DropdownMenuItem>
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                   </DropdownMenuGroup>
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>GitHub</DropdownMenuItem>
                   <DropdownMenuItem>Support</DropdownMenuItem>
                   <DropdownMenuItem disabled>API</DropdownMenuItem>
+
+                  <DropdownMenuSeparator className="sm:hidden" />
+                  <DropdownMenuItem className={cn("sm:hidden", "", "")}>
+                    <NavigationMenuLink
+                      href="/"
+                      className={cn("contents", "", "")}
+                    >
+                      <Button
+                        id="log-out-button"
+                        onClick={handleLogout}
+                        variant={"ghost"}
+                        size={"lg"}
+                        className="contents"
+                      >
+                        Log out
+                      </Button>
+                    </NavigationMenuLink>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

@@ -60,31 +60,18 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <UserProvider>
-            <header className={cn("w-full", "", "")}>
+            <header>
               <nav className={cn("w-full", "", "")}>
                 <NavBar />
               </nav>
             </header>
-            <main
-              className={cn(
-                "max-w-4xl",
-                "mx-auto",
-                "flex",
-                "flex-col",
-                "items-start",
-                "justify-start",
-                "gap-5",
-                "py-10",
-                "",
-                "",
-              )}
-            >
-              <Notification
-                message="There is a known vulnerability in a dependency. Please be cautious."
-                storageKey="warning:dependency-v20260108"
-                moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
-                moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
-                moreText={`@modelcontextprotocol/sdk  <1.25.2
+
+            <Notification
+              message="There is a known vulnerability in a dependency. Please be cautious."
+              storageKey="warning:dependency-v20260108"
+              moreUrl="https://github.com/advisories/GHSA-8r9q-7v3j-jr4g"
+              moreTitle="Anthropic's MCP TypeScript SDK has a ReDoS vulnerability"
+              moreText={`@modelcontextprotocol/sdk  <1.25.2
                     Severity: high
                     Anthropic's MCP TypeScript SDK has a ReDoS vulnerability - https://github.com/advisories/GHSA-8r9q-7v3j-jr4g
                     No fix available
@@ -93,8 +80,24 @@ export default async function RootLayout({
                     Depends on vulnerable versions of @modelcontextprotocol/sdk
                     Depends on vulnerable versions of undici
                     node_modules/next-devtools-mcp`}
-                type="warning"
-              />
+              type="warning"
+            />
+            <main
+              className={cn(
+                "max-w-4xl",
+                "mx-auto",
+                "flex",
+                "flex-col",
+                "flex-1",
+                "gap-5",
+                "justify-center",
+                "items-center",
+                "px-5",
+                "pb-15",
+
+                "",
+              )}
+            >
               <TooltipProvider>{children}</TooltipProvider>
               <DarkModeButton />
             </main>
