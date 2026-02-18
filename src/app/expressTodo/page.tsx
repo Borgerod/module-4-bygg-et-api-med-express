@@ -26,7 +26,6 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -41,17 +40,32 @@ async function getTodos(): Promise<Todo[]> {
   const url = expressUrl
     ? `${expressUrl.replace(/\/$/, "")}/expressTodo`
     : "/expressTodo";
+
   const res = await fetch(url, { cache: "no-store", credentials: "include" });
+
   if (res.status === 401) {
     if (typeof window !== "undefined") {
-      redirect(
+      window.location.assign(
         `/login?redirect=${encodeURIComponent(window.location.pathname)}`,
       );
     }
     return [];
   }
-  const data = await res.json();
-  return data.data || data;
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch todos: ${res.status}`);
+  }
+
+  const data: unknown = await res.json();
+  const parsed = data as { data?: Todo[] } | Todo[];
+
+  if (Array.isArray(parsed)) {
+    return parsed;
+  }
+  if (Array.isArray(parsed.data)) {
+    return parsed.data;
+  }
+  return [];
 }
 
 export default function Page() {
@@ -68,10 +82,26 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    getTodos().then((data) => {
-      setTodos(data);
-      setIsLoading(false);
-    });
+    let mounted = true;
+
+    const loadTodos = async () => {
+      try {
+        const data = await getTodos();
+        if (mounted) {
+          setTodos(data);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadTodos();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const { addTask, deleteTask, toggleComplete, editTask } = TodoUtils(

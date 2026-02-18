@@ -6,7 +6,7 @@ import {
   verifyRefreshToken,
 } from "@/app/api/expressBackend/controllers/auth.controllers";
 import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from "@/app/api/expressBackend/config/env.config";
 import User from "@/app/api/expressBackend/models/user.model";
 import { v4 as uuidv4 } from "uuid";
@@ -18,45 +18,66 @@ interface TokenPair {
   refreshToken: string;
 }
 
+const getTokenMaxAge = (token: string): number => {
+  const decoded = jwt.decode(token) as JwtPayload | null;
+  if (!decoded || typeof decoded.exp !== "number") {
+    return 0;
+  }
+  const msLeft = decoded.exp * 1000 - Date.now();
+  return msLeft > 0 ? msLeft : 0;
+};
+
+const getCookieSecurity = (): { secure: boolean; sameSite: "lax" | "none" } => {
+  if (process.env.NODE_ENV === "production") {
+    return { secure: true, sameSite: "none" };
+  }
+  return { secure: false, sameSite: "lax" };
+};
+
 const setAuthCookies = (
   res: Response,
   tokens: TokenPair,
   rememberMe = false,
 ) => {
-  const refreshMaxAge = rememberMe
-    ? 30 * 24 * 60 * 60 * 1000
-    : 7 * 24 * 60 * 60 * 1000;
-  const accessMaxAge = rememberMe
-    ? 7 * 24 * 60 * 60 * 1000
-    : 3 * 60 * 60 * 1000;
+  const refreshMaxAge = getTokenMaxAge(tokens.refreshToken);
+  const accessMaxAge = getTokenMaxAge(tokens.accessToken);
+  const { secure, sameSite } = getCookieSecurity();
 
   res.cookie("refreshToken", tokens.refreshToken, {
-    ...(rememberMe ? { maxAge: refreshMaxAge } : {}),
+    maxAge: refreshMaxAge,
     httpOnly: true,
-    secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
-    sameSite: "none",
+    secure,
+    sameSite,
+    path: "/",
   });
 
   res.cookie("accessToken", tokens.accessToken, {
-    ...(rememberMe ? { maxAge: accessMaxAge } : {}),
+    maxAge: accessMaxAge,
     httpOnly: true,
-    secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
-    sameSite: "none",
+    secure,
+    sameSite,
+    path: "/",
   });
 };
 
 const delAuthCookies = (res: Response) => {
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: config.env !== "development", //? should maybe ser to secure:true ?
-    path: "/",
-  });
+  const clearCookie = (name: "refreshToken" | "accessToken") => {
+    res.clearCookie(name, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
+    res.clearCookie(name, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+  };
 
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: config.env !== "development", //? should maybe ser to secure:true ?
-    path: "/",
-  });
+  clearCookie("refreshToken");
+  clearCookie("accessToken");
 };
 
 const handleRefreshToken = async (
@@ -69,13 +90,14 @@ const handleRefreshToken = async (
   const actualToken = token || headerRefreshToken || null;
 
   if (actualToken === null) {
-    throw new Error("Bad request", { cause: 400 });
+    delAuthCookies(res);
+    res.status(200).json({ user: null });
+    return;
   }
 
   try {
     await verifyRefreshToken(actualToken);
 
-    // Use verify instead of decode
     const payloadRefreshToken = jwt.verify(actualToken, config.jwt.secret) as {
       id: string;
     };
@@ -83,6 +105,7 @@ const handleRefreshToken = async (
     const user = await User.findByPk(payloadRefreshToken.id);
 
     if (!user) {
+      delAuthCookies(res);
       res.sendStatus(401);
       return;
     }
@@ -103,6 +126,7 @@ const handleRefreshToken = async (
     setAuthCookies(res, tokens, true);
     res.status(200).json({ success: true, ...tokens });
   } catch (error) {
+    delAuthCookies(res);
     next(error);
     return;
   }
@@ -110,25 +134,22 @@ const handleRefreshToken = async (
 
 authRouter.get(
   "/refresh",
+  handleRefreshToken,
   async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies?.refreshToken;
-    console.log("Received refreshToken:", refreshToken);
     if (!refreshToken) {
-      console.log("No refreshToken in cookies");
+      delAuthCookies(res);
       res.status(200).json({ user: null });
       return;
     }
     try {
       await verifyRefreshToken(refreshToken);
-      console.log("Refresh token verified");
       const decoded = jwt.verify(refreshToken, config.jwt.secret) as {
         id: string;
       };
-      console.log("Decoded refresh token:", decoded);
       const user = await User.findByPk(decoded.id);
-      console.log("User found by decoded id:", user);
       if (!user) {
-        console.log("No user found for id:", decoded.id);
+        delAuthCookies(res);
         res.status(200).json({ user: null });
         return;
       }
@@ -154,7 +175,7 @@ authRouter.get(
         ...tokens,
       });
     } catch (error) {
-      console.log("Error in /refresh:", error);
+      delAuthCookies(res);
       res.status(200).json({ user: null });
     }
   },
@@ -189,18 +210,13 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", async (req: Request, res: Response) => {
   try {
-    console.log("Logout request body:", req.body);
-    const userId = req.body?.userId;
+    const userId = req.body?.userId as string | undefined;
     if (userId) {
       await logout(userId);
-    } else {
-      console.log("No userId provided in logout request.");
     }
+  } finally {
     delAuthCookies(res);
     res.status(204).end();
-  } catch (error) {
-    console.error("failed to destroy cookies", error);
-    res.status(500).end();
   }
 });
 

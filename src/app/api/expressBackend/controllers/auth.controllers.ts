@@ -6,6 +6,7 @@ import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
 import jwt, { SignOptions } from "jsonwebtoken";
 import * as employeeController from "@/app/api/expressBackend/controllers/employees.controllers";
 import Employee from "@/app/api/expressBackend/models/employee.model";
+import { Response } from "express";
 
 function generateTokenPair(user: User, rememberMe = false) {
   const accessExpiration = rememberMe ? "7d" : config.jwt.accessExpiration;
@@ -102,13 +103,16 @@ async function verifyRefreshToken(token: string) {
   return true;
 }
 
-function verifyToken(token: string): { role: string; sub: string } | null {
+async function verifyToken(
+  token: string,
+): Promise<{ role: string; sub: string } | null> {
   try {
     return jwt.verify(token, config.jwt.secret) as {
       role: string;
       sub: string;
     };
   } catch {
+    await RefreshToken.destroy({ where: { token } });
     return null;
   }
 }

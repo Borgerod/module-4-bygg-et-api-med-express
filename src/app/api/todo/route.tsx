@@ -3,7 +3,7 @@ import { verifyToken } from "@/app/api/expressBackend/controllers/auth.controlle
 
 // GET /api/todo
 export async function GET(request: Request) {
-  if (!requireAuth(request)) {
+  if (!(await requireAuth(request))) {
     return new Response("Unauthorized", { status: 401 });
   }
   const todos = await getTodos();
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
 // POST /api/todo
 export async function POST(request: Request) {
-  if (!requireAuth(request)) {
+  if (!(await requireAuth(request))) {
     return new Response("Unauthorized", { status: 401 });
   }
   try {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
 
 // PATCH /api/todo?id=1
 export async function PATCH(request: Request) {
-  if (!requireAuth(request)) {
+  if (!(await requireAuth(request))) {
     return new Response("Unauthorized", { status: 401 });
   }
   const { searchParams } = new URL(request.url);
@@ -101,7 +101,7 @@ export async function PATCH(request: Request) {
 
 // DELETE /api/todo?id=1
 export async function DELETE(request: Request) {
-  if (!requireAuth(request)) {
+  if (!(await requireAuth(request))) {
     return new Response("Unauthorized", { status: 401 });
   }
   const { searchParams } = new URL(request.url);
@@ -125,16 +125,31 @@ export async function DELETE(request: Request) {
   });
 }
 
-function requireAuth(request: Request) {
+function getCookieValue(request: Request, name: string): string | null {
+  const cookieHeader = request.headers.get("cookie");
+  if (!cookieHeader) return null;
+
+  const parts = cookieHeader.split(";").map((part) => part.trim());
+  const match = parts.find((part) => part.startsWith(`${name}=`));
+  if (!match) return null;
+
+  return decodeURIComponent(match.slice(name.length + 1));
+}
+
+async function requireAuth(
+  request: Request,
+): Promise<{ role: string; sub: string } | null> {
   const authHeader = request.headers.get("authorization");
-  const token = authHeader?.split(" ")[1];
+  const bearerToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : null;
+  const cookieToken = getCookieValue(request, "accessToken");
+  const token = bearerToken ?? cookieToken;
+
   if (!token) return null;
-  const payload = verifyToken(token);
-  if (
-    !payload ||
-    typeof payload === "string" ||
-    !["user", "admin"].includes(payload.role)
-  ) {
+
+  const payload = await verifyToken(token);
+  if (!payload || !["user", "admin"].includes(payload.role)) {
     return null;
   }
   return payload;

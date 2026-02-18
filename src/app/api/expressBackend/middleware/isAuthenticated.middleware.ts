@@ -1,39 +1,32 @@
 import { verifyToken } from "@/app/api/expressBackend/controllers/auth.controllers";
 import { Request, Response, NextFunction } from "express";
 
-export function isAuthenticated(validRoles = ["user"]) {
-  return (
-    req: Request & { payload?: { role: string; sub: string } },
-    res: Response,
-    next: NextFunction,
-  ) => {
-    let token: string | undefined;
-    if (req.headers["authorization"]) {
-      token = req.headers["authorization"].split(" ")[1];
-    } else if (req.cookies && req.cookies.accessToken) {
-      token = req.cookies.accessToken;
-    }
+type AuthPayload = { role: string; sub: string };
+
+export function isAuthenticated(validRoles: string[] = ["user"]) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : null;
+    const cookieToken =
+      typeof req.cookies?.accessToken === "string"
+        ? req.cookies.accessToken
+        : null;
+    const token = bearerToken ?? cookieToken;
 
     if (!token) {
-      res.sendStatus(401);
+      res.status(401).json({ error: "Unauthorized" });
       return;
     }
 
-    const payload = verifyToken(token);
-
-    if (
-      !payload ||
-      !(
-        (validRoles.includes("admin") && payload.role === "admin") ||
-        (validRoles.includes("self") && payload.sub === req.params?.id) ||
-        validRoles.includes(payload.role)
-      )
-    ) {
-      res.sendStatus(403);
+    const payload = (await verifyToken(token)) as AuthPayload | null;
+    if (!payload || !validRoles.includes(payload.role)) {
+      res.status(403).json({ error: "Forbidden" });
       return;
     }
 
-    req.payload = payload;
+    (req as Request & { user?: AuthPayload }).user = payload;
     next();
   };
 }

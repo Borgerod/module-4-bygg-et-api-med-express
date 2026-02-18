@@ -1,1 +1,9 @@
 b5f60233-5e0c-43de-9f85-4bf114ad37ce	09022026	11:34:57	GET		/
+e3414c9e-7ad1-4bc4-813b-82b462f3e9fc	18022026	18:36:49	GET	http://localhost:3000	/api/expressTodo
+d5d0ff2a-e44b-4e3d-8ca7-f3b1d03a3393	18022026	18:36:49	GET	http://localhost:3000	/api/expressTodo
+08549326-3d6b-4fef-bd29-419b5c5074dd	18022026	18:36:57	GET	http://localhost:3000	/api/expressTodo
+60a897de-5a91-4e2f-a38d-d92be45904e1	18022026	18:36:57	GET	http://localhost:3000	/api/expressTodo
+c933c911-eb6a-4cb8-a6fc-67fd922e8a33	18022026	18:38:09	GET	http://localhost:3000	/api/expressTodo
+699af472-8a50-42be-9530-ce1f50afe723	18022026	18:38:09	GET	http://localhost:3000	/api/expressTodo
+da3d6f06-a0e7-43c8-bcac-1872bc430bfc	18022026	18:39:58	GET	http://localhost:3000	/api/expressTodo
+faa33181-083b-4dab-ad46-e62c377edcd1	18022026	18:39:58	GET	http://localhost:3000	/api/expressTodo
