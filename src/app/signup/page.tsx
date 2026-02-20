@@ -1,3 +1,6 @@
+// TODO: make sure this works
+// todo: implement this: new employe fills in form and submits which will then be assigned to an admin (by a filled field or through other means) then the admin will fill in the rest if the information before submitting, => finilazing the user creation process.
+
 "use client";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
