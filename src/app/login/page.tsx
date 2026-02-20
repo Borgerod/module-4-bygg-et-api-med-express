@@ -7,7 +7,7 @@ import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@lib/utils";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as React from "react";
 import { Notification } from "@/components/ui/Notification";
 import { useSearchParams } from "next/navigation";
@@ -21,10 +21,18 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [buttonText, setButtonText] = useState("Login");
   const [notification, setNotification] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/";
   const router = useRouter();
+
+  // const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("rememberMe") === "true";
+  });
+  useEffect(() => {
+    localStorage.setItem("rememberMe", String(rememberMe));
+  }, [rememberMe]);
 
   const userContext = useContext(UserContext);
   if (!userContext) {
