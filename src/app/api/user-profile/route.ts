@@ -11,6 +11,6 @@ export async function GET() {
     console.log("[user-profile] Invalid token detected, cookies cleared.");
     return NextResponse.json(null);
   }
-  console.log("[user-profile] User authenticated:", user?.userId ?? "unknown");
+  console.log("[user-profile] User authenticated:", user?.userId ?? "unknown"); //should allways be known
   return NextResponse.json(user);
 }
