@@ -48,13 +48,13 @@ const setAuthCookies = (
 const delAuthCookies = (res: Response) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: config.env !== "development", //? should maybe ser to secure:true ?
+    secure: config.env !== "development", //? should maybe set to secure:true ?
     path: "/",
   });
 
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: config.env !== "development", //? should maybe ser to secure:true ?
+    secure: config.env !== "development", //? should maybe set to secure:true ?
     path: "/",
   });
 };
