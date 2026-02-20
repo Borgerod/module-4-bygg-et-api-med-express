@@ -83,13 +83,27 @@ async function login(
   return { success: true, ...tokens };
 }
 
-async function logout(userId: string) {
+async function logout(userId: string, refreshToken?: string) {
   try {
-    const deleted = await RefreshToken.destroy({ where: { userId } });
-    console.log(`Deleted ${deleted} refresh tokens for userId: ${userId}`);
+    let deleted = 0;
+    if (refreshToken) {
+      deleted = await RefreshToken.destroy({ where: { token: refreshToken } });
+    }
+    if (!deleted && userId) {
+      deleted = await RefreshToken.destroy({ where: { userId } });
+    }
+    if (!deleted) {
+      console.error(
+        `Could not find refresh token for userId: ${userId} or token: ${refreshToken}`,
+      );
+    } else {
+      console.log(
+        `Deleted ${deleted} refresh tokens for userId: ${userId} or token: ${refreshToken}`,
+      );
+    }
   } catch (error) {
     console.error(
-      "could not find token by userId, might already be destroyed",
+      "could not find token by userId or token, might already be destroyed",
       error,
     );
   }

@@ -89,8 +89,14 @@ const handleRefreshToken = async (
 
     const tokens = generateTokenPair(user);
     const existingToken = await RefreshToken.findOne({
-      where: { userId: user.id },
+      where: { token: actualToken },
     });
+    console.log(
+      "Fetched existingToken for token",
+      actualToken,
+      existingToken,
+      "",
+    );
     await RefreshToken.upsert({
       userId: user.id,
       token: tokens.refreshToken,
@@ -138,15 +144,17 @@ authRouter.get(
       const existingToken = await RefreshToken.findOne({
         where: { token: refreshToken },
       });
-      const rememberMe = (existingToken?.get("rememberMe") as boolean) ?? false;
-
+      if (!existingToken || !existingToken.get("sessionId")) {
+        delAuthCookies(res);
+        res
+          .status(401)
+          .json({ message: "Session invalid. Please log in again." });
+        return;
+      }
+      const rememberMe = (existingToken.get("rememberMe") as boolean) ?? false;
       const tokens = generateTokenPair(user, rememberMe);
-      await RefreshToken.upsert({
-        userId: user.id,
+      await existingToken.update({
         token: tokens.refreshToken,
-        sessionId: existingToken
-          ? (existingToken.get("sessionId") as string)
-          : uuidv4(),
         loginAt: new Date(),
         rememberMe,
       });
@@ -218,12 +226,12 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", async (req: Request, res: Response) => {
   try {
-    console.log("Logout request body:", req.body);
+    const refreshToken = req.cookies?.refreshToken;
     const userId = req.body?.userId;
-    if (userId) {
-      await logout(userId);
+    if (refreshToken || userId) {
+      await logout(userId ?? "", refreshToken);
     } else {
-      console.log("No userId provided in logout request.");
+      console.error("No userId or refreshToken provided in logout request.");
     }
     delAuthCookies(res);
     res.status(204).end();

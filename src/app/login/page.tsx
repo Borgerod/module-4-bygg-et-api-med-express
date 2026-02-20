@@ -30,7 +30,7 @@ export default function LoginPage() {
   if (!userContext) {
     throw new Error("useContext must be used within a UserProvider");
   }
-  const { setUser } = userContext;
+  const { setUser, refreshUser } = userContext;
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -52,19 +52,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         setNotification(false);
-
-        const profileRes = await fetch(
-          `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/refresh`,
-          {
-            credentials: "include",
-          },
-        );
-
-        if (profileRes.ok) {
-          const data = await profileRes.json();
-          setUser(data?.user ?? null);
-        }
-
+        await refreshUser();
         router.push(redirectTo);
         router.refresh();
       } else {
