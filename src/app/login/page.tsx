@@ -1,13 +1,12 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
+import { Field, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@lib/utils";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as React from "react";
 import { Notification } from "@/components/ui/Notification";
 import { useSearchParams } from "next/navigation";
@@ -31,7 +30,7 @@ export default function LoginPage() {
   if (!userContext) {
     throw new Error("useContext must be used within a UserProvider");
   }
-  const { setUser, refreshUser } = userContext;
+  const { refreshUser } = userContext;
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -58,7 +57,12 @@ export default function LoginPage() {
         router.refresh();
       } else {
         const data = await res.json();
-        setMessage(data.message || "Login failed");
+        if (data.error) {
+          setMessage(data.error);
+        } else {
+          setMessage("An unexpected error occurred. Please try again.");
+        }
+        console.error("Network error: ", data.error);
         setNotification(true);
         setButtonText("Login");
       }
@@ -91,10 +95,21 @@ export default function LoginPage() {
       )}
     >
       <Card
-        className={cn("min-w-87.5", "max-w-full", "mx-auto", "p-0", "", "")}
+        className={cn(
+          "min-w-87.5",
+          "max-w-full",
+          "h-fit",
+          "mx-auto",
+          "p-0",
+          "",
+          "",
+        )}
       >
-        <form onSubmit={handleLogin}>
-          <FieldSet className={cn("p-5 w-full", "", "")}>
+        <form
+          onSubmit={handleLogin}
+          className={cn("w-full", "flex", "flex-col", "p-6", "", "")}
+        >
+          <FieldSet>
             <h1 className="text-2xl mb-4">Login</h1>
             {notification && <Notification message={message} type="warning" />}
 
@@ -123,10 +138,17 @@ export default function LoginPage() {
                 className={cn("w-full", "", "")}
               />
             </Field>
-            <FieldGroup
+            <div
+              // <FieldGroup
               id="field-subgroup"
               className={cn(
-                "w-full h-fit flex flex-col gap-y-2 items-stretch justify-center",
+                "w-full",
+                "h-fit",
+                "flex",
+                "flex-col",
+                "gap-y-2",
+                "items-stretch",
+                "justify-center",
                 "",
                 "",
               )}
@@ -152,7 +174,7 @@ export default function LoginPage() {
               <Button className="text-xs" type="button" variant={"outline"}>
                 <Link href={"/signup"}>Signup</Link>
               </Button>
-            </FieldGroup>
+            </div>
           </FieldSet>
         </form>
       </Card>
