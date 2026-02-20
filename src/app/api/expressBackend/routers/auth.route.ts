@@ -112,12 +112,14 @@ authRouter.get(
   "/refresh",
   async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies?.refreshToken;
-    console.log("Received refreshToken:", refreshToken);
+
     if (!refreshToken) {
       console.log("No refreshToken in cookies");
       res.status(200).json({ user: null });
       return;
     }
+
+    console.log("Received refreshToken:", refreshToken);
     try {
       await verifyRefreshToken(refreshToken);
       console.log("Refresh token verified");
@@ -154,6 +156,33 @@ authRouter.get(
         ...tokens,
       });
     } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        let dbError = null;
+        let cookieError = null;
+        try {
+          await RefreshToken.destroy({ where: { token: refreshToken } });
+        } catch (err) {
+          dbError = err;
+          console.error(
+            "[auth] Eror while trying to delete refreshToken from db: \n",
+            err,
+          );
+        }
+        try {
+          delAuthCookies(res);
+        } catch (err) {
+          cookieError = err;
+          console.error(
+            "[auth] Error while trying to delete refreshToken from cookies: \n",
+            err,
+          );
+        }
+        if (!dbError && !cookieError) {
+          console.log(
+            "[auth] Expired refresh token detected and removed from DB and cookies.",
+          );
+        }
+      }
       console.log("Error in /refresh:", error);
       res.status(200).json({ user: null });
     }

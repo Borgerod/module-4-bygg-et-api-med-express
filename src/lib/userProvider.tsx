@@ -28,10 +28,15 @@ export default function UserProvider({
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await fetch("/api/user-profile");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/refresh`,
+        {
+          credentials: "include",
+        },
+      );
       if (res.ok) {
         const data = await res.json();
-        setUser(data);
+        setUser(data?.user ?? null);
       }
       setLoading(false);
     };

@@ -53,13 +53,16 @@ export default function LoginPage() {
       if (res.ok) {
         setNotification(false);
 
-        const profileRes = await fetch("/api/user-profile", {
-          credentials: "include",
-        });
+        const profileRes = await fetch(
+          `${process.env.NEXT_PUBLIC_EXPRESS_URL}/auth/refresh`,
+          {
+            credentials: "include",
+          },
+        );
 
         if (profileRes.ok) {
-          const userProfile = await profileRes.json();
-          setUser(userProfile);
+          const data = await profileRes.json();
+          setUser(data?.user ?? null);
         }
 
         router.push(redirectTo);

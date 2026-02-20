@@ -21,6 +21,10 @@ export const config = {
     secret: process.env.JWT_SECRET ?? "foobar12",
     accessExpiration: process.env.JWT_ACCESS_EXPIRATION ?? "3h",
     refreshExpiration: process.env.JWT_REFRESH_EXPIRATION ?? "7d",
+    rememberMeAccessExpiration:
+      process.env.JWT_ACCESS_EXPIRATION__REMEBER_ME ?? "30d",
+    rememberMeRefreshExpiration:
+      process.env.JWT_REFRESH_EXPIRATION__REMEBER_ME ?? "30d",
   },
 
   cors: {

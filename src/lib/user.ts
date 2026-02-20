@@ -17,43 +17,43 @@ export function getUserIdFromVerifiedToken(token: string): {
   return { id: payload.sub };
 }
 
-export const getUserProfileFromDb = cache(
-  async (): Promise<UserProfile | null> => {
-    const cookieStore = await cookies();
+// export const getUserProfileFromDb = cache(
+//   async (): Promise<UserProfile | null> => {
+//     const cookieStore = await cookies();
 
-    const accessToken = cookieStore.get("accessToken")?.value;
-    if (!accessToken) {
-      return null;
-    }
+//     const accessToken = cookieStore.get("accessToken")?.value;
+//     if (!accessToken) {
+//       return null;
+//     }
 
-    const { id } = getUserIdFromVerifiedToken(accessToken);
+//     const { id } = getUserIdFromVerifiedToken(accessToken);
 
-    const userResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_EXPRESS_URL}/users/${id}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
+//     const userResponse = await fetch(
+//       `${process.env.NEXT_PUBLIC_EXPRESS_URL}/users/${id}`,
+//       {
+//         method: "GET",
+//         credentials: "include",
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//         },
+//       },
+//     );
 
-    const employeeResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_EXPRESS_URL}/employees/by-user/${id}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
+//     const employeeResponse = await fetch(
+//       `${process.env.NEXT_PUBLIC_EXPRESS_URL}/employees/by-user/${id}`,
+//       {
+//         method: "GET",
+//         credentials: "include",
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//         },
+//       },
+//     );
 
-    const userJson = await userResponse.json();
-    const employeeJson = await employeeResponse.json();
-    console.log(employeeJson);
+//     const userJson = await userResponse.json();
+//     const employeeJson = await employeeResponse.json();
+//     console.log(employeeJson);
 
-    return { ...userJson, ...employeeJson };
-  },
-);
+//     return { ...userJson, ...employeeJson };
+//   },
+// );
