@@ -32,15 +32,12 @@ async function fetchUserProfile(): Promise<UserProfile | null> {
   if (!user?.id) return null;
 
   const [userRes, employeeRes] = await Promise.all([
-    fetch(
-      `${process.env.NEXT_PUBLIC_EXPRESS_URL}/users/${user.id}`,
-      {
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${refreshData.accessToken}`,
-        },
+    fetch(`${process.env.NEXT_PUBLIC_EXPRESS_URL}/users/${user.id}`, {
+      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${refreshData.accessToken}`,
       },
-    ),
+    }),
     fetch(
       `${process.env.NEXT_PUBLIC_EXPRESS_URL}/employees/by-user/${user.id}`,
       {
