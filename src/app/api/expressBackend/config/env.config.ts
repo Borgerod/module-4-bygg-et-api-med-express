@@ -33,3 +33,14 @@ export const config = {
       : ["http://localhost:4000", "http://127.0.0.1:5500"],
   },
 };
+
+export function toMilliseconds(time: string): number {
+  const [, val, unit] = time.match(/(\d+)([smhd])/) ?? [];
+  const units: Record<string, number> = {
+    s: 1_000,
+    m: 60_000,
+    h: 3_600_000,
+    d: 86_400_000,
+  };
+  return parseInt(val) * (units[unit] ?? 0);
+}

@@ -25,14 +25,7 @@ export default function LoginPage() {
   const redirectTo = searchParams.get("redirect") || "/";
   const router = useRouter();
 
-  // const [rememberMe, setRememberMe] = useState(false);
-  const [rememberMe, setRememberMe] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("rememberMe") === "true";
-  });
-  useEffect(() => {
-    localStorage.setItem("rememberMe", String(rememberMe));
-  }, [rememberMe]);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const userContext = useContext(UserContext);
   if (!userContext) {

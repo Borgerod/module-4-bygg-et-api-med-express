@@ -4,114 +4,42 @@ import {
   login,
   logout,
   verifyRefreshToken,
-} from "@/app/api/expressBackend/controllers/auth.controllers";
-import RefreshToken from "@/app/api/expressBackend/models/refresh-token.model";
+} from "@expressBackend/controllers/auth.controllers";
+import RefreshToken from "@expressBackend/models/refresh-token.model";
 import jwt from "jsonwebtoken";
-import { config } from "@/app/api/expressBackend/config/env.config";
-import User from "@/app/api/expressBackend/models/user.model";
-import { v4 as uuidv4 } from "uuid";
+import { config, toMilliseconds } from "@expressBackend/config/env.config";
+import User from "@expressBackend/models/user.model";
 
 const authRouter = express.Router();
 
 interface TokenPair {
   accessToken: string;
   refreshToken: string;
+  accessExpiration: string;
+  refreshExpiration: string;
 }
 
-const setAuthCookies = (
-  res: Response,
-  tokens: TokenPair,
-  rememberMe = false,
-) => {
-  const refreshMaxAge = rememberMe
-    ? 30 * 24 * 60 * 60 * 1000
-    : 7 * 24 * 60 * 60 * 1000;
-  const accessMaxAge = rememberMe
-    ? 7 * 24 * 60 * 60 * 1000
-    : 3 * 60 * 60 * 1000;
+const cookieBase = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none" as const,
+  path: "/",
+};
 
+const setAuthCookies = (res: Response, tokens: TokenPair) => {
   res.cookie("refreshToken", tokens.refreshToken, {
-    ...(rememberMe ? { maxAge: refreshMaxAge } : {}),
-    httpOnly: true,
-    secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
-    sameSite: "none",
+    ...cookieBase,
+    maxAge: toMilliseconds(tokens.refreshExpiration),
   });
-
   res.cookie("accessToken", tokens.accessToken, {
-    ...(rememberMe ? { maxAge: accessMaxAge } : {}),
-    httpOnly: true,
-    secure: true, //? should maybe ser to secure:false ? because i do sort of want to use the cookies that i have made also.
-    sameSite: "none",
+    ...cookieBase,
+    maxAge: toMilliseconds(tokens.accessExpiration),
   });
 };
 
 const delAuthCookies = (res: Response) => {
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: config.env !== "development", //? should maybe set to secure:true ?
-    path: "/",
-  });
-
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: config.env !== "development", //? should maybe set to secure:true ?
-    path: "/",
-  });
-};
-
-const handleRefreshToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const { token } = req.params;
-  const headerRefreshToken = req.cookies.refreshToken;
-  const actualToken = token || headerRefreshToken || null;
-
-  if (actualToken === null) {
-    throw new Error("Bad request", { cause: 400 });
-  }
-
-  try {
-    await verifyRefreshToken(actualToken);
-
-    // Use verify instead of decode
-    const payloadRefreshToken = jwt.verify(actualToken, config.jwt.secret) as {
-      id: string;
-    };
-
-    const user = await User.findByPk(payloadRefreshToken.id);
-
-    if (!user) {
-      res.sendStatus(401);
-      return;
-    }
-
-    const tokens = generateTokenPair(user);
-    const existingToken = await RefreshToken.findOne({
-      where: { token: actualToken },
-    });
-    console.log(
-      "Fetched existingToken for token",
-      actualToken,
-      existingToken,
-      "",
-    );
-    await RefreshToken.upsert({
-      userId: user.id,
-      token: tokens.refreshToken,
-      sessionId: existingToken
-        ? (existingToken.get("sessionId") as string)
-        : uuidv4(),
-      loginAt: new Date(),
-      rememberMe: (existingToken?.get("rememberMe") as boolean) ?? false,
-    });
-    setAuthCookies(res, tokens, true);
-    res.status(200).json({ success: true, ...tokens });
-  } catch (error) {
-    next(error);
-    return;
-  }
+  res.clearCookie("refreshToken", cookieBase);
+  res.clearCookie("accessToken", cookieBase);
 };
 
 authRouter.get(
@@ -151,6 +79,7 @@ authRouter.get(
           .json({ message: "Session invalid. Please log in again." });
         return;
       }
+
       const rememberMe = (existingToken.get("rememberMe") as boolean) ?? false;
       const tokens = generateTokenPair(user, rememberMe);
       await existingToken.update({
@@ -158,7 +87,7 @@ authRouter.get(
         loginAt: new Date(),
         rememberMe,
       });
-      setAuthCookies(res, tokens, rememberMe);
+      setAuthCookies(res, tokens);
       res.json({
         user: { id: user.id, email: user.email, role: user.role },
         ...tokens,
@@ -197,15 +126,19 @@ authRouter.get(
   },
 );
 
-authRouter.get("/refresh/:token", handleRefreshToken);
+// authRouter.get("/refresh/:token", handleRefreshToken);
 
-authRouter.post("/login", async (req, res) => {
-  const { email, password, rememberMe } = req.body;
+authRouter.post("/login", async (req: Request, res: Response) => {
+  const { email, password, rememberMe } = req.body as {
+    email: string;
+    password: string;
+    rememberMe: boolean;
+  };
   try {
     const result = await login(email, password, rememberMe === true);
     const user = await User.findOne({ where: { email } });
     if (user) {
-      setAuthCookies(res, result, rememberMe === true);
+      setAuthCookies(res, result);
       res.status(200).json({
         user: { id: user.id, email: user.email, role: user.role },
         ...result,
@@ -226,8 +159,8 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", async (req: Request, res: Response) => {
   try {
-    const refreshToken = req.cookies?.refreshToken;
-    const userId = req.body?.userId;
+    const refreshToken = req.cookies?.refreshToken as string | undefined;
+    const userId = req.body?.userId as string | undefined;
     if (refreshToken || userId) {
       await logout(userId ?? "", refreshToken);
     } else {

@@ -8,10 +8,6 @@ import * as employeeController from "@/app/api/expressBackend/controllers/employ
 import Employee from "@/app/api/expressBackend/models/employee.model";
 
 function generateTokenPair(user: User, rememberMe = false) {
-  // sets expiration dates for tokens based on wether RememberMe is checked or not
-  // TODO: store rememberMe in cache. (and a value for db? prob need device id)
-  // TODO: fetch rememberMe value upon page load so the user actually stays logged in.
-
   const accessExpiration = rememberMe
     ? config.jwt.rememberMeAccessExpiration
     : config.jwt.accessExpiration;
@@ -19,28 +15,24 @@ function generateTokenPair(user: User, rememberMe = false) {
     ? config.jwt.rememberMeRefreshExpiration
     : config.jwt.refreshExpiration;
 
-  const accessToken: string = jwt.sign(
-    {
-      role: user.role,
-    },
-    config.jwt.secret,
-    {
-      subject: user.id,
-      expiresIn: accessExpiration,
-    } as SignOptions,
-  );
+  const accessToken: string = jwt.sign({ role: user.role }, config.jwt.secret, {
+    subject: user.id,
+    expiresIn: accessExpiration,
+  } as SignOptions);
 
   const refreshToken: string = jwt.sign({ id: user.id }, config.jwt.secret, {
     expiresIn: refreshExpiration,
   } as SignOptions);
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, accessExpiration, refreshExpiration };
 }
 
 export interface LoginResult {
   success: boolean;
   accessToken: string;
   refreshToken: string;
+  accessExpiration: string;
+  refreshExpiration: string;
 }
 
 async function login(
