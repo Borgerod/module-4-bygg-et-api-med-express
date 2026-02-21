@@ -35,7 +35,7 @@ type WarningProps = {
   moreTitle?: string;
   moreText?: string;
   type?: WarningType;
-  // visible?: boolean;
+  className?: string;
 };
 
 const ICONS: Record<WarningType, ReactNode> = {
@@ -64,6 +64,7 @@ export function Notification(props: WarningProps) {
     moreTitle,
     moreText,
     type = "default",
+    className,
   } = props;
 
   const color = COLOR_MAP[type];
@@ -104,6 +105,7 @@ export function Notification(props: WarningProps) {
           `border-${color} dark:border-${color}-dark`,
           `text-${color} dark:text-${color}-dark`,
           "max-w-4xl",
+          className,
           "",
         )}
       >
