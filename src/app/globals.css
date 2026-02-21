@@ -117,7 +117,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Semantic colors - Light mode */
-  --info: oklch(59.854% 0.1141 233.899);
+  --info: oklch(0.59854 0.1141 233.899);
   --info-bg: color-mix(in oklch, var(--info), transparent 90%);
   --info-border: color-mix(in oklch, var(--info), transparent 70%);
   --info-text: var(--info);
@@ -152,6 +152,9 @@
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);
+
+  --card: oklch(0.18 0 0);
+
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
