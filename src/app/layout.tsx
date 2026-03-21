@@ -34,32 +34,7 @@ export default function RootLayout({
       - running it with `npx tsx src/app/expressTodo/server.ts`
       - or reinstalling `ts-node` with a newer version: `npm install -D ts-node@latest`
 	*/
-  /* ! IMPORTANT NOTICE: Project description 
-    todo: add this to README
-    My project consists of two individual parts: 
-    
-    - prisma-soluton
-      - a pure NEXTjs solution using only up-to-date NEXTjs 16.1.1.
-      - uses a NEXTjs framework
-      - uses ui.shadcn front-end components.   
-      - using prisma for db integration and api handling.
-      - routing handled by NEXTjs
-      ? reasoning: I wanted to make the most modern solution I could make.
-      both server and project runs together on PORT:3000
 
-    - express-soluton
-      - a express oriented solution while still trying to maintain NEXTjs recommendations.
-      - uses a NEXTjs framework
-      - uses ui.shadcn front-end components.   
-      - uses express.js for api handling. 
-      - routing handled by NEXTjs
-      - borrows the generated DATABASE_URL from prisma (DATABASE_URL) (instead of using in-memory / json soluton).
-      - server runs seperatly from project on PORT:4000
-      ? reasoning: this part is built by following assignment instructions. 
-      
-    NOTE: This project comes with a 'export.json', which is a prereset / reset for the database. 
-          ? reasoning: So that the user has some data to go from (instructions includeed in README)
-*/
   /* * PROJECT COMPOSITION: Mandatory + Chosen Theme
         
       - Mandatory: 0. Authentication (required for all projects)
@@ -92,7 +67,7 @@ export default function RootLayout({
         todo 1.1 [ ]: validate atleast: ['body of POST/PUT/PATCH','parameters (f.ex. :id)','query (how relevant)' ]
       TODO 2.0 [ ]:   make sure APIs are using correct method - https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods
         todo 2.1 [ ]: refactor 'editing-data' api-method - swap PUT with PATCH
-      TODO 3.0 [X]:   make sure TS is written with ECMAScript Modules (ESM) syntax  
+      TODO 3.0 [ ]:   make sure TS is written with ECMAScript Modules (ESM) syntax  
       TODO 4.0 [ ]:   add descr-comments to non-obvious code 
       TODO 5.0 [ ]:   use HTTP status codes - use concrete statuscodes for all responses (see *'status-code-examples')
       TODO 6.0 [ ]:   (requirement) implement requirements for HTTP headers
@@ -119,8 +94,7 @@ export default function RootLayout({
                       - Issue (generate) accessToken and refreshToken (JWTs (JSON Web Tokens) with a payload, containing an arbitrary but consistent generated login ID).
                       - return '200 ok' with { <accessToken>, <refreshToken> }
 
-      TODO 9.0 [X]:   use CRUD-endpoints for your theme under /v1/... (see *'crud-example-structure')
-                      - note: /v1/ is for API versioning for, commong practice for older versions available for clients that haven’t upgraded
+      TODO 9.0 [ ]:   use CRUD-endpoints for your theme under /v1/... (see *'crud-example-structure')
       TODO 10.0 [ ]:  (prefer/not required) follow tips (see *'tips')
       TODO 11.0 [ ]:  finish README.md w/ install guide, api guide (what does what, headers etc) or use https://swagger.io/
   */

@@ -1,3 +1,0 @@
-this is only used by my express solution
-
-- This might not be necessary since prisma provides a schema and i also have a constructor, but i will make it for now and might delete it later.
