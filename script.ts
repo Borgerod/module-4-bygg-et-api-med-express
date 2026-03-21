@@ -1,5 +1,8 @@
+import { execSync } from "child_process";
 import { prisma } from "@lib/prisma";
 
+execSync("npx prisma migrate reset --force", { stdio: "inherit" });
+execSync("npx prisma generate", { stdio: "inherit" });
 type TodoCreateInput = {
   title: string;
   done?: boolean;

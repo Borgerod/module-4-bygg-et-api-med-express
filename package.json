@@ -9,7 +9,7 @@
     "lint": "eslint",
     "api": "npx tsx src/app/expressTodo/server.ts",
     "dev:all": "concurrently \"npm run dev\" \"npm run api\"",
-    "seed": "npx tsx src/app/api/expressBackend/seeding/210116-ab-sqlite-seed.ts",
+    "seed": "npx tsx script.ts && npx tsx src/app/api/expressBackend/seeding/210116-ab-sqlite-seed.ts",
     "log": "powershell -Command Get-Content ./logs/reqLog.txt -Wait"
   },
   "dependencies": {
