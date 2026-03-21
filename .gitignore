@@ -31,7 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+# .env*
 
 # vercel
 .vercel
@@ -40,6 +40,19 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+#db
+**/dev.db
+dev.db
+# **/reqLog.txt
+# reqLog.txt
 
 # backups
 _BACKUP_FILES
+/generated/prisma
+
+src/app/admin/TEMP_TEST_PAGE
+src/app/admin/page.tsx
+src/app/users/page.tsx
+src/app/users/TEMP_TEST_PAGE
+dev.db
+TEST_USERS_DELETEME.txt

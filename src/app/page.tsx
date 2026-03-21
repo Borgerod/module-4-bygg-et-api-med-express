@@ -1,60 +1,214 @@
+"use client";
+import { Card } from "@/components/ui/card";
+import { cn } from "@lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-	return (
-		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-			<main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-				<Image
-					className="dark:invert"
-					src="/next.svg"
-					alt="Next.js logo"
-					width={100}
-					height={20}
-					priority
-				/>
-				<div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-					<h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-						To get started, edit the page.tsx file.
-					</h1>
-					<p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-						Looking for a starting point or more instructions? Head
-						over to{" "}
-						<a
-							href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-							className="font-medium text-zinc-950 dark:text-zinc-50"
-						>
-							Templates
-						</a>{" "}
-						or the{" "}
-						<a
-							href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-							className="font-medium text-zinc-950 dark:text-zinc-50"
-						>
-							Learning
-						</a>{" "}
-						center.
-					</p>
-				</div>
-				<div className="flex flex-col gap-5 w-full">
-					<h3 className="text-2xl leading-0 text-stone-600">Pages</h3>
-					<hr className="border-t  w-full border-stone-400" />
-					<div className="flex flex-col gap-4 text-base font-medium sm:flex-row ">
-						<Link
-							className="w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90"
-							href={"/todo"}
-						>
-							ToDo
-						</Link>
-						<Link
-							className="w-full sm:w-1/2 shadow-md hover:shadow-xs flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90"
-							href={"/expressTodo"}
-						>
-							ToDo (Express)
-						</Link>
-					</div>
-				</div>
-			</main>
-		</div>
-	);
+  return (
+    <div
+      className={cn(
+        "flex-1",
+        "flex",
+        "flex-col",
+        "h-full",
+        "justify-around",
+        "sm:justify-center",
+        "gap-10",
+        "py-5",
+        "max-w-4xl",
+        "",
+        "",
+      )}
+    >
+      <div
+        id="project-header"
+        className={cn(
+          "flex flex-col w-full  sm:flex-row sm:justify-between items-center gap-5",
+          "",
+          "",
+        )}
+      >
+        <Image
+          className={cn(
+            "h-50",
+            "w-100",
+            "h-full w-full",
+            "min-h-10 min-w-30",
+            "max-h-30 max-w-40",
+            "dark:opacity-90",
+            "dark:brightness-120",
+            "dark:saturate-70",
+            "",
+            "",
+          )}
+          src="/logo.png"
+          alt="ToDo logo"
+          width={200}
+          height={200}
+          priority
+        />
+        <Card
+          className={cn(
+            "p-5 text-md leading-0 text-stone-600 dark:text-stone-400 w-full h-fit ",
+            "min-w-fit",
+            "max-w-100",
+            "text-nowrap",
+            "",
+            "",
+          )}
+        >
+          <p className="flex flex-row justify-between">
+            <span>Assignment:</span>
+            <span> Bygg et API med Expres</span>
+          </p>
+          <p className="flex flex-row justify-between">
+            <span>Module:</span>
+            <span> 4, fullstack</span>
+          </p>
+          <p className="flex flex-row justify-between">
+            <span>Chosen theme:</span>
+            <span> Todo App</span>
+          </p>
+        </Card>
+      </div>
+
+      <div
+        id="project-description"
+        className="flex flex-col  gap-5 items-start "
+      >
+        <h1
+          suppressHydrationWarning
+          className={cn(
+            "max-w-xs text-3xl font-semibold  tracking-tight ",
+            "",
+            "",
+          )}
+        >
+          Welcome to 2Do
+        </h1>
+        <p
+          className={cn(
+            "max-w-md text-lg leading-8 text-stone-600 dark:text-stone-400",
+            "",
+            "",
+          )}
+        >
+          An app for managing tasks, powered by{" "}
+          <a
+            href="https://nextjs.org"
+            className={cn(
+              "font-medium text-stone-950 dark:text-stone-50",
+              "",
+              "",
+            )}
+          >
+            NEXTjs
+          </a>
+          , with backend handling by{" "}
+          <a
+            href="https://expressjs.com/"
+            className={cn(
+              "font-medium text-stone-950 dark:text-stone-50",
+              "",
+              "",
+            )}
+          >
+            Express
+          </a>
+          , database by{" "}
+          <a
+            href="https://www.sqlite.org/"
+            className={cn(
+              "font-medium text-stone-950 dark:text-stone-50",
+              "",
+              "",
+            )}
+          >
+            SQLite{" "}
+          </a>
+          both with and without using{" "}
+          <a
+            href="https://www.prisma.io/"
+            className={cn(
+              "font-medium text-stone-950 dark:text-stone-50",
+              "",
+              "",
+            )}
+          >
+            Prisma
+          </a>
+          , designed with the{" "}
+          <a
+            href="https://ui.shadcn.com/"
+            className={cn(
+              "font-medium text-stone-950 dark:text-stone-50",
+              "",
+              "",
+            )}
+          >
+            Ui.ShadCn
+          </a>{" "}
+          UI Kit.
+        </p>
+        <div>
+          <p
+            className={cn(
+              "max-w-md text-lg leading-5 text-stone-600 dark:text-stone-400",
+              "text-start",
+              "",
+              "",
+            )}
+          >
+            With the goal of the task is to display capabilities for:
+          </p>
+          <ul
+            className={cn(
+              "list-disc pl-5 text-stone-600 dark:text-stone-400",
+              "px-10",
+              "",
+              "",
+            )}
+          >
+            <li className="text-start">REST-ful API construction</li>
+            <li className="text-start">Node + Express</li>
+            <li className="text-start">API handling</li>
+            <li className="text-start">Authentication.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        id="project-routes"
+        className="flex flex-col items-center gap-5 text-center sm:items-start sm:text-left"
+      >
+        <h3 className="text-2xl leading-10 text-stone-600 dark:text-stone-300 self-start">
+          Pages
+        </h3>
+        <hr className="border-t w-full border-stone-400 dark:border-white/[.145]" />
+        <div className="flex flex-col w-full gap-4 text-base font-medium sm:flex-row ">
+          <Link
+            className={cn(
+              "w-full sm:w-1/2 shadow-md hover:shadow-xs hover:bg flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
+              "",
+              "",
+            )}
+            href={"/todo"}
+          >
+            ToDo (Prisma)
+          </Link>
+          <Link
+            className={cn(
+              "w-full sm:w-1/2 shadow-md hover:shadow-xs flex h-12 items-center justify-center rounded-xl border border-solid px-5 transition-colors hover:border-transparent dark:border-white/[.145] dark:hover:bg-[#1a1a1a] hover:bg-stone-200 border-stone-300/90",
+              "",
+              "",
+            )}
+            href={"/expressTodo"}
+          >
+            ToDo (Express)
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }

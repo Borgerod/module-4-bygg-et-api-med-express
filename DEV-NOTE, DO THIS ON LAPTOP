@@ -1,0 +1,10 @@
+make this shortcuts to terminal to simply generate random keys (256-bit entropy),
+gen a unique key with the commands: "random-key", "randomKey", "key":
+
+function random-key {
+    $bytes = New-Object byte[] 32
+    [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+    [Convert]::ToBase64String($bytes)
+}
+Set-Alias randomKey random-key
+Set-Alias key random-key

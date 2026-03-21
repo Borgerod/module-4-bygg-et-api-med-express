@@ -1,110 +1,219 @@
-/* ! NOTE: as a temp solution i want to keep server.ts and users.route.ts separate to make it easier to work with (less clutter) 
-          - so i am going to import whatever i need from server.ts 
-          - in server.ts i will add required lines: 
-             + import { userRouter } from "../../expressBackend/routers/users.route"; // adjust path as needed
-             + app.use("/users", userRouter);
-
-          - in users.route.ts: will operate as normal
-*/
-
 import express from "express";
 import dotenv from "dotenv";
-import { Pool } from "pg";
-import { Todo, TodoProps } from "./todo";
-import { userRouter } from "@expressBackend/routers/users.route";
-// import { userRouter } from "../../expressBackend/routers/users.route"; // !TEMP
-// import { userRouter } from "@expressBackend/controllers/users.controllers"; // !TEMP
+import Database from "better-sqlite3";
+import { Todo, TodoProps } from "@types";
+import { userRouter } from "@/app/api/expressBackend/routers/user.route";
+import { sequelize } from "@/app/api/expressBackend/config/db.config";
+import { employeesRouter } from "@/app/api/expressBackend/routers/employee.route";
+import { authRouter } from "@/app/api/expressBackend/routers/auth.route";
+import os from "os";
+import { Request, Response } from "express";
+import { isAuthenticated } from "@/app/api/expressBackend/middleware/isAuthenticated.middleware";
+import { useRequestId } from "@/app/api/expressBackend/middleware/useRequestId.middleware";
+import { configureApp } from "@expressBackend/config/server.config";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+export const db = new Database(
+  process.env.DATABASE_URL?.replace("file:", "") ?? "./dev.db",
+);
 
 const app = express();
-app.use(express.json());
-app.set("trust proxy", true);
 
-app.use("/users", userRouter);
+app.use(cookieParser());
+app.use(express.json());
+app.use(cookieParser());
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  console.log(`[${req.method}] ${req.url}`);
   next();
 });
 
-////* GET (w/query)
-app.get("/expressTodo", async (req, res) => {
-  const id = req.query.id; //how to get queries
-  //TODO: Continue from here (filtering)
-  let query = 'SELECT * FROM "Todo"';
-  const params: QueryParam[] = [];
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+  );
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-  // If done parameter exists, filter by it
-  if (req.query.done !== undefined) {
-    const done = req.query.done === "true";
-    query += " WHERE done = $1";
-    params.push(done);
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
   }
-  // query += ' ORDER BY "createdAt" ASC, id ASC';
-  query += ' ORDER BY "createdAt" DESC, id DESC';
-  const result = await pool.query(query, params);
-  res.json({
-    count: result.rows.length,
-    data: result.rows,
-  });
+
+  next();
 });
+
+// Middleware
+app.use(useRequestId);
+
+// Routes
+app.use("/users", userRouter);
+app.use("/employees", employeesRouter);
+app.use("/auth", authRouter);
+
+function validateTableAndId(
+  table: string,
+  id: string,
+): { validatedTable: string } | { error: string; status: number } {
+  const tableMap: Record<string, string> = {
+    Todo: "Todo",
+  };
+
+  const validatedTable = tableMap[table];
+  if (!validatedTable) {
+    return { error: "Invalid table name", status: 400 };
+  }
+
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) {
+    return { error: "Invalid ID format", status: 400 };
+  }
+
+  return { validatedTable };
+}
+
+////* GET (w/query)
+app.get(
+  "/expressTodo",
+  isAuthenticated(["user", "admin"]), // Only allow logged-in users with these roles
+  (req, res) => {
+    let query = 'SELECT * FROM "Todo"';
+    const params: unknown[] = [];
+
+    if (req.query.done !== undefined) {
+      query += " WHERE done = ?";
+      params.push(req.query.done === "true" ? 1 : 0);
+    }
+    query += ' ORDER BY "createdAt" DESC, id DESC';
+    const stmt = db.prepare(query);
+    const rows = stmt.all(...params);
+
+    res.json({
+      count: rows.length,
+      data: rows,
+    });
+  },
+);
 
 export type QueryParam = TodoProps[keyof TodoProps];
 
 ////* POST
-app.post("/expressTodo", async (req, res) => {
-  console.log("Received body:", req.body);
+app.post("/expressTodo", (req, res) => {
   const todo = new Todo(req.body);
-  console.log("Created todo:", todo);
 
-  await pool.query(
+  db.prepare(
     `INSERT INTO "Todo" (id, title, done, "dueDate", tags, "createdAt")
-        VALUES ($1, $2, $3, $4, $5, $6)`,
-    [todo.id, todo.title, todo.done, todo.dueDate, todo.tags, todo.createdAt]
+     VALUES (?, ?, ?, ?, ?, ?)`,
+  ).run(
+    todo.id,
+    todo.title,
+    todo.done ? 1 : 0,
+    todo.dueDate ? new Date(todo.dueDate).toISOString() : null,
+    todo.tags,
+    todo.createdAt
+      ? new Date(todo.createdAt).toISOString()
+      : new Date().toISOString(),
   );
+
   res.status(201).json(todo);
 });
 
 ////* DELETE
-app.delete("/expressTodo/:id", async (req, res) => {
-  await pool.query(`DELETE FROM "Todo" WHERE id = $1`, [req.params.id]);
-  res.status(204).send();
+app.delete("/expressTodo/:table/:id", (req, res) => {
+  const { table, id } = req.params;
+
+  const validation = validateTableAndId(table, id);
+  if ("error" in validation) {
+    return res.status(validation.status).json({ error: validation.error });
+  }
+
+  const { validatedTable } = validation;
+
+  try {
+    const stmt = db.prepare(`DELETE FROM "${validatedTable}" WHERE id = ?`);
+    const result = stmt.run(id);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    res.json({ deleted: result.changes });
+    console.log(`Deleted {item-id: ${id} from ${validatedTable}}`);
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ error: "Failed to delete item" });
+  }
 });
 
-////* PUT | EDIT
-app.put("/expressTodo/:id", async (req, res) => {
-  // quick check if empty req
-  if (!req.body || Object.keys(req.body).length === 0) {
-    return res.status(400).json({ error: "No fields to update" });
-  }
-  const updates: string[] = [];
-  const params: QueryParam[] = [req.params.id];
-
-  // if the param IS something: push to 'update bucket', else ignore
-  (Object.keys(req.body) as Array<keyof TodoProps>).forEach((key) => {
-    const val = (req.body as Partial<TodoProps>)[key];
-    if (val !== undefined) {
-      params.push(val);
-      updates.push(`"${String(key)}" = $${params.length}`);
-    }
-  });
-
-  // push to db when complete.
-  await pool.query(
-    `UPDATE "Todo" SET ${updates.join(", ")} WHERE id = $1`,
-    params
+////* PATCH | EDIT
+app.patch("/expressTodo/:id", (req, res) => {
+  const { id } = req.params;
+  const allowedFields = ["title", "done", "dueDate", "tags"];
+  const changes = Object.fromEntries(
+    Object.entries(req.body)
+      .filter(
+        ([key, value]) => allowedFields.includes(key) && value !== undefined,
+      )
+      .map(([key, value]) =>
+        key === "done" ? [key, value ? 1 : 0] : [key, value],
+      ),
   );
 
-  res.status(200).json({ message: "Todo updated" });
+  if (Object.keys(changes).length === 0) {
+    return res.status(400).json({ error: "No valid fields to update" });
+  }
+
+  const setClause = Object.keys(changes)
+    .map((key) => `"${key}" = ?`)
+    .join(", ");
+  const values = Object.values(changes);
+  values.push(id);
+
+  try {
+    const stmt = db.prepare(`UPDATE "Todo" SET ${setClause} WHERE id = ?`);
+    const result = stmt.run(...values);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update task" });
+  }
 });
 
-app.listen(4000, () => {
-  console.log("Server running on port 4000");
-});
+//* ERROR HADNLER
+app.use(
+  (err: Error, req: Request, res: Response, next: express.NextFunction) => {
+    res.status(500).json({
+      error: err.message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+  },
+);
+
+configureApp(app);
+
+sequelize
+  .sync()
+  .then(() => {
+    const port = 4000;
+    const localUrl = `http://localhost:${port}`;
+    const networkUrl = `http://${os.networkInterfaces()["Ethernet"]?.[1]?.address || "127.0.0.1"}:${port}`;
+    console.log(`▲ Express API`);
+    console.log(`- Local:         ${localUrl}`);
+    console.log(`- Network:       ${networkUrl}`);
+    console.log(`- CORS enabled for: http://localhost:3000`);
+    app.listen(port, () => {});
+  })
+  .catch((error) => {
+    console.error("Failed to sync database schema:", error);
+    process.exit(1);
+  });
